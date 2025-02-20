@@ -1,0 +1,5 @@
+*.FITS
+*.Fits
+*.fits
+.venv
+__pycache__

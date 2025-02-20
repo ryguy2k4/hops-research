@@ -1,0 +1,13 @@
+ipykernel
+ipython
+jupyter
+matplotlib
+numpy
+pandas
+scikit-learn
+scipy
+seaborn
+astropy
+aplpy
+paramiko
+scp
