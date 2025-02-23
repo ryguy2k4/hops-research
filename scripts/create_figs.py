@@ -29,8 +29,8 @@ def create_fig(img, distance=0):
         fig.add_scalebar(1 * u.arcsecond)
         fig.scalebar.set_label('1"')
     else:
-        fig.add_scalebar((100 / (distance)) * u.arcsecond)
-        fig.scalebar.set_label('100 AU')
+        fig.add_scalebar((500 / (distance)) * u.arcsecond)
+        fig.scalebar.set_label('500 AU')
 
     fig.scalebar.set_linewidth(3)
 
