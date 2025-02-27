@@ -13,23 +13,14 @@ import warnings
 warnings.filterwarnings("ignore")
 
 def angle_between_vectors(v1, v2):
-    """Calculate the angle (in degrees) between two vectors."""
-    dot_product = np.dot(v1, v2)  # Compute dot product
-    norm_v1 = np.linalg.norm(v1)  # Compute magnitude of v1
-    norm_v2 = np.linalg.norm(v2)  # Compute magnitude of v2
-    
-    # Compute angle in radians and then convert to degrees
-    angle_rad = np.arccos(dot_product / (norm_v1 * norm_v2))
-    angle_deg = np.degrees(angle_rad)
-    
-    return angle_deg
+    cos_theta = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+    return np.arccos(np.clip(cos_theta, -1.0, 1.0)) * (180 / np.pi)  # Convert to degrees
 
 df = pd.read_csv('../data/outflow_data.csv')
 
 
 # This loops through each source field with an angle measurement and creates
 # a figure with the separation vector an outflow vector overlayed
-overwrite = False
 smallest_angles = []
 for i, field in df.iterrows():
 
@@ -79,4 +70,5 @@ ax.hist(df2['smallest_angle'], label=f"N = {len(df2)}")
 ax.legend(loc='upper left')
 ax.set_xlabel("smallest angle between binary separation and outflow")
 ax.set_ylabel("count")
-fig2.savefig("../results/histogram2.png")
+fig2.savefig("../results/histogram3.png")
+df2.to_csv("../results/angles.csv", index=False)
