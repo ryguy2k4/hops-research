@@ -25,4 +25,3 @@ HOPS-213,"A, B",A+B,"Image is fuzzy, outflows faint but distinct, double check b
 HOPS-75,"A, B",A+B,"red outflow is offset from binary, outflows messy",11,62.03,137.31,99.67,99.67,-63.63,-109.6,-86.615,93.385,96.5275,6.285
 HOPS-384,"A, AB, B, C",A+AB,"discernable v shape, see channel 109, but messy and only blue lobe",11,160.85,207.89,184.37,184.37,,,,,184.37,184.37
 HOPS-173,"A, B",A+B,"faint v shape, see channel 102, one side unclear",7.5,-85.86,-140.16,-113.01,246.99,,,,,246.99,246.99
-HOPS-77,"AA, AB, B",AA+AB,possible blue lobe see channel 109,10,33,105.59,69.295,69.295,,,,,69.295,69.295

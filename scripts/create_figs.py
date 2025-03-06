@@ -3,6 +3,7 @@ import astropy.units as u
 from astropy.nddata import Cutout2D
 from astropy.coordinates import SkyCoord
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 import numpy as np
 import aplpy
 import astropy.wcs.wcs as wcs
@@ -64,26 +65,49 @@ def create_sub_fig(hdu, center, size, distance=0):
     
     return create_fig(hdu_cut, distance)
 
-def create_m8_map(hdu, center, size, distance=0):
-    # create map
-    m8_map = np.max(hdu.data[0,:,:,:], axis=0)
-
+def cut_fig(data, header, center, size):
     # get the wcs
-    wcs_original = wcs.WCS(hdu)
+    wcs_original = wcs.WCS(header)
     wcs_2d = wcs_original.celestial
 
     # make the cut
-    cut = Cutout2D(m8_map, center, size, wcs=wcs_2d)
+    cut = Cutout2D(data, center, size, wcs=wcs_2d)
 
     # create a header with the wcs
     # CAUTION: lots of header data not being preserved here
     new_header = cut.wcs.to_header()
     for key in ['BUNIT', 'OBJECT', 'TELESCOP', 'INSTRUME', 'BMAJ', 'BMIN', 'BPA']:
-        if key in hdu.header:
-            new_header[key] = hdu.header[key]
+        if key in header:
+            new_header[key] = header[key]
 
     # combine cut and wcs and an HDU
-    hdu_cut = fits.PrimaryHDU(data=cut.data, header=new_header)
-    
-    return create_fig(hdu_cut, distance)
+    return fits.PrimaryHDU(data=cut.data, header=new_header)
 
+def create_m8_map(hdu, center, size, distance=0):
+    # create map
+    m8_map = np.max(hdu.data[0,:,:,:], axis=0)
+
+    cut = cut_fig(m8_map, hdu.header, center, size)
+    
+    return create_fig(cut, distance)
+
+def create_m0_map(hdu, center, size, channel_idx, distance=0):
+    # create map
+    channels = hdu.data[0,channel_idx,:,:]
+    m0_map = np.sum(channels, axis=0)
+
+    cut = cut_fig(m0_map, hdu.header, center, size)
+    
+    return create_fig(cut, distance)
+
+def mark_sources(fig, source_rows):
+    marker_colors = ['black', 'red', 'magenta', 'darkred', 'darkblue']
+    legend_handles = []
+    sources_to_mark = source_rows.reset_index()[0:4]
+    for i, row in sources_to_mark.iterrows():
+        center2 = SkyCoord(row['RA'], row['Dec'], unit=u.degree)
+        fig.show_markers(center2.ra.deg, center2.dec.deg, coords_frame='world', marker='x', s=25, c=marker_colors[i], linewidths=1, label=row['Source'])
+
+        # Create legend handle for this source (only if not already added)
+        legend_handles.append(mlines.Line2D([], [], color=marker_colors[i], marker='x', markersize=6, linestyle='None', label=row['Source']))
+    fig.ax.legend(handles=legend_handles, loc='upper right', bbox_to_anchor=(1.05,1+0.07*np.min(len(sources_to_mark))))
