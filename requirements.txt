@@ -11,3 +11,4 @@ astropy
 aplpy
 paramiko
 scp
+snakemake
