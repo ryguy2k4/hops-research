@@ -96,6 +96,12 @@ def fix_outflow_source(x):
         return str(x)[0] + '-' + str(x)[1]
     else:
         return x
+    
+def angle_west_of_north(v):
+    x, y = v
+    angle_rad = np.arctan2(y, x)  # atan2(y, x) gives the angle in radians
+    angle_deg = np.degrees(angle_rad)  # Convert to degrees
+    return (90 - angle_deg) % 360  # Ensure the angle is in [0, 360) range
 
 # read file
 df = pd.read_csv("data/input/notes.csv")
@@ -107,7 +113,7 @@ df = df[~df['Binary'].isna()]
 df['source_a'] = df['Binary'].apply(lambda x: split_source_string(x)[0])
 df['source_b'] = df['Binary'].apply(lambda x: split_source_string(x)[1])
 # rename columns
-df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Average Angle (Blue)']].rename(columns={'Field': 'field', 'Average Angle (Blue)': 'angle', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels'})
+df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Average Angle (Blue)']].rename(columns={'Field': 'field', 'Average Angle (Blue)': 'outflow_angle', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels'})
 
 # merge coordinates and distance
 new_rows = []
@@ -121,10 +127,12 @@ for i, row in df.iterrows():
     row['source_b_ra'] = row_b['RA'].iloc[0]
     row['source_b_dec'] = row_b['Dec'].iloc[0]
     row['distance'] = row_a['Dis'].iloc[0]
+    separation_vector = np.array([row['source_b_ra'] - row['source_a_ra'], row['source_b_dec'] - row['source_a_dec']])
+    row['separation_angle'] = angle_west_of_north(separation_vector)
     new_rows.append(row)
 
 # create new dataframe
-master = pd.DataFrame(new_rows)[['field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'angle']]
+master = pd.DataFrame(new_rows)[['field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'outflow_angle', 'separation_angle']]
 # parse `outflow_source`
 master['outflow_source'] = master['outflow_source'].apply(lambda x: fix_outflow_source(x))
 # save

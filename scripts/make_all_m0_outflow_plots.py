@@ -91,48 +91,50 @@ for i, field in df.iterrows():
     legend_handles.append(mlines.Line2D([], [], color='magenta', marker='x', markersize=6, linestyle='None', label=field['source_b']))
     fig.ax.legend(handles=legend_handles, loc='upper right', bbox_to_anchor=(1,1.15))
 
-    ### calculate outflow vector
-    angle_north = field['angle']
-    angle_east_rad = np.radians(90 - angle_north)
-    # get coordinate vectors
-    # define outflow origin
+
+    ### VECTORS
+    def make_vector(origin, angle_north, length=0.005):
+        angle_east_rad = np.radians(90 - angle_north)
+        return origin[0] + length * np.cos(angle_east_rad), origin[1] + length * np.sin(angle_east_rad)
+
+    # define vector origin at the outflow source
     if field['outflow_source'] == 'both':
         outflow_origin = np.array([np.mean([field['source_a_ra'], field['source_b_ra']]), np.mean([field['source_a_dec'], field['source_b_dec']])])
     elif field['outflow_source'] == field['source_a']:
         outflow_origin = np.array([field['source_a_ra'], field['source_a_dec']])
     else:
         outflow_origin = np.array([field['source_b_ra'], field['source_b_dec']])
-    outflow_tip_pix = fig.world2pixel(outflow_origin[0] + 0.005 * np.cos(angle_east_rad), outflow_origin[1] + 0.005 * np.sin(angle_east_rad))
+
     outflow_origin_pix = fig.world2pixel(outflow_origin[0], outflow_origin[1])
-    # get outflow vector
+
+    # get outflow angle
+    outflow_angle_north = field['outflow_angle']
+    # create outflow vector
+    outflow_tip = make_vector(outflow_origin, outflow_angle_north)
+    outflow_tip_pix = fig.world2pixel(outflow_tip[0], outflow_tip[1])
     outflow_vector = np.array([outflow_tip_pix[0] - outflow_origin_pix[0], outflow_tip_pix[1] - outflow_origin_pix[1]])
+    
+    # get separation angle
+    separation_angle_north = field['separation_angle']
+    # choose a separation vector that provides the smallest angle between vectors
+    angle = np.abs(outflow_angle_north - separation_angle_north)
+    if angle < 90:
+        separation_tip = make_vector(outflow_origin, separation_angle_north)
+    else:
+        separation_tip = make_vector(outflow_origin, separation_angle_north + 180)
+        angle = 180 - angle
+    separation_tip_pix = fig.world2pixel(separation_tip[0], separation_tip[1])
+    separation_vector = np.array([separation_tip_pix[0] - outflow_origin_pix[0], separation_tip_pix[1] - outflow_origin_pix[1]])
+    
+    # plot separation vector
+    fig.ax.quiver(outflow_origin_pix[0], outflow_origin_pix[1], separation_vector[0], separation_vector[1],
+                angles='xy', scale_units='xy', scale=1, color='white', width=0.005)
     # plot outflow vector
     fig.ax.quiver(outflow_origin_pix[0], outflow_origin_pix[1], outflow_vector[0], outflow_vector[1],
                 angles='xy', scale_units='xy', scale=1, color='red', width=0.005)
 
-
-    ### calculate separation vector
-    # get coordinate vectors
-    star_a_pix = fig.world2pixel(center_a.ra.deg, center_a.dec.deg)
-    star_b_pix = fig.world2pixel(center_b.ra.deg, center_b.dec.deg)
-    # get separation vector
-    separation_vector = np.array([star_a_pix[0] - star_b_pix[0], star_a_pix[1] - star_b_pix[1]])
-    # normalize to same length as outflow vector
-    separation_vector = np.linalg.norm(outflow_vector) * separation_vector / np.linalg.norm(separation_vector)
-    # get smallest angle
-    angle = angle_between_vectors(outflow_vector, separation_vector)
-    if angle > 90:
-        # recompute for the smaller angle
-        separation_vector = np.array([star_b_pix[0] - star_a_pix[0], star_b_pix[1] - star_a_pix[1]])
-        separation_vector = np.linalg.norm(outflow_vector) * separation_vector / np.linalg.norm(separation_vector)
-        angle = angle_between_vectors(outflow_vector, separation_vector)
-    # plot separation vector
-    fig.ax.quiver(star_a_pix[0], star_a_pix[1], separation_vector[0], separation_vector[1],
-                angles='xy', scale_units='xy', scale=1, color='white', width=0.005)
-
-
     # display angle between outflow and separation in top left corner
-    fig.ax.text(30,fig.ax.get_xlim()[1]-50, f"{angle:.2f}°")
+    fig.ax.text(30,fig.ax.get_xlim()[1]-50, f"{np.abs(angle):.2f}°")
 
     # save image
     fig.savefig(output_path)

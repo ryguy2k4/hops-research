@@ -28,7 +28,6 @@ rule make_all_m8_outflow_plots:
         "data/output/outflow_data.csv"
     output:
         directory("results/m8_outflow_plots"),
-        "results/outflow_vs_separation_angles.csv"
     shell:
         "python3 scripts/make_all_m8_outflow_plots.py"
 
