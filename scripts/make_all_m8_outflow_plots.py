@@ -72,8 +72,13 @@ for i, field in df.iterrows():
     angle_north = field['angle']
     angle_east_rad = np.radians(90 - angle_north)
     # get coordinate vectors
-    # define outflow origin between the sources
-    outflow_origin = np.array([np.mean([field['source_a_ra'], field['source_b_ra']]), np.mean([field['source_a_dec'], field['source_b_dec']])])
+    # define outflow origin
+    if field['outflow_source'] == 'both':
+        outflow_origin = np.array([np.mean([field['source_a_ra'], field['source_b_ra']]), np.mean([field['source_a_dec'], field['source_b_dec']])])
+    elif field['outflow_source'] == field['source_a']:
+        outflow_origin = np.array([field['source_a_ra'], field['source_a_dec']])
+    else:
+        outflow_origin = np.array([field['source_b_ra'], field['source_b_dec']])    
     outflow_tip_pix = fig.world2pixel(outflow_origin[0] + 0.005 * np.cos(angle_east_rad), outflow_origin[1] + 0.005 * np.sin(angle_east_rad))
     outflow_origin_pix = fig.world2pixel(outflow_origin[0], outflow_origin[1])
     # get outflow vector

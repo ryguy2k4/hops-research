@@ -91,9 +91,18 @@ def create_m8_map(hdu, center, size, distance=0):
     
     return create_fig(cut, distance)
 
-def create_m0_map(hdu, center, size, channel_idx, distance=0):
+def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0):
+    # sigma
+    blank_channel = hdu.data[0,0,:,:]
+    region_size = np.array([100, 100]) * u.pixel
+    wcs_2d = wcs.WCS(hdu.header).celestial
+    region = Cutout2D(blank_channel, center, region_size, wcs=wcs_2d)
+    mean = np.mean(region.data)
+    std = np.std(region.data)
+
     # create map
     channels = hdu.data[0,channel_idx,:,:]
+    channels[channels < (mean + sigma*std)] = 0
     m0_map = np.sum(channels, axis=0)
 
     cut = cut_fig(m0_map, hdu.header, center, size)

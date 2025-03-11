@@ -12,3 +12,4 @@ aplpy
 paramiko
 scp
 snakemake
+spectral_cube
