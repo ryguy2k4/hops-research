@@ -7,7 +7,7 @@ import numpy as np
 import os
 import pandas as pd
 
-from create_figs import create_m8_map
+from create_figs import create_m8_map, mark_sources_2, plot_vector
 
 # script options
 overwrite = False
@@ -43,12 +43,8 @@ for i, field in df.iterrows():
     hdulist = fits.open(f"/Volumes/Alpha/Research/data/{target_name.casefold()}/{target_name.casefold()}__s15__12co.fits")
     hdu = hdulist[0]
 
-    # extract center coords
-    center_ra = hdu.header['OBSRA']
-    center_dec = hdu.header['OBSDEC']
-
     # set center and size of cutout
-    center = SkyCoord(center_ra, center_dec, unit=u.degree)
+    center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
     size = np.array([39, 39]) * u.arcsecond
     distance = field['distance']
 
@@ -58,21 +54,9 @@ for i, field in df.iterrows():
     fig.show_colorscale(cmap='viridis', stretch='sqrt')
 
     # add a marker at each source with legend
-    center_a = SkyCoord(field['source_a_ra'], field['source_a_dec'], unit=u.degree)
-    center_b = SkyCoord(field['source_b_ra'], field['source_b_dec'], unit=u.degree)
-    fig.show_markers(center_a.ra.deg, center_a.dec.deg, coords_frame='world', marker='x', s=25, c='black', linewidths=1, label=field['source_a'])
-    fig.show_markers(center_b.ra.deg, center_b.dec.deg, coords_frame='world', marker='x', s=25, c='magenta', linewidths=1, label=field['source_b'])
-    legend_handles = []
-    legend_handles.append(mlines.Line2D([], [], color='black', marker='x', markersize=6, linestyle='None', label=field['source_a']))
-    legend_handles.append(mlines.Line2D([], [], color='magenta', marker='x', markersize=6, linestyle='None', label=field['source_b']))
-    fig.ax.legend(handles=legend_handles, loc='upper right', bbox_to_anchor=(1,1.15))
-
+    mark_sources_2(fig, field)
 
     ### VECTORS
-    def make_vector(origin, angle_north, length=0.005):
-        angle_east_rad = np.radians(90 - angle_north)
-        return origin[0] + length * np.cos(angle_east_rad), origin[1] + length * np.sin(angle_east_rad)
-
     # define vector origin at the outflow source
     if field['outflow_source'] == 'both':
         outflow_origin = np.array([np.mean([field['source_a_ra'], field['source_b_ra']]), np.mean([field['source_a_dec'], field['source_b_dec']])])
@@ -81,33 +65,19 @@ for i, field in df.iterrows():
     else:
         outflow_origin = np.array([field['source_b_ra'], field['source_b_dec']])
 
-    outflow_origin_pix = fig.world2pixel(outflow_origin[0], outflow_origin[1])
-
-    # get outflow angle
+    # plot outflow angle
     outflow_angle_north = field['outflow_angle']
-    # create outflow vector
-    outflow_tip = make_vector(outflow_origin, outflow_angle_north)
-    outflow_tip_pix = fig.world2pixel(outflow_tip[0], outflow_tip[1])
-    outflow_vector = np.array([outflow_tip_pix[0] - outflow_origin_pix[0], outflow_tip_pix[1] - outflow_origin_pix[1]])
+    plot_vector(fig, outflow_origin, outflow_angle_north, color='red', length=0.005)
     
-    # get separation angle
+    # plot separation angle
     separation_angle_north = field['separation_angle']
     # choose a separation vector that provides the smallest angle between vectors
     angle = np.abs(outflow_angle_north - separation_angle_north)
     if angle < 90:
-        separation_tip = make_vector(outflow_origin, separation_angle_north)
+        plot_vector(fig, outflow_origin, separation_angle_north, color='white', length=0.005)
     else:
-        separation_tip = make_vector(outflow_origin, separation_angle_north + 180)
+        plot_vector(fig, outflow_origin, separation_angle_north + 180, color='white', length=0.005)
         angle = 180 - angle
-    separation_tip_pix = fig.world2pixel(separation_tip[0], separation_tip[1])
-    separation_vector = np.array([separation_tip_pix[0] - outflow_origin_pix[0], separation_tip_pix[1] - outflow_origin_pix[1]])
-    
-    # plot separation vector
-    fig.ax.quiver(outflow_origin_pix[0], outflow_origin_pix[1], separation_vector[0], separation_vector[1],
-                angles='xy', scale_units='xy', scale=1, color='white', width=0.005)
-    # plot outflow vector
-    fig.ax.quiver(outflow_origin_pix[0], outflow_origin_pix[1], outflow_vector[0], outflow_vector[1],
-                angles='xy', scale_units='xy', scale=1, color='red', width=0.005)
 
     # display angle between outflow and separation in top left corner
     fig.ax.text(30,fig.ax.get_xlim()[1]-50, f"{np.abs(angle):.2f}°")

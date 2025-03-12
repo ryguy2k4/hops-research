@@ -7,11 +7,11 @@ import numpy as np
 import os
 import pandas as pd
 
-from create_figs import create_m0_map, mark_sources_2, plot_vector
+from create_figs import create_m0_contours, mark_sources_2, plot_vector
 
 # script options
 overwrite = False
-output_folder = "results/m0_outflow_plots"
+output_folder = "results/m0_outflow_contours"
 
 # read data
 df = pd.read_csv('data/output/outflow_data.csv')
@@ -65,10 +65,10 @@ for i, field in df.iterrows():
     distance = field['distance']
 
     # create figure
-    channels = getIdx([field['red_channels'], field['blue_channels']])
-    fig = create_m0_map(hdu, center, size, channels, 3, distance)
+    red_channels = getIdx([field['red_channels']])
+    blue_channels = getIdx([field['blue_channels']])
+    fig = create_m0_contours(hdu, center, size, red_channels, blue_channels, sigma=3, distance=distance)
     fig.set_title(f"{target_name} 12CO M0")
-    fig.show_colorscale(cmap='viridis', stretch='sqrt')
 
     # add a marker at each source with legend
     mark_sources_2(fig, field)
@@ -84,16 +84,16 @@ for i, field in df.iterrows():
 
     # plot outflow angle
     outflow_angle_north = field['outflow_angle']
-    plot_vector(fig, outflow_origin, outflow_angle_north, color='red', length=0.005)
+    plot_vector(fig, outflow_origin, outflow_angle_north, color='green', length=0.005)
     
     # plot separation angle
     separation_angle_north = field['separation_angle']
     # choose a separation vector that provides the smallest angle between vectors
     angle = np.abs(outflow_angle_north - separation_angle_north)
     if angle < 90:
-        plot_vector(fig, outflow_origin, separation_angle_north, color='white', length=0.005)
+        plot_vector(fig, outflow_origin, separation_angle_north, color='black', length=0.005)
     else:
-        plot_vector(fig, outflow_origin, separation_angle_north + 180, color='white', length=0.005)
+        plot_vector(fig, outflow_origin, separation_angle_north + 180, color='black', length=0.005)
         angle = 180 - angle
 
     # display angle between outflow and separation in top left corner

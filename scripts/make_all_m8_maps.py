@@ -42,12 +42,8 @@ for file in files:
         hdulist = fits.open(file)
         hdu = hdulist[0]
 
-        # extract center coords
-        center_ra = hdu.header['OBSRA']
-        center_dec = hdu.header['OBSDEC']
-
         # set center and size of cutout
-        center = SkyCoord(center_ra, center_dec, unit=u.degree)
+        center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
         size = np.array([39, 39]) * u.arcsecond
         distance = target_info.iloc[0]['Dis']
 
