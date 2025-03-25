@@ -7,13 +7,9 @@ output_folder = "results"
 
 # create histogram
 df = pd.read_csv('data/output/outflow_data.csv')
-angle = np.abs(df['outflow_angle'] - df['separation_angle'])
-angle = np.min([angle, 180 - angle], axis=0)
-angle = np.abs(angle)
-angle
 
 fig2, ax = plt.subplots()
-ax.hist(angle, label=f"N = {len(angle)}")
+ax.hist(df['delta_PA'], label=f"N = {len(df)}")
 ax.legend(loc='upper left')
 ax.set_xlabel("smallest angle between binary separation and outflow")
 ax.set_ylabel("count")

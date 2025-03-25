@@ -113,7 +113,7 @@ df = df[~df['Binary'].isna()]
 df['source_a'] = df['Binary'].apply(lambda x: split_source_string(x)[0])
 df['source_b'] = df['Binary'].apply(lambda x: split_source_string(x)[1])
 # rename columns
-df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Average Angle (Blue)']].rename(columns={'Field': 'field', 'Average Angle (Blue)': 'outflow_angle', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels'})
+df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Average Angle (Blue)']].rename(columns={'Field': 'field', 'Average Angle (Blue)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels'})
 
 # merge coordinates and distance
 new_rows = []
@@ -127,13 +127,22 @@ for i, row in df.iterrows():
     row['source_b_ra'] = row_b['RA'].iloc[0]
     row['source_b_dec'] = row_b['Dec'].iloc[0]
     row['distance'] = row_a['Dis'].iloc[0]
+    # calculate angle of the separation vector
     separation_vector = np.array([row['source_b_ra'] - row['source_a_ra'], row['source_b_dec'] - row['source_a_dec']])
-    row['separation_angle'] = angle_west_of_north(separation_vector)
+    row['binary_PA'] = angle_west_of_north(separation_vector)
+    # # fix angle reference
     new_rows.append(row)
 
 # create new dataframe
-master = pd.DataFrame(new_rows)[['field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'outflow_angle', 'separation_angle']]
+master = pd.DataFrame(new_rows)[['field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'outflow_PA', 'binary_PA']]
 # parse `outflow_source`
 master['outflow_source'] = master['outflow_source'].apply(lambda x: fix_outflow_source(x))
+
+# compute delta_PA
+angle = np.abs(master['outflow_PA'] - master['binary_PA'])
+angle = np.min([angle, 180 - angle], axis=0)
+angle = np.abs(angle)
+master['delta_PA'] = angle
+
 # save
 master.to_csv('data/output/outflow_data.csv',index=False)

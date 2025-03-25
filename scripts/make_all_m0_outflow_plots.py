@@ -83,11 +83,11 @@ for i, field in df.iterrows():
         outflow_origin = np.array([field['source_b_ra'], field['source_b_dec']])
 
     # plot outflow angle
-    outflow_angle_north = field['outflow_angle']
+    outflow_angle_north = field['outflow_PA']
     plot_vector(fig, outflow_origin, outflow_angle_north, color='red', length=0.005)
     
     # plot separation angle
-    separation_angle_north = field['separation_angle']
+    separation_angle_north = field['binary_PA']
     # choose a separation vector that provides the smallest angle between vectors
     angle = np.abs(outflow_angle_north - separation_angle_north)
     if angle < 90:
