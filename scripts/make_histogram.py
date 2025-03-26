@@ -3,7 +3,11 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-output_folder = "results"
+output_folder = "results/histogram"
+
+# verify output path exists
+if not os.path.exists(output_folder):
+    os.mkdir(output_folder)
 
 # create histogram
 df = pd.read_csv('data/output/outflow_data.csv')
