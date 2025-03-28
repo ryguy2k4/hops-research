@@ -47,6 +47,7 @@ def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1
     fig.beam.set_edgecolor("black")
     fig.beam.set_facecolor("white")
 
+    figure.clear()
     return fig
 
 """
