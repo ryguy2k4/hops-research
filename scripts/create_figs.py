@@ -13,13 +13,15 @@ import astropy.wcs.wcs as wcs
 Creates a simple aplpy FITSFigure with a colorbar, scalebar, and beam
 
 """
-def create_fig(img, distance=0):
+def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # Create FITSFigure
-    figure = plt.figure(figsize=(6,6))
-    fig = aplpy.FITSFigure(img, figure=figure)
+    if not multiimage:
+        figure.clear()
+
+    fig = aplpy.FITSFigure(img, figure=figure, subplot=subplot)
 
     # Display image
-    fig.show_colorscale(cmap='viridis')
+    fig.show_colorscale(cmap='viridis', stretch='sqrt')
 
     # Title
     fig.set_title(img.header['OBJECT'])
@@ -122,7 +124,7 @@ Included channels are specified with channel_idx and
 sigma-clipping is specified with sigma; default is 3
 
 """
-def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0):
+def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # sigma
     blank_channel = hdu.data[0,0,:,:]
     region_size = np.array([100, 100]) * u.pixel
@@ -138,7 +140,7 @@ def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0):
 
     cut = cut_fig(m0_map, hdu.header, center, size)
     
-    return create_fig(cut, distance)
+    return create_fig(cut, distance, figure, subplot, multiimage=multiimage)
 
 def create_m0_contours(hdu, center, size, red_channels, blue_channels, sigma=3, distance=0):
     # sigma

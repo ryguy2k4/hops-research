@@ -1,6 +1,6 @@
 rule runall:
     input:
-        directory("results/m8_maps"),
+        # directory("results/m8_maps"),
         directory("results/m8_outflow_plots"),
         directory("results/m0_outflow_plots"),
         # directory("results/m0_outflow_contours"),

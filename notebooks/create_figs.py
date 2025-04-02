@@ -13,9 +13,11 @@ import astropy.wcs.wcs as wcs
 Creates a simple aplpy FITSFigure with a colorbar, scalebar, and beam
 
 """
-def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1)):
+def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # Create FITSFigure
-    figure.clear()
+    if not multiimage:
+        figure.clear()
+
     fig = aplpy.FITSFigure(img, figure=figure, subplot=subplot)
 
     # Display image
@@ -122,7 +124,7 @@ Included channels are specified with channel_idx and
 sigma-clipping is specified with sigma; default is 3
 
 """
-def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1)):
+def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # sigma
     blank_channel = hdu.data[0,0,:,:]
     region_size = np.array([100, 100]) * u.pixel
@@ -138,7 +140,7 @@ def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0, figure=pl
 
     cut = cut_fig(m0_map, hdu.header, center, size)
     
-    return create_fig(cut, distance, figure, subplot)
+    return create_fig(cut, distance, figure, subplot, multiimage=multiimage)
 
 def create_m0_contours(hdu, center, size, red_channels, blue_channels, sigma=3, distance=0):
     # sigma
@@ -225,3 +227,15 @@ def plot_vector(fig, origin, angle_north_deg, color, length=0.005):
     outflow_vector = np.array([tip_pix[0] - origin_pix[0], tip_pix[1] - origin_pix[1]])
     fig.ax.quiver(origin_pix[0], origin_pix[1], outflow_vector[0], outflow_vector[1],
                 angles='xy', scale_units='xy', scale=1, color=color, width=0.005)
+    
+def plot_dotted_vector(fig, origin, angle_north_deg, color, length=0.005):
+    angle_east_rad = np.radians(90 - angle_north_deg)
+    origin_pix = fig.world2pixel(origin[0], origin[1])
+    tip = origin[0] + length * np.cos(angle_east_rad), origin[1] + length * np.sin(angle_east_rad)
+    tip_pix = fig.world2pixel(tip[0], tip[1])
+    outflow_vector = np.array([tip_pix[0] - origin_pix[0], tip_pix[1] - origin_pix[1]])
+    fig.ax.plot(
+        [origin_pix[0], origin_pix[0] + outflow_vector[0]], 
+        [origin_pix[1], origin_pix[1] + outflow_vector[1]], 
+        linestyle="dashed", color=color, linewidth=1  # Dotted line
+    )

@@ -44,10 +44,76 @@ targets = [
     "HOPS-203",
     "HOPS-163",
     "HOPS-12",
-    "HOPS-261"
+    "HOPS-261",
+
+    "Per-emb-2",
+    "Per-emb-5",
+    "Per-emb-12",
+    "Per-emb-17",
+    "Per-emb-18",
+    "Per-emb-22",
+    "Per-emb-27",
+    "Per-emb-33",
+    "Per-emb-35",
+    "Per-emb-36",
+    "Per-emb-44"
 ]
 
-### PARSE `distances.txt`
+### PARSE `perseus1.txt` and `perseus2.txt` for PERSEUS
+
+def ra_to_degrees(ra_str):
+    h, m, s = map(float, ra_str.split(':'))
+    return (h + m / 60 + s / 3600) * 15  # Convert hours to degrees
+
+def dec_to_degrees(dec_str):
+    sign = -1 if dec_str.startswith('-') else 1
+    d, m, s = map(float, dec_str.lstrip('+-').split(':'))
+    return sign * (d + m / 60 + s / 3600)
+
+# read file
+perseus1 = astropy.io.ascii.read("data/input/perseus2.txt", delimiter="\t", guess=False).to_pandas()
+# format name columns
+perseus1['Main'] = perseus1['Source']
+perseus1['Main'] = perseus1['Main'].apply(lambda x: str(x).removesuffix('-'+str(x).split('-')[-1]))
+# filter for relevant targets
+perseus1 = perseus1[perseus1['Main'].isin(targets)]
+# order columns and rename
+perseus1 = perseus1[['Main', 'Source', 'R.A.', 'Decl.']]
+perseus1 = perseus1.rename(columns={'R.A.': 'RA', 'Decl.': 'Dec'})
+# parse ra/dec columns
+perseus1['RA'] = perseus1['RA'].apply(ra_to_degrees)
+perseus1['Dec'] = perseus1['Dec'].apply(dec_to_degrees)
+# set distance to 300pc
+perseus1['Dis'] = 300
+
+# read file
+perseus2 = astropy.io.ascii.read("data/input/perseus.txt", delimiter="\t", guess=False).to_pandas()
+# format name columns
+perseus2.loc[perseus2['Source'] == '-', 'Source'] = 'A'
+perseus2['Source'] = perseus2['Source'].apply(lambda x: str(x).removeprefix('-'))
+perseus2['Name'] = perseus2['Name'].replace('-', np.nan)
+perseus2['Name'] = perseus2['Name'].fillna(method='ffill')
+perseus2['Source'] = perseus2['Name'] + '-' + perseus2['Source']
+# order columns and rename
+perseus2 = perseus2[['Name', 'Source', 'RA', 'Dec']]
+perseus2 = perseus2.rename(columns={'Name': 'Main'})
+# filter for relevant targets
+perseus2 = perseus2[perseus2['Main'].isin(targets)]
+# parse ra/dec columns
+perseus2['RA'] = perseus2['RA'].apply(ra_to_degrees)
+perseus2['Dec'] = perseus2['Dec'].apply(dec_to_degrees)
+# set distance to 300pc
+perseus2['Dis'] = 300
+
+# merge datasets
+additional_targets = perseus2[perseus2['Main'].isin(['Per-emb-2', 'Per-emb-5', 'Per-emb-18'])]
+per_5 = perseus2.loc[perseus2['Main'] == 'Per-emb-5']
+# define Per-emb-5-B as same coordinates as Per-emb-A
+per_5['Source'] = 'Per-emb-5-B'
+perseus = pd.concat([perseus1, additional_targets, per_5]).sort_values('Source').reset_index(drop=True)
+
+
+### PARSE `distances.txt` for ORION
 
 # read file
 source_info = astropy.io.ascii.read("data/input/distances.txt").to_pandas()
@@ -69,6 +135,7 @@ source_info["Main"] = source_info["Main"].replace({"HOPS-361": "HOPS-361-N"})
 source_info["Source"] = source_info["Source"].apply(lambda x: str(x).replace("HOPS-361", "HOPS-361-N"))
 
 # save
+source_info = pd.concat([source_info, perseus])
 source_info.to_csv("data/output/source_info.csv",index=False)
 
 
@@ -106,14 +173,14 @@ def angle_west_of_north(v):
 # read file
 df = pd.read_csv("data/input/notes.csv")
 # keep relevant columns
-df = df[['Field', 'Binary', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Average Angle (Blue)']]
+df = df[['Field', 'Binary', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Red Center Corrected', 'Blue Center Corrected', 'Average Angle (Blue)']]
 # remove sources with secondaries (deal with those later)
 df = df[~df['Binary'].isna()]
 # create columns to identify each source in the pair
 df['source_a'] = df['Binary'].apply(lambda x: split_source_string(x)[0])
 df['source_b'] = df['Binary'].apply(lambda x: split_source_string(x)[1])
 # rename columns
-df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Average Angle (Blue)']].rename(columns={'Field': 'field', 'Average Angle (Blue)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels'})
+df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Blue)']].rename(columns={'Field': 'field', 'Average Angle (Blue)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA'})
 
 # merge coordinates and distance
 new_rows = []
@@ -134,14 +201,13 @@ for i, row in df.iterrows():
     new_rows.append(row)
 
 # create new dataframe
-master = pd.DataFrame(new_rows)[['field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'outflow_PA', 'binary_PA']]
+master = pd.DataFrame(new_rows)[['field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'binary_PA']]
 # parse `outflow_source`
 master['outflow_source'] = master['outflow_source'].apply(lambda x: fix_outflow_source(x))
 
 # compute delta_PA
-angle = np.abs(master['outflow_PA'] - master['binary_PA'])
+angle = np.abs(master['outflow_PA'] - master['binary_PA']) % 180
 angle = np.min([angle, 180 - angle], axis=0)
-angle = np.abs(angle)
 master['delta_PA'] = angle
 
 # save

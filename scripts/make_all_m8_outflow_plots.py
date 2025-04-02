@@ -1,11 +1,10 @@
 import astropy.io.fits as fits
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
 import numpy as np
 import os
 import pandas as pd
+import glob
 
 from create_figs import create_m8_map, mark_sources_2, plot_vector
 
@@ -40,7 +39,8 @@ for i, field in df.iterrows():
         continue
 
     # open image
-    hdulist = fits.open(f"/Volumes/Alpha/Research/data/{target_name.casefold()}/{target_name.casefold()}__s15__12co.fits")
+    image_filename = (glob.glob(f'/Volumes/Alpha/Research/data/{target_name.casefold()}/*12co*.fits') + glob.glob(f'/Volumes/Alpha/Research/data/{target_name.casefold()}/*spw39*.fits'))[0]
+    hdulist = fits.open(image_filename)
     hdu = hdulist[0]
 
     # set center and size of cutout
@@ -72,7 +72,7 @@ for i, field in df.iterrows():
     # plot separation angle
     separation_angle_north = field['binary_PA']
     # choose a separation vector that provides the smallest angle between vectors
-    angle = np.abs(outflow_angle_north - separation_angle_north)
+    angle = np.abs(outflow_angle_north - separation_angle_north) % 180
     if angle < 90:
         plot_vector(fig, outflow_origin, separation_angle_north, color='white', length=0.005)
     else:

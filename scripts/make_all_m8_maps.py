@@ -16,15 +16,16 @@ output_folder = "results/m8_maps"
 
 # read source info
 source_info = pd.read_csv("data/output/source_info.csv")
+source_info['Main'] = source_info['Main'].apply(lambda x: str(x).casefold())
 source_info.set_index('Main', inplace=True)
 
 # get files
-files = glob.glob("/Volumes/Alpha/Research/data/*/*12co.fits")
+files = glob.glob('/Volumes/Alpha/Research/data/*/*12co*.fits') + glob.glob('/Volumes/Alpha/Research/data/*/*spw39*.fits')
 
 for file in files:
 
     # set output name and output path
-    target_name = os.path.basename(file.split("__")[0].upper())
+    target_name = os.path.dirname(file).split('/')[-1]
     filename = f"{target_name}_m8.pdf"
     output_path = os.path.join(output_folder, filename)
 
@@ -50,7 +51,6 @@ for file in files:
         # create figure
         fig = create_m8_map(hdu, center, size, distance)
         fig.set_title(f"{target_name} 12CO M8")
-        fig.show_colorscale(cmap='viridis', stretch='sqrt')
 
         # add a marker at each source
         mark_sources(fig, target_info)
