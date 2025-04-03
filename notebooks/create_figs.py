@@ -7,6 +7,7 @@ import matplotlib.lines as mlines
 import numpy as np
 import aplpy
 import astropy.wcs.wcs as wcs
+import pandas as pd
 
 """
 
@@ -17,7 +18,6 @@ def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1
     # Create FITSFigure
     if not multiimage:
         figure.clear()
-
     fig = aplpy.FITSFigure(img, figure=figure, subplot=subplot)
 
     # Display image
@@ -50,6 +50,7 @@ def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1
     fig.beam.set_edgecolor("black")
     fig.beam.set_facecolor("white")
 
+    figure.show()
     return fig
 
 """
@@ -210,6 +211,18 @@ def mark_sources_2(fig, field):
     legend_handles = []
     legend_handles.append(mlines.Line2D([], [], color='black', marker='x', markersize=6, linestyle='None', label=field['source_a']))
     legend_handles.append(mlines.Line2D([], [], color='magenta', marker='x', markersize=6, linestyle='None', label=field['source_b']))
+    fig.ax.legend(handles=legend_handles, loc='upper right', bbox_to_anchor=(1,1.15))
+
+def mark_sources_3(fig, field_rows):
+    legend_handles = []
+    for i, field in field_rows.iterrows():
+        center_a = SkyCoord(field['source_a_ra'], field['source_a_dec'], unit=u.degree)
+        fig.show_markers(center_a.ra.deg, center_a.dec.deg, coords_frame='world', marker='x', s=25, c='black', linewidths=1, label=field['source_a'])
+        legend_handles.append(mlines.Line2D([], [], color='black', marker='x', markersize=6, linestyle='None', label=field['source_a']))
+        if ~pd.isna(field['source_b']):
+            center_b = SkyCoord(field['source_b_ra'], field['source_b_dec'], unit=u.degree)
+            fig.show_markers(center_b.ra.deg, center_b.dec.deg, coords_frame='world', marker='x', s=25, c='magenta', linewidths=1, label=field['source_b'])
+            legend_handles.append(mlines.Line2D([], [], color='magenta', marker='x', markersize=6, linestyle='None', label=field['source_b']))
     fig.ax.legend(handles=legend_handles, loc='upper right', bbox_to_anchor=(1,1.15))
 
 
