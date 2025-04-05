@@ -250,5 +250,5 @@ def plot_dotted_vector(fig, origin, angle_north_deg, color, length=0.005):
     fig.ax.plot(
         [origin_pix[0], origin_pix[0] + outflow_vector[0]], 
         [origin_pix[1], origin_pix[1] + outflow_vector[1]], 
-        linestyle="dashed", color=color, linewidth=1  # Dotted line
+        linestyle="dashed", color=color, linewidth=0.5  # Dotted line
     )

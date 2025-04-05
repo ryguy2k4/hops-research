@@ -1,11 +1,12 @@
 rule runall:
     input:
         # directory("results/m8_maps"),
+        # directory("results/m0_outflow_contours"),
         directory("results/m8_outflow_plots"),
         directory("results/m0_outflow_plots"),
-        # directory("results/m0_outflow_contours"),
         directory("results/stat_test"),
-        directory("results/histogram")
+        directory("results/histogram"),
+        directory("results/m0_multi_outflow_plots")
 
 rule prepare_tables:
     input:
@@ -48,6 +49,15 @@ rule make_all_m0_outflow_contours:
         directory("results/m0_outflow_contours"),
     shell:
         "python3 scripts/make_all_m0_outflow_contours.py"
+
+rule make_all_m0_multi_outflow_plots:
+    input:
+        "data/output/outflow_data.csv",
+        "data/output/source_info.csv"
+    output:
+        directory("results/m0_multi_outflow_plots"),
+    shell:
+        "python3 scripts/make_all_m0_multi_outflow_plots.py"
 
 rule perform_stat_test:
     input:

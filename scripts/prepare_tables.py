@@ -111,6 +111,7 @@ per_5 = perseus2.loc[perseus2['Main'] == 'Per-emb-5']
 # define Per-emb-5-B as same coordinates as Per-emb-A
 per_5['Source'] = 'Per-emb-5-B'
 perseus = pd.concat([perseus1, additional_targets, per_5]).sort_values('Source').reset_index(drop=True)
+perseus['group'] = 'perseus'
 
 
 ### PARSE `distances.txt` for ORION
@@ -133,6 +134,7 @@ source_info = source_info.sort_values(['Main', 'Source']).reset_index(drop=True)
 # fix HOPS-361-N
 source_info["Main"] = source_info["Main"].replace({"HOPS-361": "HOPS-361-N"})
 source_info["Source"] = source_info["Source"].apply(lambda x: str(x).replace("HOPS-361", "HOPS-361-N"))
+source_info['group'] = 'orion'
 
 # save
 source_info = pd.concat([source_info, perseus])
@@ -174,11 +176,13 @@ def angle_west_of_north(v):
 df = pd.read_csv("data/input/notes.csv")
 # keep relevant columns
 df = df[['Field', 'Binary', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Red Center Corrected', 'Blue Center Corrected', 'Average Angle (Blue)']]
-# remove sources with secondaries (deal with those later)
-df = df[~df['Binary'].isna()]
+# get sources with secondaries
+no_binary = df['Binary'].isna()
 # create columns to identify each source in the pair
-df['source_a'] = df['Binary'].apply(lambda x: split_source_string(x)[0])
-df['source_b'] = df['Binary'].apply(lambda x: split_source_string(x)[1])
+df.loc[~no_binary, 'source_a'] = df.loc[~no_binary, 'Binary'].apply(lambda x: split_source_string(x)[0])
+df.loc[~no_binary, 'source_b'] = df.loc[~no_binary, 'Binary'].apply(lambda x: split_source_string(x)[1])
+df.loc[no_binary, 'source_a'] = df.loc[no_binary, 'Outflow Source']
+df.loc[no_binary, 'source_b'] = None
 # rename columns
 df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Blue)']].rename(columns={'Field': 'field', 'Average Angle (Blue)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA'})
 
@@ -186,22 +190,31 @@ df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Re
 new_rows = []
 for i, row in df.iterrows():
     key_a = row['field'] + '-' + row['source_a']
-    key_b = row['field'] + '-' + row['source_b']
     row_a = source_info.loc[source_info['Source'] == key_a]
-    row_b = source_info.loc[source_info['Source'] == key_b]
     row['source_a_ra'] = row_a['RA'].iloc[0]
     row['source_a_dec'] = row_a['Dec'].iloc[0]
-    row['source_b_ra'] = row_b['RA'].iloc[0]
-    row['source_b_dec'] = row_b['Dec'].iloc[0]
+    row['group'] = row_a['group'].iloc[0]
+
+    if row['source_b'] != None:
+        key_b = row['field'] + '-' + row['source_b']
+        row_b = source_info.loc[source_info['Source'] == key_b]
+        row['source_b_ra'] = row_b['RA'].iloc[0]
+        row['source_b_dec'] = row_b['Dec'].iloc[0]
+
+        # calculate angle of the separation vector
+        separation_vector = np.array([row['source_b_ra'] - row['source_a_ra'], row['source_b_dec'] - row['source_a_dec']])
+        row['binary_PA'] = angle_west_of_north(separation_vector)
+    else:
+        row['source_b_ra'] = None
+        row['source_b_dec'] = None
+        row['binary_PA'] = None
+
     row['distance'] = row_a['Dis'].iloc[0]
-    # calculate angle of the separation vector
-    separation_vector = np.array([row['source_b_ra'] - row['source_a_ra'], row['source_b_dec'] - row['source_a_dec']])
-    row['binary_PA'] = angle_west_of_north(separation_vector)
-    # # fix angle reference
+
     new_rows.append(row)
 
 # create new dataframe
-master = pd.DataFrame(new_rows)[['field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'binary_PA']]
+master = pd.DataFrame(new_rows)[['group', 'field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'binary_PA']]
 # parse `outflow_source`
 master['outflow_source'] = master['outflow_source'].apply(lambda x: fix_outflow_source(x))
 
