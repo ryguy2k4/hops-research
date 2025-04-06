@@ -160,6 +160,7 @@ if not os.path.exists(output_folder):
 
 # load data
 data = pd.read_csv('data/output/outflow_data.csv')
+data = data.loc[~data['delta_PA'].isna()]
 
 perform_test(data.loc[data['group'] == 'orion'], os.path.join(output_folder, 'orion'))
 perform_test(data.loc[data['group'] == 'perseus'], os.path.join(output_folder, 'perseus'))

@@ -218,6 +218,9 @@ master = pd.DataFrame(new_rows)[['group', 'field', 'source_a', 'source_a_ra', 's
 # parse `outflow_source`
 master['outflow_source'] = master['outflow_source'].apply(lambda x: fix_outflow_source(x))
 
+# change reference angle to the red side
+master['outflow_PA'] = (master['outflow_PA'] + 180) % 360
+
 # compute delta_PA
 angle = np.abs(master['outflow_PA'] - master['binary_PA']) % 180
 angle = np.min([angle, 180 - angle], axis=0)
