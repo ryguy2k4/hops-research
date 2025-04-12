@@ -195,7 +195,7 @@ def mark_sources(fig, source_rows):
 
         # Create legend handle for this source (only if not already added)
         legend_handles.append(mlines.Line2D([], [], color=marker_colors[i], marker='x', markersize=6, linestyle='None', label=row['Source']))
-    fig.ax.legend(handles=legend_handles, loc='upper right', bbox_to_anchor=(1.05,1+0.07*np.min(len(sources_to_mark))))
+    # fig.ax.legend(handles=legend_handles, loc='upper right', bbox_to_anchor=(1.05,1+0.07*np.min(len(sources_to_mark))))
 
 
 """

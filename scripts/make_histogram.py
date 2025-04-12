@@ -12,11 +12,11 @@ if not os.path.exists(output_folder):
 # create histogram
 df = pd.read_csv('data/output/outflow_data.csv')
 
-fig2, ax = plt.subplots()
-ax.hist(df['delta_PA'], label=f"N = {len(df)}")
-ax.legend(loc='upper left')
-ax.set_xlabel("smallest angle between binary separation and outflow")
-ax.set_ylabel("count")
-histogram_filename = "histogram.pdf"
-histogram_path = os.path.join(output_folder, histogram_filename)
-fig2.savefig(histogram_path)
+fig, ax = plt.subplots(figsize=(11,8))
+ax.hist(df['delta_PA'], label=f"N = {len(df)}", color='#1D58A7')
+ax.legend(loc='upper left', fontsize=32)
+ax.set_title("$\Delta$PA Distribution", fontsize=24)
+ax.set_xlabel("$\Delta$PA - smallest angle between binary separation and outflow (degrees)", fontsize=16)
+ax.set_ylabel("count", fontsize=16)
+fig.savefig(os.path.join(output_folder, "histogram.pdf"))
+fig.savefig(os.path.join(output_folder, "histogram.png"), dpi=300, transparent=True, bbox_inches='tight')

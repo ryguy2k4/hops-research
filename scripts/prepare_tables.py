@@ -106,11 +106,16 @@ perseus2['Dec'] = perseus2['Dec'].apply(dec_to_degrees)
 perseus2['Dis'] = 300
 
 # merge datasets
-additional_targets = perseus2[perseus2['Main'].isin(['Per-emb-2', 'Per-emb-5', 'Per-emb-18'])]
-per_5 = perseus2.loc[perseus2['Main'] == 'Per-emb-5']
-# define Per-emb-5-B as same coordinates as Per-emb-A
-per_5['Source'] = 'Per-emb-5-B'
-perseus = pd.concat([perseus1, additional_targets, per_5]).sort_values('Source').reset_index(drop=True)
+additional_targets = perseus2[perseus2['Main'].isin(['Per-emb-2', 'Per-emb-18'])]
+
+### temporary removal of Per-emb-5
+# additional_targets = perseus2[perseus2['Main'].isin(['Per-emb-2', 'Per-emb-5', 'Per-emb-18'])]
+# per_5 = perseus2.loc[perseus2['Main'] == 'Per-emb-5']
+# # define Per-emb-5-B as same coordinates as Per-emb-A
+# per_5['Source'] = 'Per-emb-5-B'
+# perseus = pd.concat([perseus1, additional_targets, per_5]).sort_values('Source').reset_index(drop=True)
+
+perseus = pd.concat([perseus1, additional_targets]).sort_values('Source').reset_index(drop=True)
 perseus['group'] = 'perseus'
 
 
@@ -189,6 +194,11 @@ df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Re
 # merge coordinates and distance
 new_rows = []
 for i, row in df.iterrows():
+
+    ### temporary removal of Per-emb-5
+    if row['field'] == 'Per-emb-5':
+        continue
+
     key_a = row['field'] + '-' + row['source_a']
     row_a = source_info.loc[source_info['Source'] == key_a]
     row['source_a_ra'] = row_a['RA'].iloc[0]

@@ -8,44 +8,52 @@ import pandas as pd
 import os
 
 def createCumulatPlotCos(datax, datay, datalabel='', title='', xlabel='', filename='test'):
-    fig = plt.figure(figsize=(11,8))
-    ax = fig.add_subplot(111)
+    fig, ax = plt.subplots(figsize=(11,8))
     
     # get labels
     if datalabel == '':
         datalabel = [''] * len(datax)
     
     # Loop through each dataset and plot it as a step function
+    colors = ['#1D58A7', '#FCB316', '#006230', '#007E8E', '#5C0E41', '#7D3E13']
     for i in range(len(datax)):
-        ax.step(datax[i], datay[i], label=datalabel[i])
+        ax.step(datax[i], datay[i], label=datalabel[i], color=colors[i])
     
     # PLOT
     ax.set_title(title, fontsize=24)
     ax.set_ylabel('Frequency', fontsize=18)
     ax.set_xlabel(xlabel, fontsize=18)
     ax.set_xlim(0, 1.0)
-    ax.legend(fontsize=18)
+    ax.set_ylim(0, 1.0)
+
+    # legend
+    ax.legend(fontsize=10)
+
     plt.savefig(filename + '.pdf', dpi=200)
+    plt.savefig(filename + '.png', dpi=300, transparent=True, bbox_inches='tight')
+
 
 def createCumulatPlotDeg(datax, datay, datalabel='', title='', xlabel='', filename='test'):
-    fig = plt.figure(figsize=(11,8))
-    ax = fig.add_subplot(111)
+    fig, ax = plt.subplots(figsize=(11,8))
     
     # get labels
     if datalabel == '':
         datalabel = [''] * len(datax)
     
     # Loop through each dataset and plot it as a step function
+    colors = ['#1D58A7', '#FCB316', '#006230', '#007E8E', '#5C0E41', '#7D3E13']
     for i in range(len(datax)):
-        ax.step(datax[i], datay[i], label=datalabel[i])
+        ax.step(datax[i], datay[i], label=datalabel[i], color=colors[i])
         
     # PLOT
     ax.set_title(title, fontsize=24)
-    ax.set_ylabel('Frequency', fontsize=18)
-    ax.set_xlabel(xlabel, fontsize=18)
+    ax.set_ylabel('frequency', fontsize=16)
+    ax.set_xlabel(xlabel, fontsize=16)
     ax.set_xlim(0, 90.0)
-    ax.legend(fontsize=18)
+    ax.set_ylim(0, 1.0)
+    ax.legend(fontsize=10)
     plt.savefig(filename + '.pdf', dpi=200)
+    plt.savefig(filename + '.png', dpi=300, transparent=True, bbox_inches='tight')
 
 def makeCumulate(arrayData):
     # sort ascending
@@ -67,8 +75,8 @@ def perform_test(data, output_path):
     cosi = np.cos(data['delta_PA'][:] * np.pi / 180.0)
     bins = np.linspace(0, 1.0, 11)
     ax1.hist(cosi, bins, fill=True, facecolor='gray', alpha=0.4, histtype='bar', ec='black', linewidth=2.0)
-    ax1.set_ylabel('N', fontsize=18)
-    ax1.set_xlabel('cos($Delta$[Outflow-Binary])', fontsize=18)
+    ax1.set_ylabel('N', fontsize=16)
+    ax1.set_xlabel('cos($Delta$[Outflow-Binary])', fontsize=16)
     ax1.set_title('Outflow PA vs. Binary PA', fontsize=24)
     plt.savefig(os.path.join(output_path, 'hist.pdf'))
 
@@ -139,7 +147,7 @@ def perform_test(data, output_path):
         'Model - 75% Orthogonal Outflow, 25% Random',
         'Model - 50% Orthogonal Outflow, 50% Random',
         'Model - 25% Orthogonal Outflow, 75% Random'
-    ], title='Outflow PA vs. Binary PA', xlabel='$\Delta$[Outflow-Binary] (degrees)', filename=os.path.join(output_path, 'OutflowPA_cumulat_deg'))
+    ], title='$\Delta$PA Cumulative Frequency Distribution', xlabel='$\Delta$PA - smallest angle between binary separation and outflow (degrees)', filename=os.path.join(output_path, 'OutflowPA_cumulat_deg'))
 
     createCumulatPlotCos([
         paCumulat_cos, paCumulat_cos_model, paCumulat_cos_model_rand
@@ -147,7 +155,7 @@ def perform_test(data, output_path):
         frac_paCumulat_cos, frac_paCumulat_cos_model, frac_paCumulat_cos_model_rand
     ], datalabel=[
         'Observations', 'Model - Orthogonal Outflow', 'Model - Random Orientation'
-    ], title='Outflow PA vs. Binary PA', xlabel='cos($\Delta$[Outflow-Binary])', filename=os.path.join(output_path, 'OutflowPA_cumulat_cos'))
+    ], title='Cumulative Frequency Distribution', xlabel='cos($\Delta$PA)', filename=os.path.join(output_path, 'OutflowPA_cumulat_cos'))
 
 # script options
 output_folder = "results/stat_test"

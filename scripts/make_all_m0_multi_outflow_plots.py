@@ -47,7 +47,7 @@ for i, field in df.groupby('field').agg('first').reset_index().iterrows():
     # verify output path exists and
     # skip already existing files if you don't want to overwrite them
     target_name = field['field']
-    filename = f"{target_name}_outflow.pdf"
+    filename = f"{target_name}_outflow.png"
     output_path = os.path.join(output_folder, filename)
 
     # verify output path exists and
@@ -72,11 +72,6 @@ for i, field in df.groupby('field').agg('first').reset_index().iterrows():
     channels = getIdx([field['red_channels'], field['blue_channels']])
     fig = create_m0_map(hdu, center, size, channels, 3, distance)
     fig.set_title(f"{target_name} 12CO M0")
-
-    ### MARKERS
-    # add a marker at each source with legend
-    target_info = source_info.loc[target_name.casefold()]
-    mark_sources(fig, target_info)
 
     ### VECTORS
     # plot binary separation angle
@@ -110,4 +105,10 @@ for i, field in df.groupby('field').agg('first').reset_index().iterrows():
             source_label = source['source_a']+'+'+source['source_b']
         fig.ax.text(30,fig.ax.get_xlim()[1]-50-40*(j), f"{source_label} : {np.abs(angle):.2f}°")
 
-    fig.savefig(output_path)
+    ### MARKERS
+    # add a marker at each source with legend
+    target_info = source_info.loc[target_name.casefold()]
+    mark_sources(fig, target_info)
+
+    # fig.savefig(os.path.join(output_folder, f"{target_name}_outflow.png"), dpi=300, transparent=True)
+    fig.savefig(os.path.join(output_folder, f"{target_name}_outflow.pdf"))
