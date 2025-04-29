@@ -110,5 +110,5 @@ for i, field in df.groupby('field').agg('first').reset_index().iterrows():
     target_info = source_info.loc[target_name.casefold()]
     mark_sources(fig, target_info)
 
-    # fig.savefig(os.path.join(output_folder, f"{target_name}_outflow.png"), dpi=300, transparent=True)
+    fig.savefig(os.path.join(output_folder, f"{target_name}_outflow.png"), dpi=300, transparent=True)
     fig.savefig(os.path.join(output_folder, f"{target_name}_outflow.pdf"))
