@@ -39,6 +39,7 @@ def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1
     else:
         fig.add_scalebar((500 / (distance)) * u.arcsecond)
         fig.scalebar.set_label('500 AU')
+        fig.scalebar.set_font_size(8)
 
     fig.scalebar.set_linewidth(3)
 
