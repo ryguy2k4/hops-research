@@ -9,8 +9,13 @@ import glob
 from create_figs import create_m0_map, mark_sources, plot_vector
 
 # script options
-overwrite = False
 output_folder = "results/m0_multi_outflow_plots"
+# overwrite output files if they already exist
+overwrite = False
+# this script assumes that the directory below contains a folder for each field
+# and that within each field folder there is a 12CO image, which contains
+# '12co' or 'spw39' in the filename
+image_directory = "/Volumes/Alpha/Research/data/"
 
 # read data
 df = pd.read_csv('data/output/outflow_data.csv')
@@ -44,8 +49,6 @@ def getIdx(listOf):
 # a figure with the separation vector and outflow vector overlayed
 for i, field in df.groupby('field').agg('first').reset_index().iterrows():
 
-    # verify output path exists and
-    # skip already existing files if you don't want to overwrite them
     target_name = field['field']
     filename = f"{target_name}_outflow.png"
     output_path = os.path.join(output_folder, filename)
@@ -59,7 +62,7 @@ for i, field in df.groupby('field').agg('first').reset_index().iterrows():
         continue
 
     # open image
-    image_filename = (glob.glob(f'/Volumes/Alpha/Research/data/{target_name.casefold()}/*12co*.fits') + glob.glob(f'/Volumes/Alpha/Research/data/{target_name.casefold()}/*spw39*.fits'))[0]
+    image_filename = (glob.glob(f'{image_directory}{target_name.casefold()}/*12co*.fits') + glob.glob(f'{image_directory}{target_name.casefold()}/*spw39*.fits'))[0]
     hdulist = fits.open(image_filename)
     hdu = hdulist[0]
 
@@ -110,5 +113,7 @@ for i, field in df.groupby('field').agg('first').reset_index().iterrows():
     target_info = source_info.loc[target_name.casefold()]
     mark_sources(fig, target_info)
 
+
+    # SAVE
     fig.savefig(os.path.join(output_folder, f"{target_name}_outflow.png"), dpi=300, transparent=True)
     fig.savefig(os.path.join(output_folder, f"{target_name}_outflow.pdf"))

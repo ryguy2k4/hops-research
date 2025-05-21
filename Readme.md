@@ -34,4 +34,5 @@ The worflow is implemented with snakemake and defined in the `Snakefile` in the 
 * `distances.txt` - sourced from Table 1: Orion Catalog in https://iopscience.iop.org/article/10.3847/1538-4357/ac36d2
 * `perseus.txt` - sourced from Table 4 in https://iopscience.iop.org/article/10.3847/1538-4357/ad151d#apjad151dbib60  Table 4 (perseus.txt)
 * `perseus2.txt` - sourced from Table 1 in https://iopscience.iop.org/article/10.3847/1538-4357/aae1f7
-* `notes.txt` - this is a google spreadsheet downloaded as a csv that contains my notes on the sources. 
+* `notes.txt` - this is a google spreadsheet downloaded as a csv that contains my notes on the sources.
+* FITS Images - the relevant FITS images are not included in this repository. For compatibility with the code, they should be organized such that each field is in a folder named after the field, and that folder contains a 12CO image, which contains either "12co" or "spw39" in the filename.
