@@ -1,0 +1,77 @@
+Title: The VLA/ALMA Nascent Disk and Multiplicity (VANDAM) Survey of Orion 
+       Protostars V. A Characterization of Protostellar Multiplicity 
+Authors: Tobin J.J., Offner S.S.R., Kratter K.M., Megeath S.T., Sheehan P.D., 
+         Looney L.W., Diaz-Rodriguez A.K., Osorio M., Anglada G., Sadavoy S.I.,
+         Furlan E., Segura-Cox D., Karnath N., Van 'T Hoff M.L.R., 
+         van Dishoeck E.F., Li Z.-Y., Sharma R., Stutz A.M., Tychoniec L. 
+Table: Perseus Protostar Pairings
+================================================================================
+Byte-by-byte Description of file: apjac36d2t4_mrt.txt
+--------------------------------------------------------------------------------
+   Bytes Format Units    Label   Explanations
+--------------------------------------------------------------------------------
+   1- 56 A56    ---      Pair    Source pair identifiers
+  58- 63 F6.3   arcsec   ASep    Angular separation 
+  65- 69 F5.3   arcsec e_ASep    Uncertainty in ASep
+  71- 76 F6.1   AU       PSep    Physical separation 
+  78- 81 F4.1   AU     e_PSep    Uncertainty in PSep
+  83- 87 F5.2   [-]      log9FR  ? log F1/F2 flux ratio at 9 mm (1)
+  89- 92 F4.2   [-]    e_log9FR  ? Uncertainty in log9FR
+  94- 97 F4.2   ---      Prob    ? Probability (2)
+  99-123 A25    ---      Class   Classifications (3)
+--------------------------------------------------------------------------------
+Note (1): Flux ratios are only provided for pairings of single components.
+Note (2): Corresponds to the probability of the pairing being a true, bound
+          pair and not a line of sight association, based on the YSO surface
+          density. The overall probability of each member may be lower given
+          the multiplicative nature of companion probabilities when pairing
+          two binary (or higher order systems) together.
+Note (3): Classes are provided in abbreviated form:
+    C0 = Class 0;
+    CI = Class I;
+    FS = Flat Spectrum;
+   CII = Class II.
+     N = does not have a classification.
+--------------------------------------------------------------------------------
+P2-A-P2-B                                                 0.080 0.005   24.1  1.5 -0.17 0.09 1.00 C0+C0                     
+P18-A-P18-B                                               0.085 0.004   25.5  1.2 -0.03 0.11 1.00 C0+C0                     
+P5-A-P5-B                                                 0.097 0.003   29.1  1.0 -0.26 0.03 1.00 C0+C0                     
+L1448NW-A-L1448NW-B                                       0.251 0.003   75.3  1.0 -0.17 0.02 1.00 C0+C0                     
+P33-B-P33-C                                               0.265 0.008   79.6  2.3 -0.14 0.04 1.00 C0+C0                     
+P17-A-P17-B                                               0.278 0.008   83.4  2.5 -0.75 0.04 1.00 C0+C0                     
+P44-A-P44-B                                               0.300 0.003   90.1  1.0 -0.48 0.02 1.00 C0+C0                     
+P36-A-P36-B                                               0.311 0.006   93.3  1.8 -0.80 0.02 1.00 CI+CI                     
+P49-A-P49-B                                               0.313 0.006   93.9  1.8 -0.45 0.05 1.00 CI+CI                     
+P48-A-P48-B                                               0.346 0.021  103.7  6.2 -0.06 0.13 1.00 CI+CI                     
+P40-A-P40-B                                               0.391 0.014  117.3  4.1 -0.94 0.10 1.00 CI+CI                     
+E269-A-E269-B                                             0.517 0.010  155.2  3.0 -0.14 0.08 1.00 None+None                 
+P55-A-P55-B                                               0.618 0.009  185.4  2.8 -0.14 0.05 1.00 CI+CI                     
+P27-A-P27-B                                               0.620 0.002  186.0  0.7 -0.75 0.02 1.00 C0+C0                     
+P22-A-P22-B                                               0.751 0.004  225.4  1.3 -0.51 0.04 1.00 C0+C0                     
+P33-A-(P33-B+P33-C)                                       0.877 0.007  263.2  2.0            0.99 C0+(C0+C0)                
+E183-A-E183-B                                             0.991 0.025  297.4  7.4 -0.43 0.19 0.97 CI+CI                     
+L1448IRS1-A-L1448IRS1-B                                   1.382 0.012  414.5  3.5 -0.94 0.06 1.00 CI+CI                     
+P12-A-P12-B                                               1.830 0.004  549.0  1.2 -1.04 0.03 0.99 C0+C0                     
+P35-A-P35-B                                               1.908 0.003  572.5  1.0 -0.23 0.03 0.99 CI+CI                     
+P11-A-P11-B                                               2.950 0.016  885.0  4.9 -0.97 0.08 0.92 C0+C0                     
+E156-A-E156-B                                             3.107 0.010  932.2  2.9 -0.18 0.10 0.92 None+None                 
+(P36-A+P36-B)-BD-+30-547                                  3.625 0.029 1087.5  8.7            0.98 (CI+CI)+None              
+(P44-A+P44-B)-SVS13A2                                     5.201 0.005 1560.3  1.6            0.91 (C0+C0)+C0                
+P32-A-P32-B                                               6.067 0.018 1820.1  5.5 -0.17 0.17 0.92 C0+C0                     
+[P33-A+(P33-B+P33-C)]-L1448IRS3A                          7.255 0.006 2176.5  1.8            0.93 [C0+(C0+C0)]+CI           
+P26-P42                                                   8.105 0.007 2431.5  2.1 -0.85 0.03 0.96 C0+CI                     
+P8-(P55-A+P55-B)                                          9.276 0.005 2782.9  1.6            0.93 C0+(CI+CI)                
+P37-E235                                                 10.558 0.013 3167.4  4.0 -0.66 0.11 0.75 C0+None                   
+P13-I4B'                                                 10.657 0.006 3197.0  1.8 -0.35 0.02 0.87 C0+C0                     
+(P11-A+P11-B)-P11-C                                      10.939 0.021 3281.8  6.2            0.74 (C0+C0)+C0                
+(P18-A+P18-B)-P21                                        13.247 0.005 3974.0  1.5            0.78 (C0+C0)+C0                
+[(P44-A+P44-B)+SVS13A2]-SVS13B                           13.374 0.002 4012.3  0.7            0.61 [(C0+C0)+C0]+C0           
+P41-B1-bS                                                13.960 0.020 4188.1  5.9 -0.90 0.09 0.91 CI+C0                     
+P16-P28                                                  16.063 0.038 4819.0 11.4 -0.02 0.17 0.71 C0+C0                     
+([P33-A+(P33-B+P33-C)]+L1448IRS3A)-(L1448NW-A+L1448NW-B) 19.791 0.006 5937.4  1.9            0.66 ([C0+(C0+C0)]+CI)+(C0+C0) 
+(P41+B1-bS)-B1-bN                                        20.337 0.023 6101.2  6.8            0.82 (CI+C0)+C0                
+[(P18-A+P18-B)+P21]-(P49-A+P49-B)                        27.684 0.004 8305.3  1.3            0.51 [(C0+C0)+C0]+(CI+CI)      
+P58-P65                                                  28.885 0.029 8665.4  8.7 -0.19 0.13 0.39 CI+CI                     
+([(P44-A+P44-B)+SVS13A2]+SVS13B)-SVS13C                  29.560 0.001 8868.0  0.4            0.39 ([(C0+C0)+C0]+C0)+C0      
+(P27-A+P27-B)-[(P36-A+P36-B)+BD-+30-547]                 29.971 0.001 8991.4  0.3            0.45 (C0+C0)+[(CI+CI)+None]    
+P6-P10                                                   31.953 0.007 9585.9  2.1 -0.12 0.03 0.67 C0+C0                     

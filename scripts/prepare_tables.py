@@ -30,7 +30,7 @@ targets = [
     "HOPS-158",
     "HOPS-75",
     "HOPS-395",
-    "HOPS-43",
+    "HOPS-43", # where did this one come from?
     "HOPS-255",
     "HOPS-213",
     "HOPS-77",
@@ -187,10 +187,15 @@ df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Re
 new_rows = []
 for i, row in df.iterrows():
 
-    ### removal of Per-emb-5
-    ### not a binary
+    ### exceptions
+    # removal of Per-emb-5, not a binary
     if row['field'] == 'Per-emb-5':
         continue
+    # # removal of secondary outflows on stars >500 AU from inner binary
+    # if (row['field'] == 'HOPS-12') & (pd.isna(row['source_b'])):
+    #     continue
+    # if (row['field'] == 'HOPS-203') & (pd.isna(row['source_b'])):
+    #     continue
 
     key_a = row['field'] + '-' + row['source_a']
     row_a = source_info.loc[source_info['Source'] == key_a]

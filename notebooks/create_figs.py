@@ -186,7 +186,7 @@ def create_m0_contours(hdu, center, size, red_channels, blue_channels, sigma=3, 
 Marks sources given rows from 'source_info.csv'
 
 """
-def mark_sources(fig, source_rows):
+def mark_sources(fig, source_rows, use_short_label=False):
     marker_colors = ['black', 'magenta', 'red', 'darkred', 'darkblue']
     legend_handles = []
     sources_to_mark = source_rows.reset_index()[0:4]
@@ -195,8 +195,10 @@ def mark_sources(fig, source_rows):
         fig.show_markers(center2.ra.deg, center2.dec.deg, coords_frame='world', marker='x', s=25, c=marker_colors[i], linewidths=1, label=row['Source'])
 
         # Create legend handle for this source (only if not already added)
-        legend_handles.append(mlines.Line2D([], [], color=marker_colors[i], marker='x', markersize=6, linestyle='None', label=row['Source']))
-    # fig.ax.legend(handles=legend_handles, loc='upper right', bbox_to_anchor=(1.05,1+0.07*np.min(len(sources_to_mark))))
+        short_label = str(row['Source']).casefold().removeprefix(str(source_rows.index.tolist()[i]).casefold()+'-').upper()
+        legend_handles.append(mlines.Line2D([], [], color=marker_colors[i], marker='x', markersize=4, linestyle='None', label=short_label if use_short_label else row['Source']))
+
+    fig.ax.legend(handles=legend_handles, fontsize=6, loc='upper right', bbox_to_anchor=(0.98,1))
 
 
 """
