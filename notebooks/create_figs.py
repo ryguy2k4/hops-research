@@ -110,13 +110,13 @@ def cut_fig(data, header, center, size):
 Takes an image and creates a moment 8 map
 
 """
-def create_m8_map(hdu, center, size, distance=0):
+def create_m8_map(hdu, center, size, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # create map
     m8_map = np.max(hdu.data[0,:,:,:], axis=0)
 
     cut = cut_fig(m8_map, hdu.header, center, size)
     
-    return create_fig(cut, distance)
+    return create_fig(cut, distance, figure, subplot, multiimage=multiimage)
 
 
 """
