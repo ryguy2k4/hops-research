@@ -172,7 +172,7 @@ def angle_west_of_north(v):
 # read file
 df = pd.read_csv("data/input/notes.csv")
 # keep relevant columns
-df = df[['Field', 'Binary', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Red Center Corrected', 'Blue Center Corrected', 'Average Angle (Blue)']]
+df = df[['Field', 'Binary', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Red Center Corrected', 'Blue Center Corrected', 'Average Angle (Red)']]
 # get sources with secondaries
 no_binary = df['Binary'].isna()
 # create columns to identify each source in the pair
@@ -181,7 +181,7 @@ df.loc[~no_binary, 'source_b'] = df.loc[~no_binary, 'Binary'].apply(lambda x: sp
 df.loc[no_binary, 'source_a'] = df.loc[no_binary, 'Outflow Source']
 df.loc[no_binary, 'source_b'] = None
 # rename columns
-df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Blue)']].rename(columns={'Field': 'field', 'Average Angle (Blue)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA'})
+df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Red)']].rename(columns={'Field': 'field', 'Average Angle (Red)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA'})
 
 # merge coordinates and distance
 new_rows = []
@@ -225,9 +225,6 @@ for i, row in df.iterrows():
 master = pd.DataFrame(new_rows)[['group', 'field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'binary_PA']]
 # parse `outflow_source`
 master['outflow_source'] = master['outflow_source'].apply(lambda x: fix_outflow_source(x))
-
-# change reference angle to the red side
-master['outflow_PA'] = (master['outflow_PA'] + 180) % 360
 
 # compute delta_PA
 angle = np.abs(master['outflow_PA'] - master['binary_PA']) % 180
