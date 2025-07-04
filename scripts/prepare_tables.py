@@ -131,6 +131,7 @@ source_info = source_info.sort_values(['Main', 'Source']).reset_index(drop=True)
 # fix HOPS-361-N
 source_info["Main"] = source_info["Main"].replace({"HOPS-361": "HOPS-361-N"})
 source_info["Source"] = source_info["Source"].apply(lambda x: str(x).replace("HOPS-361", "HOPS-361-N"))
+
 source_info['group'] = 'orion'
 
 # save
@@ -172,7 +173,7 @@ def angle_west_of_north(v):
 # read file
 df = pd.read_csv("data/input/notes.csv")
 # keep relevant columns
-df = df[['Field', 'Binary', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Red Center Corrected', 'Blue Center Corrected', 'Average Angle (Red)']]
+df = df[['Field', 'Binary', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Red Center Corrected', 'Blue Center Corrected', 'Average Angle (Red)', 'Lobe PA Offset']]
 # get sources with secondaries
 no_binary = df['Binary'].isna()
 # create columns to identify each source in the pair
@@ -181,7 +182,7 @@ df.loc[~no_binary, 'source_b'] = df.loc[~no_binary, 'Binary'].apply(lambda x: sp
 df.loc[no_binary, 'source_a'] = df.loc[no_binary, 'Outflow Source']
 df.loc[no_binary, 'source_b'] = None
 # rename columns
-df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Red)']].rename(columns={'Field': 'field', 'Average Angle (Red)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA'})
+df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Red)', 'Lobe PA Offset']].rename(columns={'Field': 'field', 'Average Angle (Red)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA', 'Lobe PA Offset': 'lobe_PA_offset'})
 
 # merge coordinates and distance
 new_rows = []
@@ -222,7 +223,7 @@ for i, row in df.iterrows():
     new_rows.append(row)
 
 # create new dataframe
-master = pd.DataFrame(new_rows)[['group', 'field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'binary_PA']]
+master = pd.DataFrame(new_rows)[['group', 'field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'lobe_PA_offset', 'binary_PA']]
 # parse `outflow_source`
 master['outflow_source'] = master['outflow_source'].apply(lambda x: fix_outflow_source(x))
 
