@@ -71,7 +71,7 @@ def dec_to_degrees(dec_str):
     return sign * (d + m / 60 + s / 3600)
 
 # read file
-perseus1 = astropy.io.ascii.read("data/input/perseus2.txt", delimiter="\t", guess=False).to_pandas()
+perseus1 = astropy.io.ascii.read("data/input/tobin2018_perseus_2.txt", delimiter="\t", guess=False).to_pandas()
 # format name columns
 perseus1['Main'] = perseus1['Source']
 perseus1['Main'] = perseus1['Main'].apply(lambda x: str(x).removesuffix('-'+str(x).split('-')[-1]))
@@ -87,7 +87,7 @@ perseus1['Dec'] = perseus1['Dec'].apply(dec_to_degrees)
 perseus1['Dis'] = 300
 
 # read file
-perseus2 = astropy.io.ascii.read("data/input/perseus.txt", delimiter="\t", guess=False).to_pandas()
+perseus2 = astropy.io.ascii.read("data/input/reynolds2024_perseus_1.txt", delimiter="\t", guess=False).to_pandas()
 # format name columns
 perseus2.loc[perseus2['Source'] == '-', 'Source'] = 'A'
 perseus2['Source'] = perseus2['Source'].apply(lambda x: str(x).removeprefix('-'))
@@ -114,7 +114,7 @@ perseus['group'] = 'perseus'
 ### PARSE `distances.txt` for ORION
 
 # read file
-source_info = astropy.io.ascii.read("data/input/distances.txt").to_pandas()
+source_info = astropy.io.ascii.read("data/input/tobin2022_orion.txt").to_pandas()
 
 # filter for relevant targets
 source_info = source_info[source_info['Main'].isin(targets)]
@@ -234,3 +234,75 @@ master['delta_PA'] = angle
 
 # save
 master.to_csv('data/output/outflow_data.csv',index=False)
+
+
+### PARSE Separations Data
+
+ori = astropy.io.ascii.read("data/input/tobin2022_orion_pairings.txt").to_pandas()
+per = astropy.io.ascii.read("data/input/tobin2022_perseus_pairings.txt").to_pandas()
+
+ori_keys = {
+    'H12-B-A+H12-B-B' : 'HOPS-12', # double
+    '(H12-B-A+H12-B-B)+H12-A' : 'HOPS-12',
+    'H290-A+H290-B' : 'HOPS-290',
+    'H92-A-B+H92-A-A' : 'HOPS-92', # double
+    'H92-B+(H92-A-B+H92-A-A)' : 'HOPS-92',
+    'H288-A-B+H288-A-A' : 'HOPS-288', # double
+    'H288-B+(H288-A-B+H288-A-A)' : 'HOPS-288',
+    'H203-B+H203-A' : 'HOPS-203', # double
+    'H203-C+(H203-B+H203-A)' : 'HOPS-203',
+    'HH270VLA1-B+HH270VLA1-A': 'HH270VLA1',
+    'H32-B+H32-A' : 'HOPS-32',
+    'H84-B+H84-A' : 'HOPS-84',
+    'H168-A+H168-B' : 'HOPS-168',
+    'H281-B+H281-A' : 'HOPS-281',
+    'H312-B+H312-A' : 'HOPS-312',
+    'H364-A+H364-B' : 'HOPS-364',
+    'H395-B+H395-A' : 'HOPS-395',
+    'H400-B+H400-A' : 'HOPS-400',
+    'H182-B+H182-A' : 'HOPS-182',
+    'H323-B+H323-A' : 'HOPS-323',
+    'H282-B+H282-A' : 'HOPS-282',
+    'H366-A+H366-B' : 'HOPS-366',
+    'H193-B+H193-A' : 'HOPS-193',
+    'H304-B+H304-A' : 'HOPS-304',
+    'H361-C-A+H361-C-B' : 'HOPS-361-N',
+    'H384-A+H384-A-B' : 'HOPS-384',
+    'H363-B+H363-A' : 'HOPS-363',
+    'H173-B+H173-A' : 'HOPS-173',
+    'H75-B+H75-A' : 'HOPS-75',
+    'H213-A+H213-B' : 'HOPS-213',
+}
+
+per_keys = {
+    'P2-A-P2-B' : 'Per-emb-2',
+    'P12-A-P12-B' : 'Per-emb-12',
+    'P17-A-P17-B' : 'Per-emb-17',
+    'P18-A-P18-B' : 'Per-emb-18',
+    'P22-A-P22-B' : 'Per-emb-22',
+    'P27-A-P27-B' : 'Per-emb-27',
+    'P33-B-P33-C' : 'Per-emb-33', # double
+    'P33-A-(P33-B+P33-C)' : 'Per-emb-33',
+    'P35-A-P35-B' : 'Per-emb-35',
+    'P36-A-P36-B' : 'Per-emb-36',
+    'P44-A-P44-B' : 'Per-emb-44',
+}
+
+sep = pd.concat([ori[ori['Pair'].isin(list(ori_keys.keys()))], per[per['Pair'].isin(list(per_keys.keys()))]]).reset_index(drop=True)
+sep['Pair'] = sep['Pair'].apply(lambda x: {**per_keys, **ori_keys}[x])
+sep['Tertiary'] = sep['Class'].str.contains('\\(')
+
+def class_map(x):
+    if 'C0' in x:
+        return 'C0'
+    elif 'CI' in x:
+        return 'C1'
+    elif 'FS' in x:
+        return 'FS'
+    else:
+        return np.nan
+
+sep['Class'] = sep['Class'].apply(class_map)
+sep = sep[['Pair', 'Tertiary', 'PSep', 'Class']].sort_values(by='Pair').reset_index(drop=True)
+sep = sep.rename(columns={'PSep': 'separation', 'Class': 'class', 'Tertiary': 'tertiary', 'Pair': 'pair'})
+sep.to_csv("data/output/separations.csv",index=False)
