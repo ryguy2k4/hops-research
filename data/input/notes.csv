@@ -41,7 +41,7 @@ Per-emb-27,2,"A, B",A+B,"Visually distinct, separated",A,,"Sharp v-shape, some s
 Per-emb-27,2,"A, B",A+B,"Visually distinct, separated",B,,,"Distorted shape, edges seem to twist around each other and change pointing direction",,8,142-149,161-166,,,,,94.96,132.88,113.92,113.92,113.92,
 Per-emb-33,3,"A, B, C",A+B,"Visually distinct, touching",A+B,Can't distinguish outflow source. ,"Unclear outflow, possibly something there",Sharp v-shape,,4,,154-164,,,,,99.49,147.05,123.27,123.27,123.27,
 Per-emb-33,3,"A, B, C",,"Visually distinct, touching",C,,,"Appears hidden within outflow from A+B, but has defined edges within",,4,,154-165,,,,,102.15,113.16,107.655,107.655,107.655,
-Per-emb-35,2,"A, B",A+B,"Visually distinct, separated",B,,Faint/unclear,Diffuse v-shape,,8.6,,159-163,,,,,-38.25,-66.32,-52.285,307.715,307.715,
+Per-emb-35,2,"A, B",A+B,"Visually distinct, separated",B,,Faint/unclear,Diffuse v-shape,,8.6,,159-163,-38.25,-66.32,-52.285,127.715,112.46,152.84,132.65,132.65,130.1825,4.935
 Per-emb-35,2,"A, B",A+B,"Visually distinct, separated",A,,Diffuse v-shape,no outflow,,8.6,,159-164,107,130.8,118.9,298.9,,,,,298.9,
 Per-emb-36,2,"A, B",A+B,"Visually distinct, separated, B very faint",A+B,Can't distinguish outflow source. ,Unclear,"V-shape, faint, low s/n, shape slightly unclear",,8,,162-167,,,,,44.4,84.52,64.46,64.46,64.46,
 Per-emb-44,2,"A, B",A+B,"Visually distinct, touching",A+B,Can't distinguish outflow source. ,Some sort of unclear shell/bubble structure,"U-shape, additional wider arc behind binary",,8,,169-175,,,,,28,-62.05,-17.025,342.975,342.975,
