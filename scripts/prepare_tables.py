@@ -294,9 +294,9 @@ sep['Tertiary'] = sep['Class'].str.contains('\\(')
 
 def class_map(x):
     if 'C0' in x:
-        return 'C0'
+        return '0'
     elif 'CI' in x:
-        return 'C1'
+        return 'I'
     elif 'FS' in x:
         return 'FS'
     else:
