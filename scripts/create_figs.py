@@ -227,3 +227,25 @@ def plot_vector(fig, origin, angle_north_deg, color, length=0.005):
     outflow_vector = np.array([tip_pix[0] - origin_pix[0], tip_pix[1] - origin_pix[1]])
     fig.ax.quiver(origin_pix[0], origin_pix[1], outflow_vector[0], outflow_vector[1],
                 angles='xy', scale_units='xy', scale=1, color=color, width=0.005)
+    
+
+# helper function to extract channel indices from the data table
+def getIdx(listOf):
+    ranges = []
+    
+    for string in listOf:
+        if pd.isna(string):  # Skip NaN values
+            continue
+        
+        for part in string.split(', '):
+            if '-' in part:  # Handle ranges
+                start, end = map(int, part.split('-'))
+                ranges.append(np.r_[start:end + 1])  # Use np.r_
+            else:  # Handle single values
+                ranges.append(int(part))  # Append as integer
+    
+    # Ensure `ranges` is not empty before passing to np.r_
+    if not ranges:
+        return np.r_[:]  # Returns an empty np.r_
+
+    return np.r_[tuple(ranges)]  # Use `tuple(ranges)` to avoid errors

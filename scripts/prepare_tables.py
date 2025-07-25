@@ -232,6 +232,8 @@ angle = np.abs(master['outflow_PA'] - master['binary_PA']) % 180
 angle = np.min([angle, 180 - angle], axis=0)
 master['delta_PA'] = angle
 
+master = master.sort_values('source_a_ra')
+
 # save
 master.to_csv('data/output/outflow_data.csv',index=False)
 

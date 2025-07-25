@@ -255,3 +255,24 @@ def plot_dotted_vector(fig, origin, angle_north_deg, color, length=0.005):
         [origin_pix[1], origin_pix[1] + outflow_vector[1]], 
         linestyle="dashed", color=color, linewidth=0.5  # Dotted line
     )
+
+# helper function to extract channel indices from the data table
+def getIdx(listOf):
+    ranges = []
+    
+    for string in listOf:
+        if pd.isna(string):  # Skip NaN values
+            continue
+        
+        for part in string.split(', '):
+            if '-' in part:  # Handle ranges
+                start, end = map(int, part.split('-'))
+                ranges.append(np.r_[start:end + 1])  # Use np.r_
+            else:  # Handle single values
+                ranges.append(int(part))  # Append as integer
+    
+    # Ensure `ranges` is not empty before passing to np.r_
+    if not ranges:
+        return np.r_[:]  # Returns an empty np.r_
+
+    return np.r_[tuple(ranges)]  # Use `tuple(ranges)` to avoid errors
