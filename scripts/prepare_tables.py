@@ -1,7 +1,19 @@
 import numpy as np
 import astropy.io.ascii
 import pandas as pd
+from astropy.table import Table
+from io import StringIO
+from astropy import units as u
+from create_figs import getIdx
+import os
 
+### SCRIPT OPTIONS
+# output
+output_folder = "results/tables"
+if not os.path.exists(output_folder):
+    os.mkdir(output_folder)
+
+### SCRIPT
 # all the targets in this analysis
 targets = [
     "HH270VLA1",
@@ -47,7 +59,6 @@ targets = [
     "HOPS-261",
 
     "Per-emb-2",
-    "Per-emb-5",
     "Per-emb-12",
     "Per-emb-17",
     "Per-emb-18",
@@ -59,90 +70,16 @@ targets = [
     "Per-emb-44"
 ]
 
-### PARSE `perseus1.txt` and `perseus2.txt` for PERSEUS
-
+# used to parse perseus RA/Dec columns
 def ra_to_degrees(ra_str):
     h, m, s = map(float, ra_str.split(':'))
     return (h + m / 60 + s / 3600) * 15  # Convert hours to degrees
-
 def dec_to_degrees(dec_str):
     sign = -1 if dec_str.startswith('-') else 1
     d, m, s = map(float, dec_str.lstrip('+-').split(':'))
     return sign * (d + m / 60 + s / 3600)
 
-# read file
-perseus1 = astropy.io.ascii.read("data/input/tobin2018_perseus_2.txt", delimiter="\t", guess=False).to_pandas()
-# format name columns
-perseus1['Main'] = perseus1['Source']
-perseus1['Main'] = perseus1['Main'].apply(lambda x: str(x).removesuffix('-'+str(x).split('-')[-1]))
-# filter for relevant targets
-perseus1 = perseus1[perseus1['Main'].isin(targets)]
-# order columns and rename
-perseus1 = perseus1[['Main', 'Source', 'R.A.', 'Decl.']]
-perseus1 = perseus1.rename(columns={'R.A.': 'RA', 'Decl.': 'Dec'})
-# parse ra/dec columns
-perseus1['RA'] = perseus1['RA'].apply(ra_to_degrees)
-perseus1['Dec'] = perseus1['Dec'].apply(dec_to_degrees)
-# set distance to 300pc
-perseus1['Dis'] = 300
-
-# read file
-perseus2 = astropy.io.ascii.read("data/input/reynolds2024_perseus_1.txt", delimiter="\t", guess=False).to_pandas()
-# format name columns
-perseus2.loc[perseus2['Source'] == '-', 'Source'] = 'A'
-perseus2['Source'] = perseus2['Source'].apply(lambda x: str(x).removeprefix('-'))
-perseus2['Name'] = perseus2['Name'].replace('-', np.nan)
-perseus2['Name'] = perseus2['Name'].fillna(method='ffill')
-perseus2['Source'] = perseus2['Name'] + '-' + perseus2['Source']
-# order columns and rename
-perseus2 = perseus2[['Name', 'Source', 'RA', 'Dec']]
-perseus2 = perseus2.rename(columns={'Name': 'Main'})
-# filter for relevant targets
-perseus2 = perseus2[perseus2['Main'].isin(targets)]
-# parse ra/dec columns
-perseus2['RA'] = perseus2['RA'].apply(ra_to_degrees)
-perseus2['Dec'] = perseus2['Dec'].apply(dec_to_degrees)
-# set distance to 300pc
-perseus2['Dis'] = 300
-
-# merge datasets
-additional_targets = perseus2[perseus2['Main'].isin(['Per-emb-2', 'Per-emb-18'])]
-perseus = pd.concat([perseus1, additional_targets]).sort_values('Source').reset_index(drop=True)
-perseus['group'] = 'perseus'
-
-
-### PARSE `distances.txt` for ORION
-
-# read file
-source_info = astropy.io.ascii.read("data/input/tobin2022_orion.txt").to_pandas()
-
-# filter for relevant targets
-source_info = source_info[source_info['Main'].isin(targets)]
-
-# create ra/dec columns
-source_info['RA'] = 15 * (source_info['RAh'] + source_info['RAm'] / 60 + source_info['RAs'] / 3600)
-source_info['DE-'] = source_info["DE-"].apply(lambda x: -1 if x == "-" else 1)
-source_info['Dec'] = source_info['DE-'] * (source_info['DEd'] + source_info['DEm'] / 60 + source_info['DEs'] / 3600)
-
-# order columns and sort
-source_info = source_info[['Main', 'Source', 'RA', 'Dec', 'Dis', 'LBol', 'TBol', 'Class', 'SigmaYSO']]
-source_info = source_info.sort_values(['Main', 'Source']).reset_index(drop=True)
-
-# fix HOPS-361-N
-source_info["Main"] = source_info["Main"].replace({"HOPS-361": "HOPS-361-N"})
-source_info["Source"] = source_info["Source"].apply(lambda x: str(x).replace("HOPS-361", "HOPS-361-N"))
-
-source_info['group'] = 'orion'
-
-# save
-source_info = pd.concat([source_info, perseus])
-source_info.to_csv("data/output/source_info.csv",index=False)
-
-
-
-### PARSE `notes.txt`
-
-# used to parse the `Binary` column
+# used to parse the `Binary` in `notes.csv`
 def split_source_string(x):
     x = str(x).split('+')
     if len(x[0]) == 1:
@@ -155,7 +92,7 @@ def split_source_string(x):
         b = x[1][0] + '-' + x[1][1]
     return [a, b]
 
-# used to parse the `outflow_source` column
+# used to parse the `outflow_source` column in `notes.csv`
 def fix_outflow_source(x):
     if str(x).__contains__('+'):
         return 'both'
@@ -166,14 +103,77 @@ def fix_outflow_source(x):
     
 def angle_west_of_north(v):
     x, y = v
-    angle_rad = np.arctan2(y, x)  # atan2(y, x) gives the angle in radians
-    angle_deg = np.degrees(angle_rad)  # Convert to degrees
-    return (90 - angle_deg) % 360  # Ensure the angle is in [0, 360) range
+    angle_rad = np.arctan2(y, x)
+    angle_deg = np.degrees(angle_rad)
+    return (90 - angle_deg) % 360 
 
+# used to rename the `Class` column in `separations.csv`
+def class_map(x):
+    if 'C0' in x:
+        return '0'
+    elif 'CI' in x:
+        return 'I'
+    elif 'FS' in x:
+        return 'FS'
+    else:
+        return np.nan
+
+
+### PARSE `tobin2018_perseus_2.txt` and `reynolds2024_perseus_1.txt` for PERSEUS
+# read file
+tobin2018_perseus_2 = astropy.io.ascii.read("data/input/tobin2018_perseus_2.txt", delimiter="\t", guess=False).to_pandas()
+# format name columns
+tobin2018_perseus_2['Main'] = tobin2018_perseus_2['Source'].apply(lambda x: str(x).removesuffix('-'+str(x).split('-')[-1]))
+# select columns and rename
+tobin2018_perseus_2 = tobin2018_perseus_2[['Main', 'Source', 'R.A.', 'Decl.']].rename(columns={'R.A.': 'RA', 'Decl.': 'Dec'})
+# read file
+reynolds2024_perseus_1 = astropy.io.ascii.read("data/input/reynolds2024_perseus_1.txt", delimiter="\t", guess=False).to_pandas()
+# format name columns
+reynolds2024_perseus_1.loc[reynolds2024_perseus_1['Source'] == '-', 'Source'] = 'A'
+reynolds2024_perseus_1['Name'] = reynolds2024_perseus_1['Name'].replace('-', np.nan).fillna(method='ffill')
+reynolds2024_perseus_1['Source'] = reynolds2024_perseus_1['Source'].apply(lambda x: str(x).removeprefix('-'))
+reynolds2024_perseus_1['Source'] = reynolds2024_perseus_1['Name'] + '-' + reynolds2024_perseus_1['Source']
+# select columns and rename
+reynolds2024_perseus_1 = reynolds2024_perseus_1[['Name', 'Source', 'RA', 'Dec', 'T _B']].rename(columns={'Name': 'Main', 'T _B': 'TBol'})
+
+### MERGE PERSEUS datasets into `perseus`
+perseus = pd.merge(tobin2018_perseus_2, reynolds2024_perseus_1, on=['Main', 'Source'], how='outer', suffixes=(None, '_y'))
+# filter for relevant targets
+perseus = perseus[perseus['Main'].isin(targets)]
+# parse ra/dec columns
+perseus['RA'] = perseus['RA'].fillna(perseus['RA_y'])
+perseus['Dec'] = perseus['Dec'].fillna(perseus['Dec_y'])
+perseus = perseus.drop(columns=['RA_y', 'Dec_y'])
+perseus['RA'] = perseus['RA'].apply(ra_to_degrees)
+perseus['Dec'] = perseus['Dec'].apply(dec_to_degrees)
+# set distance to 300pc
+perseus['Dis'] = 300
+# add group column
+perseus['group'] = 'perseus'
+
+### PARSE `distances.txt` for ORION
+# read file
+orion = astropy.io.ascii.read("data/input/tobin2022_orion.txt").to_pandas()
+# filter for relevant targets
+orion = orion[orion['Main'].isin(targets)]
+# create ra/dec columns
+orion['RA'] = 15 * (orion['RAh'] + orion['RAm'] / 60 + orion['RAs'] / 3600)
+orion['DE-'] = orion["DE-"].apply(lambda x: -1 if x == "-" else 1)
+orion['Dec'] = orion['DE-'] * (orion['DEd'] + orion['DEm'] / 60 + orion['DEs'] / 3600)
+# select columns and sort
+orion = orion[['Main', 'Source', 'RA', 'Dec', 'Dis', 'LBol', 'TBol', 'Class', 'SigmaYSO']]
+# fix HOPS-361-N
+orion["Main"] = orion["Main"].replace({"HOPS-361": "HOPS-361-N"})
+orion["Source"] = orion["Source"].apply(lambda x: str(x).replace("HOPS-361", "HOPS-361-N"))
+orion['group'] = 'orion'
+
+### MERGE ORION and PERSEUS into `source_info`
+source_info = pd.concat([orion, perseus]).sort_values(by=['RA']).reset_index(drop=True)
+source_info.to_csv("data/output/source_info.csv",index=False)
+
+### PARSE `notes.txt`
 # read file
 df = pd.read_csv("data/input/notes.csv")
-# keep relevant columns
-df = df[['Field', 'Binary', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Red Center Corrected', 'Blue Center Corrected', 'Average Angle (Red)', 'Lobe PA Offset']]
 # get sources with secondaries
 no_binary = df['Binary'].isna()
 # create columns to identify each source in the pair
@@ -181,29 +181,20 @@ df.loc[~no_binary, 'source_a'] = df.loc[~no_binary, 'Binary'].apply(lambda x: sp
 df.loc[~no_binary, 'source_b'] = df.loc[~no_binary, 'Binary'].apply(lambda x: split_source_string(x)[1])
 df.loc[no_binary, 'source_a'] = df.loc[no_binary, 'Outflow Source']
 df.loc[no_binary, 'source_b'] = None
-# rename columns
-df = df[['Field', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Red)', 'Lobe PA Offset']].rename(columns={'Field': 'field', 'Average Angle (Red)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA', 'Lobe PA Offset': 'lobe_PA_offset'})
+# select and rename columns
+df = df[['Field', 'Confidence', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Red)', 'Lobe PA Offset']].rename(columns={'Field': 'field', 'Average Angle (Red)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA', 'Lobe PA Offset': 'lobe_PA_offset', 'Confidence': 'confidence'})
 
 # merge coordinates and distance
 new_rows = []
 for i, row in df.iterrows():
-
-    ### exceptions
-    # removal of Per-emb-5, not a binary
-    if row['field'] == 'Per-emb-5':
-        continue
-    # # removal of secondary outflows on stars >500 AU from inner binary
-    # if (row['field'] == 'HOPS-12') & (pd.isna(row['source_b'])):
-    #     continue
-    # if (row['field'] == 'HOPS-203') & (pd.isna(row['source_b'])):
-    #     continue
-
+    # construct source_a
     key_a = row['field'] + '-' + row['source_a']
     row_a = source_info.loc[source_info['Source'] == key_a]
     row['source_a_ra'] = row_a['RA'].iloc[0]
     row['source_a_dec'] = row_a['Dec'].iloc[0]
     row['group'] = row_a['group'].iloc[0]
 
+    # construct source_b, if source is not a tertiary
     if row['source_b'] != None:
         key_b = row['field'] + '-' + row['source_b']
         row_b = source_info.loc[source_info['Source'] == key_b]
@@ -219,30 +210,26 @@ for i, row in df.iterrows():
         row['binary_PA'] = None
 
     row['distance'] = row_a['Dis'].iloc[0]
-
     new_rows.append(row)
 
 # create new dataframe
-master = pd.DataFrame(new_rows)[['group', 'field', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'lobe_PA_offset', 'binary_PA']]
+outflow_data = pd.DataFrame(new_rows)[['group', 'field', 'confidence', 'source_a', 'source_a_ra', 'source_a_dec', 'source_b', 'source_b_ra', 'source_b_dec', 'distance', 'outflow_source', 'red_channels', 'blue_channels', 'red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'lobe_PA_offset', 'binary_PA']]
 # parse `outflow_source`
-master['outflow_source'] = master['outflow_source'].apply(lambda x: fix_outflow_source(x))
-
+outflow_data['outflow_source'] = outflow_data['outflow_source'].apply(lambda x: fix_outflow_source(x))
 # compute delta_PA
-angle = np.abs(master['outflow_PA'] - master['binary_PA']) % 180
+angle = np.abs(outflow_data['outflow_PA'] - outflow_data['binary_PA']) % 180
 angle = np.min([angle, 180 - angle], axis=0)
-master['delta_PA'] = angle
-
-master = master.sort_values('source_a_ra')
-
+outflow_data['delta_PA'] = angle
+# sort
+outflow_data = outflow_data.sort_values('source_a_ra')
 # save
-master.to_csv('data/output/outflow_data.csv',index=False)
+outflow_data.to_csv('data/output/outflow_data.csv',index=False)
 
 
 ### PARSE Separations Data
-
-ori = astropy.io.ascii.read("data/input/tobin2022_orion_pairings.txt").to_pandas()
-per = astropy.io.ascii.read("data/input/tobin2022_perseus_pairings.txt").to_pandas()
-
+# read files
+orion_sep = astropy.io.ascii.read("data/input/tobin2022_orion_pairings.txt").to_pandas()
+perseus_sep = astropy.io.ascii.read("data/input/tobin2022_perseus_pairings.txt").to_pandas()
 ori_keys = {
     'H12-B-A+H12-B-B' : 'HOPS-12', # double
     '(H12-B-A+H12-B-B)+H12-A' : 'HOPS-12',
@@ -275,7 +262,6 @@ ori_keys = {
     'H75-B+H75-A' : 'HOPS-75',
     'H213-A+H213-B' : 'HOPS-213',
 }
-
 per_keys = {
     'P2-A-P2-B' : 'Per-emb-2',
     'P12-A-P12-B' : 'Per-emb-12',
@@ -289,22 +275,84 @@ per_keys = {
     'P36-A-P36-B' : 'Per-emb-36',
     'P44-A-P44-B' : 'Per-emb-44',
 }
-
-sep = pd.concat([ori[ori['Pair'].isin(list(ori_keys.keys()))], per[per['Pair'].isin(list(per_keys.keys()))]]).reset_index(drop=True)
+# merge datasets and filter for relevant targets
+sep = pd.concat([orion_sep[orion_sep['Pair'].isin(list(ori_keys.keys()))], perseus_sep[perseus_sep['Pair'].isin(list(per_keys.keys()))]]).reset_index(drop=True)
+# rename pairs
 sep['Pair'] = sep['Pair'].apply(lambda x: {**per_keys, **ori_keys}[x])
+# note tertiary sources
 sep['Tertiary'] = sep['Class'].str.contains('\\(')
 
-def class_map(x):
-    if 'C0' in x:
-        return '0'
-    elif 'CI' in x:
-        return 'I'
-    elif 'FS' in x:
-        return 'FS'
-    else:
-        return np.nan
-
 sep['Class'] = sep['Class'].apply(class_map)
-sep = sep[['Pair', 'Tertiary', 'PSep', 'Class']].sort_values(by='Pair').reset_index(drop=True)
-sep = sep.rename(columns={'PSep': 'separation', 'Class': 'class', 'Tertiary': 'tertiary', 'Pair': 'pair'})
-sep.to_csv("data/output/separations.csv",index=False)
+sep = sep[['Pair', 'Tertiary', 'PSep', 'Class']].rename(columns={'PSep': 'separation', 'Class': 'class', 'Tertiary': 'tertiary', 'Pair': 'pair'})
+sep = sep.sort_values(by='pair').reset_index(drop=True)
+# sep.to_csv("data/output/separations.csv",index=False)
+
+### CREATE by_outflow TABLE
+by_outflow = outflow_data
+# combine sources for 'both' outflow sources
+by_outflow.loc[by_outflow['outflow_source'] == 'both', 'outflow_source'] = by_outflow.loc[by_outflow['outflow_source'] == 'both']['source_a'] + '+' + by_outflow.loc[by_outflow['outflow_source'] == 'both']['source_b']
+# combine channel columns
+by_outflow['integrated_channels'] = (by_outflow['red_channels'].fillna('') + ', ' + by_outflow['blue_channels'].fillna('')).str.lstrip(', ').str.rstrip(', ')
+# note tertiary sources
+by_outflow['tertiary'] = by_outflow['binary_PA'].isna()
+# merge separations
+by_outflow = pd.merge(by_outflow, sep, left_on=['field', 'tertiary'], right_on=['pair', 'tertiary'], how='left')
+# define type column
+by_outflow['type'] = by_outflow['tertiary'].map({True: 'Tertiary', False: 'Binary'})
+# select columns
+by_outflow = by_outflow[['field', 'confidence', 'source_a_ra', 'type', 'separation', 'class', 'outflow_source', 'outflow_PA', 'lobe_PA_offset', 'binary_PA', 'delta_PA']]
+# format missing values
+by_outflow = by_outflow.fillna('-')
+by_outflow[['outflow_PA', 'lobe_PA_offset', 'binary_PA', 'delta_PA']] = by_outflow[['outflow_PA', 'lobe_PA_offset', 'binary_PA', 'delta_PA']].replace('-', np.nan).astype(float).round(0).astype('Int64')
+# sort dataframe
+by_outflow = by_outflow.sort_values('source_a_ra').drop('source_a_ra',axis=1).reset_index(drop=True)
+# save to CSV
+by_outflow.to_csv('data/output/data_by_outflow.csv', index=False)
+# save to LaTeX table
+Table.from_pandas(by_outflow).write('results/tables/by-outflow.tex', format='ascii.latex', latexdict={'tabletype': 'deluxetable'}, overwrite=True)
+
+### CREATE by_field TABLE
+# get info for sources without outflows
+unmeasured_sources = ['HOPS-56', 'HOPS-70', 'HOPS-261', 'HOPS-158', 'HOPS-138', 'HOPS-45', 'HOPS-85', 'HOPS-77'] + ['HOPS-28', 'HOPS-163', 'HOPS-242', 'HOPS-248', 'HOPS-255', 'HOPS-357']
+sources_no_outflows = source_info[['Main', 'Source', 'RA', 'Dec']].groupby('Main').agg({
+    'Source': 'count',
+    'RA': 'first',
+    'Dec': 'first'
+}).reset_index().rename(columns={'Source': 'n_sources', 'RA': 'ra', 'Dec': 'dec'})
+# extract number of sources for all fields for later use
+n_sources = sources_no_outflows[['Main', 'n_sources']]
+# filter for sources without outflows
+sources_no_outflows = sources_no_outflows.loc[sources_no_outflows['Main'].isin(unmeasured_sources)].drop(columns='n_sources').reset_index(drop=True)
+
+# define other names for fields
+other_names = pd.DataFrame({
+    "Per-emb-2": "IRAS 03292+3039",
+    "Per-emb-12": "NGC 1333 IRAS4A",
+    "Per-emb-22": "L1448 IRS2",
+    "Per-emb-27": "NGC 1333 IRS2A",
+    "Per-emb-33": "L1448 IRS3B",
+    "Per-emb-36": "NGC 1333 IRAS2B",
+    "Per-emb-44": "SVS 13A",
+}, index=[0]).T.reset_index().rename(columns={'index': 'field', 0: 'other_names'})
+
+# start by grouping outflow data by field
+by_field = outflow_data.groupby(['field']).agg('first').reset_index()[['field', 'source_a_ra', 'source_a_dec', 'integrated_channels']]
+# select and rename columns
+by_field = by_field[['field', 'source_a_ra', 'source_a_dec', 'integrated_channels']].rename(columns={'source_a_ra': 'ra', 'source_a_dec': 'dec'})
+# add in unmeasured sources
+by_field = pd.concat([by_field, sources_no_outflows.rename(columns={'Main': 'field'})], ignore_index=True)
+# add in n_sources column
+by_field = by_field.merge(n_sources, left_on='field', right_on='Main', how='left')
+# add other names column
+by_field = by_field.merge(other_names, on='field', how='left')
+# remove duplicates
+by_field = by_field.drop_duplicates(subset=['field']).reset_index(drop=True)
+# format number columns
+by_field[['ra', 'dec']] = by_field[['ra', 'dec']].round(5)
+by_field[['n_sources']] = by_field[['n_sources']].round(0).astype(int)
+# order columns and sort
+by_field = by_field[['field', 'other_names', 'n_sources', 'ra', 'dec', 'integrated_channels']].sort_values('ra').reset_index(drop=True)
+# save to CSV
+by_field.to_csv('data/output/data_by_field.csv', index=False)
+# save to LaTeX table
+Table.from_pandas(by_field).write('results/tables/by-field.tex', format='ascii.latex', latexdict={'tabletype': 'deluxetable'}, overwrite=True)
