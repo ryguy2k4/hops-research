@@ -30,7 +30,7 @@ def createCumulatPlotCos(datax, datay, datalabel='', title='', xlabel='', filena
     ax.legend(fontsize=10)
 
     plt.savefig(filename + '.pdf', dpi=200)
-    plt.savefig(filename + '.png', dpi=300, transparent=True, bbox_inches='tight')
+    # plt.savefig(filename + '.png', dpi=300, transparent=True, bbox_inches='tight')
 
 
 def createCumulatPlotDeg(datax, datay, datalabel='', title='', xlabel='', filename='test'):
@@ -53,7 +53,7 @@ def createCumulatPlotDeg(datax, datay, datalabel='', title='', xlabel='', filena
     ax.set_ylim(0, 1.0)
     ax.legend(fontsize=10)
     plt.savefig(filename + '.pdf', dpi=200)
-    plt.savefig(filename + '.png', dpi=300, transparent=True, bbox_inches='tight')
+    # plt.savefig(filename + '.png', dpi=300, transparent=True, bbox_inches='tight')
 
 def makeCumulate(arrayData):
     # sort ascending

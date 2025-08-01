@@ -18,6 +18,7 @@ def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1
     # Create FITSFigure
     if not multiimage:
         figure.clear()
+
     fig = aplpy.FITSFigure(img, figure=figure, subplot=subplot)
 
     # Display image
@@ -143,42 +144,6 @@ def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0, figure=pl
     cut = cut_fig(m0_map, hdu.header, center, size)
     
     return create_fig(cut, distance, figure, subplot, multiimage=multiimage)
-
-def create_m0_contours(hdu, center, size, red_channels, blue_channels, sigma=3, distance=0):
-    # sigma
-    blank_channel = hdu.data[0,0,:,:]
-    region_size = np.array([100, 100]) * u.pixel
-    wcs_2d = wcs.WCS(hdu.header).celestial
-    region = Cutout2D(blank_channel, center, region_size, wcs=wcs_2d)
-    mean = np.mean(region.data)
-    std = np.std(region.data)
-
-    # create full map
-    all_channels = np.array(([list(red_channels) + list(blue_channels)])).flatten()
-    all_channels_data = hdu.data[0,all_channels,:,:]
-    all_channels_data[all_channels_data < (mean + sigma*std)] = 0
-    m0_map_full = np.sum(all_channels_data, axis=0)
-    cut_full = cut_fig(m0_map_full, hdu.header, center, size)
-
-    # create blue map
-    blue_channel_data = hdu.data[0, blue_channels,:,:]
-    blue_channel_data[blue_channel_data < (mean + sigma*std)] = 0
-    m0_map_blue = np.sum(blue_channel_data, axis=0)
-    cut_blue = cut_fig(m0_map_blue, hdu.header, center, size)
-
-    # create red map
-    red_channel_data = hdu.data[0, red_channels,:,:]
-    red_channel_data[red_channel_data < (mean + sigma*std)] = 0
-    m0_map_red = np.sum(red_channel_data, axis=0)
-    cut_red = cut_fig(m0_map_red, hdu.header, center, size)
-    
-    fig = create_fig(cut_full, distance)
-    fig.hide_colorscale()
-    # set contour levels at 10% of the maximum intensity
-    fig.show_contour(cut_blue.data, levels=[0.1*np.nanmax(m0_map_blue)], colors=['blue'])
-    fig.show_contour(cut_red.data, levels=[0.1*np.nanmax(m0_map_red)], colors=['red'])
-
-    return fig
 
 
 """
