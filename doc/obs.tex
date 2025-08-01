@@ -1,0 +1,41 @@
+
+The Perseus multiple systems were observed with ALMA during
+Cycle 5 with 5 executions throughout 2017 December, 2018 January, and 2018 September with 43-45 
+antennas operating and sampling baselines between $\sim$15 - $\sim$2500 meters. 
+The observations were executed within $\sim$1.1 hour block
+and the total time spent on each source was $\sim$17.6-20.2 minutes. 
+The precipitable water vapor ranged from 0.54 - 2.57~mm during the different executions.
+The phase calibrator was J0336+3218 in all observations and the bandpass and flux calibrator was either
+J0238+1636 or J0237+2848.
+The correlator was configured for one baseband to observe a 2 GHz continuum band 
+centered at 232.5 GHz and observed in TDM mode with 128 channels. Then the second baseband
+was configured with two 234~MHz spectral windows with 488 kHz channels centered on $^{12}$CO ($J=2\rightarrow1$) and
+N$_2$D$^{+}$ ($J=3\rightarrow2$) and $^{13}$CS ($J=5\rightarrow4$). The third baseband was configured with four
+59~MHz spectral windows with 122 kHz channels centered on H$_2$CO ($J=3_{03}\rightarrow2_{02}$), ($J=3_{22}\rightarrow2_{21}$), 
+($J=3_{21}\rightarrow2_{20}$), and SO ($J_N = 6_5\rightarrow5_4$). The fourth baseband was configured with two 59 MHz spectral windows with 61 kHz channels
+centered on $^{13}$CO ($J=2\rightarrow1$) and C$^{18}$O ($J=2\rightarrow1$). However, we will only discuss the $^{12}$CO ($J=2\rightarrow1$)
+data in this paper.
+
+The raw visibility data were reduced by the ALMA pipeline integrated within CASA 5.4.0. We additionally performed
+self-calibration on the continuum data to increase the signal to noise ratio. We performed 
+self-calibration of the continuum data on all sources also using CASA 5.6.1, using two rounds of phase-only self-calibration where the first solution
+interval corresponded to the length of a single scan and the second solution interval corresponded 
+to 12.1s or 6.05s; 6.05s corresponds to the length of a single integration. Following phase-only
+self-calibration, we also applied amplitude self-calibration, using a solution interval that was 
+the length of a scan, and we used the option \textt{solnorm=True} to normalize the amplitude solutions to 1, rather than
+allowing them to scale freely, which prevents the flux density from being significantly altered erroneously.
+Following the completion of self-calibration on the continuum, the solutions were also applied to the 
+spectral line spectral windows.
+
+The data were imaged using a custom recipe of the ALMA imaging pipeline in CASA version 5.4.0, using Briggs weighting with robust=0.5 for all images. 
+The continuum images were produced using standard 
+calls to \texttt{hif\_makeimlist} and \texttt{hif\_makeimages}. We used options of the \texttt{hif\_editimlist}
+task to image the spectral windows with the desired channel binning and frequency range. For $^{12}$CO, we used 0.66~\kms\ channels
+and imaged $\pm$100~\kms\ of the source velocity. The $^{12}$CO cubes typically had 800$\times$800 pixels, a pixel scale of 0\farcs053, and a synthesized beam of 0\farcs38$\times$0.\farcs30. The continuum images were typically 1120$\times$1120 pixels and a pixel scale of 0\farcs04 and the synthesized beam was 0\farcs28$\times$0\farcs21. The noise in the 1.3~mm continuum was $\sim$0.2~mJy~beam$^{-1}$ and the noise in the $^{12}$CO cubes was 3.6~mJy~beam$^{-1}$.
+
+One source, L1448 IRS3C, was not self-calibrated in the same way as the others because it had been unintentionally left out of the orginal processing. Instead
+of manually processing the data, we imaged those data with the ALMA pipeline included in CASA 6.6.1 using automated self-calibration through
+the imaging service available on the NRAO archive. Comparison of self-calibration done through the automated imaging
+service versus the manual self-calibration showed very similar results, and the ALMA imaging pipeline was executed in a very similar way to all the other images as well.
+
+
