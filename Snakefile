@@ -7,7 +7,7 @@ rule runall:
         "results/figs_for_paper/appendix-3.pdf",
         "results/figs_for_paper/appendix-4.pdf",
         "results/figs_for_paper/fig_1.pdf",
-        "results/figs_for_paper/fig_2.pdf"
+        "results/figs_for_paper/fig_2.pdf",
         "results/m0_outflow_maps.pdf",
         "results/all_m8_maps.pdf",
         "results/histogram/histogram.pdf",
@@ -18,7 +18,7 @@ rule runall:
 
 rule prepare_tables:
     input:
-        "data/input/reynolds2024_perseus_1.txt"
+        "data/input/reynolds2024_perseus_1.txt",
         "data/input/tobin2018_perseus_2.txt",
         "data/input/tobin2022_orion.txt",
         "data/input/notes.csv",
@@ -40,6 +40,8 @@ rule master_reference_doc:
         "data/output/source_info.csv"
     output:
         "results/master_reference.pdf"
+    shell:
+        "python3 scripts/master_reference_doc.py"
 
 rule make_figs_for_paper:
     input:

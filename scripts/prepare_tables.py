@@ -4,8 +4,7 @@ import pandas as pd
 from astropy.table import Table
 from io import StringIO
 from astropy import units as u
-from scripts._create_figs import getIdx
-from scripts._script_options import ALL_TARGETS
+from _create_figs import getIdx
 import os
 
 ### SCRIPT OPTIONS
@@ -13,8 +12,67 @@ import os
 output_folder = "results/tables"
 if not os.path.exists(output_folder):
     os.mkdir(output_folder)
+if not os.path.exists("data/output"):
+    os.mkdir("data/output")
 
 ### SCRIPT
+# all the targets in this analysis
+ALL_TARGETS = [
+    "HH270VLA1",
+    "HOPS-323",
+    "HOPS-312",
+    "HOPS-364",
+    "HOPS-45",
+    "HOPS-361", # file is named 361-N
+    "HOPS-366", 
+    "HOPS-384",
+    "HOPS-304",
+    "HOPS-357",
+    "HOPS-363",
+    "HOPS-400",
+    "HOPS-290",
+    "HOPS-56",
+    "HOPS-193",
+    "HOPS-242",
+    "HOPS-70",
+    "HOPS-138",
+    "HOPS-85",
+    "HOPS-182",
+    "HOPS-28",
+    "HOPS-92",
+    "HOPS-32",
+    "HOPS-158",
+    "HOPS-75",
+    "HOPS-395",
+    "HOPS-43", # where did this one come from?
+    "HOPS-255",
+    "HOPS-213",
+    "HOPS-77",
+    "HOPS-281",
+    "HOPS-173",
+    "HOPS-282",
+    "HOPS-84",
+    "HOPS-288",
+    "HOPS-248",
+    "HOPS-168",
+    "HOPS-203",
+    "HOPS-163",
+    "HOPS-12",
+    "HOPS-261",
+
+    "Per-emb-2",
+    "Per-emb-12",
+    "Per-emb-17",
+    "Per-emb-18",
+    "Per-emb-22",
+    "Per-emb-27",
+    "Per-emb-33",
+    "Per-emb-35",
+    "Per-emb-36",
+    "Per-emb-44",
+    "L1448 IRS3C"
+]
+
 # used to parse perseus RA/Dec columns
 def ra_to_degrees(ra_str):
     h, m, s = map(float, ra_str.split(':'))
@@ -93,6 +151,9 @@ perseus['RA'] = perseus['RA'].apply(ra_to_degrees)
 perseus['Dec'] = perseus['Dec'].apply(dec_to_degrees)
 # set distance to 300pc
 perseus['Dis'] = 300
+# fix per107
+perseus["Main"] = perseus["Main"].replace({"L1448 IRS3C": "Per-emb-107"})
+perseus["Source"] = perseus["Source"].apply(lambda x: str(x).replace("L1448 IRS3C", "Per-emb-107"))
 # add group column
 perseus['group'] = 'perseus'
 
@@ -110,6 +171,7 @@ orion = orion[['Main', 'Source', 'RA', 'Dec', 'Dis', 'LBol', 'TBol', 'Class', 'S
 # fix HOPS-361-N
 orion["Main"] = orion["Main"].replace({"HOPS-361": "HOPS-361-N"})
 orion["Source"] = orion["Source"].apply(lambda x: str(x).replace("HOPS-361", "HOPS-361-N"))
+# add group column
 orion['group'] = 'orion'
 
 ### MERGE ORION and PERSEUS into `source_info`

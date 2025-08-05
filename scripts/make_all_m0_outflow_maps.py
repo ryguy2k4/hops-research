@@ -5,10 +5,14 @@ import numpy as np
 import os
 import pandas as pd
 import glob
+import yaml
 from matplotlib.backends.backend_pdf import PdfPages
 
-from scripts._create_figs import create_m0_map, mark_sources, plot_vector, getIdx
-from scripts._script_options import IMAGE_DIRECTORY
+from _create_figs import create_m0_map, mark_sources, plot_vector, getIdx
+
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+IMAGE_DIRECTORY = config["data_dir"]
 
 
 # SET OUTPUT
@@ -19,7 +23,7 @@ if not os.path.exists(output_folder):
 
 # READ DATA
 outflow_data = pd.read_csv('data/output/outflow_data.csv')
-source_info = pd.read_csv("../data/output/source_info.csv", index_col='Main')
+source_info = pd.read_csv("data/output/source_info.csv", index_col='Main')
 source_info.index = source_info.index.str.casefold()
 
 # SCRIPT

@@ -9,10 +9,14 @@ import os
 import pandas as pd
 import glob
 import matplotlib.pyplot as plt
+import yaml
 
-from scripts._create_figs import create_m0_map, create_sub_fig, create_m8_map, mark_sources, mark_sources_2, plot_vector, plot_dotted_vector, getIdx
-from scripts._script_options import IMAGE_DIRECTORY
+from _create_figs import create_m0_map, create_sub_fig, create_m8_map, mark_sources, mark_sources_2, plot_vector, plot_dotted_vector, getIdx
 from matplotlib.backends.backend_pdf import PdfPages
+
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+IMAGE_DIRECTORY = config["data_dir"]
 
 # SET OUTPUT
 output_folder = "results"
@@ -24,7 +28,7 @@ if not os.path.exists(output_folder):
 cont_files = glob.glob(f'{IMAGE_DIRECTORY}/*/*cont*.fits')
 spw39_files = glob.glob(f'{IMAGE_DIRECTORY}/*/*12co*.fits') + glob.glob(f'{IMAGE_DIRECTORY}/*/*spw39*.fits')
 outflow_data = pd.read_csv('data/output/outflow_data.csv')
-source_info = pd.read_csv("../data/output/source_info.csv", index_col='Main')
+source_info = pd.read_csv("data/output/source_info.csv", index_col='Main')
 source_info.index = source_info.index.str.casefold()
 if len(cont_files) != len(spw39_files):
     raise ValueError("Number of continuum files does not match number of 12CO/SPW39 files.")
