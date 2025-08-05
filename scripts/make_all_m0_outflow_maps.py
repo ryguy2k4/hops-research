@@ -7,40 +7,28 @@ import pandas as pd
 import glob
 from matplotlib.backends.backend_pdf import PdfPages
 
-from create_figs import create_m0_map, mark_sources, plot_vector, getIdx
+from scripts._create_figs import create_m0_map, mark_sources, plot_vector, getIdx
+from scripts._script_options import IMAGE_DIRECTORY
 
-### SCRIPT OPTIONS
 
-# output
+# SET OUTPUT
 output_folder = "results"
 output_pdf = os.path.join(output_folder, "m0_outflow_maps.pdf")
 if not os.path.exists(output_folder):
     os.mkdir(output_folder)
 
-# this script assumes that the directory below contains a folder for each field
-# and that within each field folder there is a 12CO image, which contains
-# '12co' or 'spw39' in the filename
-image_directory = "/Volumes/Alpha/Research/data/"
+# READ DATA
+outflow_data = pd.read_csv('data/output/outflow_data.csv')
+source_info = pd.read_csv("../data/output/source_info.csv", index_col='Main')
+source_info.index = source_info.index.str.casefold()
 
-
-### SCRIPT
-
-# read data
-df = pd.read_csv('data/output/outflow_data.csv')
-
-source_info = pd.read_csv("data/output/source_info.csv")
-source_info['Main'] = source_info['Main'].apply(lambda x: str(x).casefold())
-source_info.set_index('Main', inplace=True)
-
-if not os.path.exists(output_folder):
-    os.mkdir(output_folder)
-
+# SCRIPT
 with PdfPages(output_pdf) as pdf:
-    for i, field in df.groupby('field').agg('first').sort_values('source_a_ra').reset_index().iterrows():
+    for i, field in outflow_data[~outflow_data['binary_PA'].isna()].groupby('field').agg('first').sort_values('source_a_ra').reset_index().iterrows():
         target_name = field['field']
 
-        image_filename = (glob.glob(f'{image_directory}{target_name.casefold()}/*12co*.fits') +
-                          glob.glob(f'{image_directory}{target_name.casefold()}/*spw39*.fits'))[0]
+        image_filename = (glob.glob(f'{IMAGE_DIRECTORY}{target_name.casefold()}/*12co*.fits') +
+                          glob.glob(f'{IMAGE_DIRECTORY}{target_name.casefold()}/*spw39*.fits'))[0]
         hdulist = fits.open(image_filename)
         hdu = hdulist[0]
 
@@ -60,7 +48,7 @@ with PdfPages(output_pdf) as pdf:
         plot_vector(fig, center_origin, separation_angle_north, color='white', length=0.005)
         plot_vector(fig, center_origin, separation_angle_north + 180, color='white', length=0.005)
 
-        for j, source in df[df['field'] == target_name].reset_index(drop=True).iterrows():
+        for j, source in outflow_data[outflow_data['field'] == target_name].reset_index(drop=True).iterrows():
             if source['outflow_source'] == 'both':
                 outflow_origin = center_origin
             elif source['outflow_source'] == source['source_a']:

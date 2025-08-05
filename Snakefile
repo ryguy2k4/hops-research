@@ -1,10 +1,20 @@
 rule runall:
     input:
-        # directory("results/stat_test"),
-        # directory("results/histogram"),
-        # "results/m0_outflow_maps.pdf",
-        # "results/all_m8_maps.pdf"
-        # directory("results/figs_for_paper")
+        "results/tables/by-field.tex",
+        "results/tables/by-outflow.tex",
+        "results/figs_for_paper/appendix-1.pdf",
+        "results/figs_for_paper/appendix-2.pdf",
+        "results/figs_for_paper/appendix-3.pdf",
+        "results/figs_for_paper/appendix-4.pdf",
+        "results/figs_for_paper/fig_1.pdf",
+        "results/figs_for_paper/fig_2.pdf"
+        "results/m0_outflow_maps.pdf",
+        "results/all_m8_maps.pdf",
+        "results/histogram/histogram.pdf",
+        "results/stat_test/OutflowPA_cumulat_cos.pdf",
+        "results/stat_test/OutflowPA_cumulat_deg.pdf",
+        "results/stat_test/test_results.txt",
+        "results/master_reference.pdf"
 
 rule prepare_tables:
     input:
@@ -24,6 +34,27 @@ rule prepare_tables:
     shell:
         "python3 scripts/prepare_tables.py"
 
+rule master_reference_doc:
+    input:
+        "data/output/outflow_data.csv",
+        "data/output/source_info.csv"
+    output:
+        "results/master_reference.pdf"
+
+rule make_figs_for_paper:
+    input:
+        "data/output/outflow_data.csv",
+        "data/output/source_info.csv"
+    output:
+        "results/figs_for_paper/appendix-1.pdf",
+        "results/figs_for_paper/appendix-2.pdf",
+        "results/figs_for_paper/appendix-3.pdf",
+        "results/figs_for_paper/appendix-4.pdf",
+        "results/figs_for_paper/fig_1.pdf",
+        "results/figs_for_paper/fig_2.pdf"
+    shell:
+        "python3 scripts/make_figs_for_paper.py"
+
 rule make_all_m0_outflow_maps:
     input:
         "data/output/outflow_data.csv",
@@ -42,27 +73,21 @@ rule make_all_m8_maps:
     shell:
         "python3 scripts/make_all_m8_maps.py"
 
-rule make_figs_for_paper:
+rule make_histogram:
     input:
-        "data/output/outflow_data.csv",
-        "data/output/source_info.csv"
+        "data/output/outflow_data.csv"
     output:
-        directory("results/figs_for_paper")
+        "results/histogram/histogram.pdf"
     shell:
-        "python3 scripts/make_figs_for_paper.py"
+        "python3 scripts/make_histogram.py"
 
 rule perform_stat_test:
     input:
         "data/output/outflow_data.csv"
     output:
-        directory("results/stat_test")
+        "results/stat_test/OutflowPA_cumulat_cos.pdf",
+        "results/stat_test/OutflowPA_cumulat_deg.pdf",
+        "results/stat_test/test_results.txt"
     shell:
         "python3 scripts/stat_test.py"
 
-rule make_histogram:
-    input:
-        "data/output/outflow_data.csv"
-    output:
-        directory("results/histogram")
-    shell:
-        "python3 scripts/make_histogram.py"

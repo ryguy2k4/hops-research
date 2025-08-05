@@ -11,29 +11,22 @@ import os
 import pandas as pd
 import glob
 
-from create_figs import create_m0_map, create_m8_map, getIdx, plot_vector, mark_sources
+from scripts._create_figs import create_m0_map, create_m8_map, getIdx, plot_vector, mark_sources
+from ._script_options import IMAGE_DIRECTORY
 
-### SCRIPT OPTIONS
-
-# output
+# SET OUTPUT
 output_folder = "results/figs_for_paper"
 if not os.path.exists(output_folder):
     os.mkdir(output_folder)
 
-# this script assumes that the directory below contains a folder for each field
-# and that within each field folder there is a 12CO image, which contains
-# '12co' or 'spw39' in the filename
-image_directory = "/Volumes/Alpha/Research/data/"
-
-### SCRIPT
-# read data
+# READ DATA
 outflow_data = pd.read_csv('data/output/outflow_data.csv')
 outflow_data2 = outflow_data.groupby('field').first().reset_index()
 by_field = pd.read_csv('data/output/data_by_field.csv')
-source_info = pd.read_csv("data/output/source_info.csv")
-source_info['Main'] = source_info['Main'].apply(lambda x: str(x).casefold())
-source_info.set_index('Main', inplace=True)
+source_info = pd.read_csv("../data/output/source_info.csv", index_col='Main')
+source_info.index = source_info.index.str.casefold()
 
+# SCRIPT
 # define fields in each figure
 fig_1 = ['HOPS-32', 'HOPS-168', 'HOPS-281', 'Per-emb-17']
 fig_2 = ['HOPS-290', 'HOPS-288']
@@ -59,7 +52,7 @@ def make_compound_plots(field_list, output_name, rows, cols, wspace=0.35, hspace
             os.mkdir(output_folder)
 
         # open image
-        image_filename = (glob.glob(f'/Volumes/Alpha/Research/data/{target_name.casefold()}/*12co*.fits') + glob.glob(f'/Volumes/Alpha/Research/data/{target_name.casefold()}/*spw39*.fits'))[0]
+        image_filename = (glob.glob(f'{IMAGE_DIRECTORY}{target_name.casefold()}/*12co*.fits') + glob.glob(f'{IMAGE_DIRECTORY}{target_name.casefold()}/*spw39*.fits'))[0]
         hdulist = fits.open(image_filename)    
         hdu = hdulist[0]
 

@@ -4,7 +4,8 @@ import pandas as pd
 from astropy.table import Table
 from io import StringIO
 from astropy import units as u
-from create_figs import getIdx
+from scripts._create_figs import getIdx
+from scripts._script_options import ALL_TARGETS
 import os
 
 ### SCRIPT OPTIONS
@@ -14,62 +15,6 @@ if not os.path.exists(output_folder):
     os.mkdir(output_folder)
 
 ### SCRIPT
-# all the targets in this analysis
-targets = [
-    "HH270VLA1",
-    "HOPS-323",
-    "HOPS-312",
-    "HOPS-364",
-    "HOPS-45",
-    "HOPS-361", # file is named 361-N
-    "HOPS-366", 
-    "HOPS-384",
-    "HOPS-304",
-    "HOPS-357",
-    "HOPS-363",
-    "HOPS-400",
-    "HOPS-290",
-    "HOPS-56",
-    "HOPS-193",
-    "HOPS-242",
-    "HOPS-70",
-    "HOPS-138",
-    "HOPS-85",
-    "HOPS-182",
-    "HOPS-28",
-    "HOPS-92",
-    "HOPS-32",
-    "HOPS-158",
-    "HOPS-75",
-    "HOPS-395",
-    "HOPS-43", # where did this one come from?
-    "HOPS-255",
-    "HOPS-213",
-    "HOPS-77",
-    "HOPS-281",
-    "HOPS-173",
-    "HOPS-282",
-    "HOPS-84",
-    "HOPS-288",
-    "HOPS-248",
-    "HOPS-168",
-    "HOPS-203",
-    "HOPS-163",
-    "HOPS-12",
-    "HOPS-261",
-
-    "Per-emb-2",
-    "Per-emb-12",
-    "Per-emb-17",
-    "Per-emb-18",
-    "Per-emb-22",
-    "Per-emb-27",
-    "Per-emb-33",
-    "Per-emb-35",
-    "Per-emb-36",
-    "Per-emb-44"
-]
-
 # used to parse perseus RA/Dec columns
 def ra_to_degrees(ra_str):
     h, m, s = map(float, ra_str.split(':'))
@@ -139,7 +84,7 @@ reynolds2024_perseus_1 = reynolds2024_perseus_1[['Name', 'Source', 'RA', 'Dec', 
 ### MERGE PERSEUS datasets into `perseus`
 perseus = pd.merge(tobin2018_perseus_2, reynolds2024_perseus_1, on=['Main', 'Source'], how='outer', suffixes=(None, '_y'))
 # filter for relevant targets
-perseus = perseus[perseus['Main'].isin(targets)]
+perseus = perseus[perseus['Main'].isin(ALL_TARGETS)]
 # parse ra/dec columns
 perseus['RA'] = perseus['RA'].fillna(perseus['RA_y'])
 perseus['Dec'] = perseus['Dec'].fillna(perseus['Dec_y'])
@@ -155,7 +100,7 @@ perseus['group'] = 'perseus'
 # read file
 orion = astropy.io.ascii.read("data/input/tobin2022_orion.txt").to_pandas()
 # filter for relevant targets
-orion = orion[orion['Main'].isin(targets)]
+orion = orion[orion['Main'].isin(ALL_TARGETS)]
 # create ra/dec columns
 orion['RA'] = 15 * (orion['RAh'] + orion['RAm'] / 60 + orion['RAs'] / 3600)
 orion['DE-'] = orion["DE-"].apply(lambda x: -1 if x == "-" else 1)

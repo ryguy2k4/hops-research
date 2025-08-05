@@ -6,36 +6,24 @@ import os
 import pandas as pd
 import glob
 from matplotlib.backends.backend_pdf import PdfPages
-from create_figs import create_m8_map, mark_sources
+from scripts._create_figs import create_m8_map, mark_sources
+from scripts._script_options import IMAGE_DIRECTORY
 
 
-### SCRIPT OPTIONS
-
-# output
+# SET OUTPUT
 output_folder = "results"
 output_pdf = os.path.join(output_folder, "all_m8_maps.pdf")
 if not os.path.exists(output_folder):
     os.mkdir(output_folder)
 
-# this script assumes that the directory below contains a folder for each field
-# and that within each field folder there is a 12CO image, which contains
-# '12co' or 'spw39' in the filename
-image_directory = "/Volumes/Alpha/Research/data/"
+# READ DATA
+source_info = pd.read_csv("../data/output/source_info.csv", index_col='Main')
+source_info.index = source_info.index.str.casefold()
 
-
-### SCRIPT
-
-# read data
-df = pd.read_csv('data/output/outflow_data.csv')
-
-source_info = pd.read_csv("data/output/source_info.csv")
-source_info['Main'] = source_info['Main'].apply(lambda x: str(x).casefold())
-source_info.set_index('Main', inplace=True)
-
-
+# SCRIPT
 with PdfPages(output_pdf) as pdf:
     # get files
-    files = glob.glob(f'{image_directory}/*/*12co*.fits') + glob.glob(f'{image_directory}/*/*spw39*.fits')
+    files = glob.glob(f'{IMAGE_DIRECTORY}/*/*12co*.fits') + glob.glob(f'{IMAGE_DIRECTORY}/*/*spw39*.fits')
 
     for file in files:
         # set output name and output path

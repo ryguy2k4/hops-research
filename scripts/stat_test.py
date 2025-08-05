@@ -71,14 +71,14 @@ def perform_test(data, output_path):
         os.mkdir(output_path)
 
     # Create histogram plot
-    fig, ax1 = plt.subplots(figsize=(11, 8))
+    # fig, ax1 = plt.subplots(figsize=(11, 8))
     cosi = np.cos(data['delta_PA'][:] * np.pi / 180.0)
-    bins = np.linspace(0, 1.0, 11)
-    ax1.hist(cosi, bins, fill=True, facecolor='gray', alpha=0.4, histtype='bar', ec='black', linewidth=2.0)
-    ax1.set_ylabel('N', fontsize=16)
-    ax1.set_xlabel('cos($Delta$[Outflow-Binary])', fontsize=16)
-    ax1.set_title('Outflow PA vs. Binary PA', fontsize=24)
-    plt.savefig(os.path.join(output_path, 'hist.pdf'))
+    # bins = np.linspace(0, 1.0, 11)
+    # ax1.hist(cosi, bins, fill=True, facecolor='gray', alpha=0.4, histtype='bar', ec='black', linewidth=2.0)
+    # ax1.set_ylabel('N', fontsize=16)
+    # ax1.set_xlabel('cos($Delta$[Outflow-Binary])', fontsize=16)
+    # ax1.set_title('Outflow PA vs. Binary PA', fontsize=24)
+    # plt.savefig(os.path.join(output_path, 'hist.pdf'))
 
     # Generate cumulative distributions for observed data
     paCumulat_cos, frac_paCumulat_cos = makeCumulate(cosi)
@@ -157,19 +157,18 @@ def perform_test(data, output_path):
         'Observations', 'Model - Orthogonal Outflow', 'Model - Random Orientation'
     ], title='Cumulative Frequency Distribution', xlabel='cos($\Delta$PA)', filename=os.path.join(output_path, 'OutflowPA_cumulat_cos'))
 
-# script options
+# SET OUTPUT
 output_folder = "results/stat_test"
 filename = 'OutflowPA_hist'
 output_path = os.path.join(output_folder, filename)
-
-# verify output path exists
 if not os.path.exists(output_folder):
     os.mkdir(output_folder)
 
-# load data
-data = pd.read_csv('data/output/outflow_data.csv')
-data = data.loc[~data['delta_PA'].isna()]
+# READ DATA
+outflow_data = pd.read_csv('data/output/outflow_data.csv')
+outflow_data = outflow_data.loc[~outflow_data['delta_PA'].isna()]
 
-perform_test(data.loc[data['group'] == 'orion'], os.path.join(output_folder, 'orion'))
-perform_test(data.loc[data['group'] == 'perseus'], os.path.join(output_folder, 'perseus'))
-perform_test(data, os.path.join(output_folder, 'combined'))
+# SCRIPT
+# perform_test(outflow_data.loc[outflow_data['group'] == 'orion'], os.path.join(output_folder, 'orion')) # these are separate tests
+# perform_test(outflow_data.loc[outflow_data['group'] == 'perseus'], os.path.join(output_folder, 'perseus')) # for each group
+perform_test(outflow_data, output_folder)

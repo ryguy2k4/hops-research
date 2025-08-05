@@ -61,7 +61,7 @@ Creates a simple aplpy FITSFigure with a colorbar, scalebar, and beam
 that has been cropped with parameters `center` and `size`
 
 """
-def create_sub_fig(hdu, center, size, distance=0):
+def create_sub_fig(hdu, center, size, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # get the wcs
     wcs_original = wcs.WCS(hdu)
     wcs_2d = wcs_original.celestial
@@ -79,7 +79,7 @@ def create_sub_fig(hdu, center, size, distance=0):
     # combine cut and wcs and an HDU
     hdu_cut = fits.PrimaryHDU(data=cut.data, header=new_header)
     
-    return create_fig(hdu_cut, distance)
+    return create_fig(hdu_cut, distance, figure, subplot, multiimage=multiimage)
 
 """
 
@@ -218,7 +218,7 @@ def plot_dotted_vector(fig, origin, angle_north_deg, color, length=0.005):
     fig.ax.plot(
         [origin_pix[0], origin_pix[0] + outflow_vector[0]], 
         [origin_pix[1], origin_pix[1] + outflow_vector[1]], 
-        linestyle="dashed", color=color, linewidth=0.5  # Dotted line
+        linestyle="dashed", color=color, linewidth=1  # Dotted line
     )
 
 # helper function to extract channel indices from the data table
