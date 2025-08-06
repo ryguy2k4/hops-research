@@ -6,6 +6,7 @@ from io import StringIO
 from astropy import units as u
 from _create_figs import getIdx
 import os
+import io
 
 ### SCRIPT OPTIONS
 # output
@@ -72,6 +73,19 @@ ALL_TARGETS = [
     "Per-emb-44",
     "L1448 IRS3C"
 ]
+
+def write_latex_table(df, filename):
+    table = Table.from_pandas(df)
+    latex_buffer = io.StringIO()
+    table.write(
+        latex_buffer,
+        format='ascii.latex',
+        latexdict={'tabletype': 'deluxetable'},
+        overwrite=True
+    )
+    latex_string = latex_buffer.getvalue().replace('  ', r' \nodata ')
+    with open(f'results/tables/{filename}', 'w') as f:
+        f.write(latex_string)
 
 # used to parse perseus RA/Dec columns
 def ra_to_degrees(ra_str):
@@ -281,6 +295,7 @@ per_keys = {
     'P35-A-P35-B' : 'Per-emb-35',
     'P36-A-P36-B' : 'Per-emb-36',
     'P44-A-P44-B' : 'Per-emb-44',
+    'L1448NW-A-L1448NW-B' : 'Per-emb-107',
 }
 # merge datasets and filter for relevant targets
 sep = pd.concat([orion_sep[orion_sep['Pair'].isin(list(ori_keys.keys()))], perseus_sep[perseus_sep['Pair'].isin(list(per_keys.keys()))]]).reset_index(drop=True)
@@ -316,7 +331,7 @@ by_outflow = by_outflow.sort_values('source_a_ra').drop('source_a_ra',axis=1).re
 # save to CSV
 by_outflow.to_csv('data/output/data_by_outflow.csv', index=False)
 # save to LaTeX table
-Table.from_pandas(by_outflow).write('results/tables/by-outflow.tex', format='ascii.latex', latexdict={'tabletype': 'deluxetable'}, overwrite=True)
+write_latex_table(by_outflow, 'by-outflow.tex')
 
 ### CREATE by_field TABLE
 # get info for sources without outflows
@@ -340,6 +355,7 @@ other_names = pd.DataFrame({
     "Per-emb-33": "L1448 IRS3B",
     "Per-emb-36": "NGC 1333 IRAS2B",
     "Per-emb-44": "SVS 13A",
+    "Per-emb-107": "L1448 IRS3C",
 }, index=[0]).T.reset_index().rename(columns={'index': 'field', 0: 'other_names'})
 
 # start by grouping outflow data by field
@@ -362,4 +378,4 @@ by_field = by_field[['field', 'other_names', 'n_sources', 'ra', 'dec', 'integrat
 # save to CSV
 by_field.to_csv('data/output/data_by_field.csv', index=False)
 # save to LaTeX table
-Table.from_pandas(by_field).write('results/tables/by-field.tex', format='ascii.latex', latexdict={'tabletype': 'deluxetable'}, overwrite=True)
+write_latex_table(by_field, 'by-field.tex')

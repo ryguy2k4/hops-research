@@ -1,6 +1,6 @@
 field,confidence,type,separation,class,outflow_source,outflow_PA,lobe_PA_offset,binary_PA,delta_PA
 Per-emb-22,HIGH,Binary,225.4,0,A+B,129,8,265,44
-Per-emb-107,HIGH,Binary,-,-,b-o,127,6,11,63
+Per-emb-107,HIGH,Binary,75.3,0,A+B,127,6,11,63
 Per-emb-33,HIGH,Binary,79.6,0,A+B,123,,329,26
 Per-emb-33,HIGH,Tertiary,263.2,0,C,108,,,
 Per-emb-17,HIGH,Binary,83.4,0,A+B,56,16,147,89
