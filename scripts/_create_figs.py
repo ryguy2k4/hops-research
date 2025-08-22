@@ -14,7 +14,7 @@ import pandas as pd
 Creates a simple aplpy FITSFigure with a colorbar, scalebar, and beam
 
 """
-def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
+def create_fig(img, distance=0, colorbar_label="Intensity (Jy/Beam)", figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # Create FITSFigure
     if not multiimage:
         figure.clear()
@@ -29,7 +29,7 @@ def create_fig(img, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1
 
     # Colorbar
     fig.add_colorbar()
-    fig.colorbar.set_axis_label_text("Intensity (Jy/Beam)")
+    fig.colorbar.set_axis_label_text(colorbar_label)
     fig.colorbar.set_location('right')
     fig.colorbar.set_pad(0.0)
 
@@ -60,7 +60,7 @@ Creates a simple aplpy FITSFigure with a colorbar, scalebar, and beam
 that has been cropped with parameters `center` and `size`
 
 """
-def create_sub_fig(hdu, center, size, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
+def create_sub_fig(hdu, center, size, distance=0, colorbar_label="Intensity (Jy/Beam)", figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # get the wcs
     wcs_original = wcs.WCS(hdu)
     wcs_2d = wcs_original.celestial
@@ -78,7 +78,7 @@ def create_sub_fig(hdu, center, size, distance=0, figure=plt.figure(figsize=(6,6
     # combine cut and wcs and an HDU
     hdu_cut = fits.PrimaryHDU(data=cut.data, header=new_header)
     
-    return create_fig(hdu_cut, distance, figure, subplot, multiimage=multiimage)
+    return create_fig(hdu_cut, distance, colorbar_label="Intensity (Jy/Beam)", figure=figure, subplot=subplot, multiimage=multiimage)
 
 """
 
@@ -116,7 +116,7 @@ def create_m8_map(hdu, center, size, distance=0, figure=plt.figure(figsize=(6,6)
 
     cut = cut_fig(m8_map, hdu.header, center, size)
     
-    return create_fig(cut, distance, figure, subplot, multiimage=multiimage)
+    return create_fig(cut, distance, colorbar_label="Intensity (Jy/bm)", figure=figure, subplot=subplot, multiimage=multiimage)
 
 
 """
@@ -142,7 +142,7 @@ def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0, figure=pl
 
     cut = cut_fig(m0_map, hdu.header, center, size)
     
-    return create_fig(cut, distance, figure, subplot, multiimage=multiimage)
+    return create_fig(cut, distance, colorbar_label="Intensity (Jy/bm km/s)", figure=figure, subplot=subplot, multiimage=multiimage)
 
 
 """

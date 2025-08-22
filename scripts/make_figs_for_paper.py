@@ -106,8 +106,10 @@ def make_compound_plots(field_list, output_name, rows, cols, wspace=0.35, hspace
                 angle = np.min([angle, 180 - angle])
 
         # manage axis labels
-        if i % cols != cols - 1:
-            fig.colorbar.set_axis_label_text("")
+
+        if not str(output_name).startswith("appendix"):
+            if i % cols != cols - 1:
+                fig.colorbar.set_axis_label_text("")
 
         if i % cols != 0:
             fig.axis_labels.hide_y()
@@ -128,7 +130,7 @@ def make_compound_plots(field_list, output_name, rows, cols, wspace=0.35, hspace
     figure.show()
 
 make_compound_plots(fig_1, "fig_1", rows=1, cols=4, wspace=0.4, hspace=0.1)
-make_compound_plots(fig_2, "fig_2", rows=1, cols=4, wspace=0.4, hspace=0.1)
+make_compound_plots(fig_2, "fig_2", rows=1, cols=2, wspace=0.4, hspace=0.1)
 make_compound_plots(app_1[0:15], "appendix-1", rows=5, cols=3)
 make_compound_plots(app_1[15:30], "appendix-2", rows=5, cols=3)
 make_compound_plots(app_1[30::], "appendix-3", rows=5, cols=3)
