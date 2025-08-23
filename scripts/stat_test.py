@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import pandas as pd
 import os
+from labellines import labelLine
 
 def createCumulatPlotCos(datax, datay, datalabel='', title='', xlabel='', filename='test'):
     fig, ax = plt.subplots(figsize=(11,8))
@@ -41,17 +42,28 @@ def createCumulatPlotDeg(datax, datay, datalabel='', title='', xlabel='', filena
         datalabel = [''] * len(datax)
     
     # Loop through each dataset and plot it as a step function
-    colors = ['#1D58A7', '#FCB316', '#006230', '#007E8E', '#5C0E41', '#7D3E13']
+    colors = ['#4477AA', '#AA3377', '#66CCEE', '#CCBB44', '#228833', '#EE6677']
     for i in range(len(datax)):
-        ax.step(datax[i], datay[i], label=datalabel[i], color=colors[i])
+        ax.step(datax[i], datay[i], label=datalabel[i], color=colors[i], linewidth=2.0)
         
     # PLOT
-    ax.set_title(title, fontsize=24)
-    ax.set_ylabel('frequency', fontsize=16)
-    ax.set_xlabel(xlabel, fontsize=16)
+    ax.set_title(title, fontsize=28, pad=10)
+    ax.set_xlabel(xlabel, fontsize=20, labelpad=15)
+    ax.set_ylabel('frequency', fontsize=20, labelpad=15)
+    # ax.legend(fontsize=13)
+
+    labelLine(ax.get_lines()[0], x=16, align=False, rotation=0, yoffset=-0.018, fontsize=14)
+    labelLine(ax.get_lines()[1], x=35, align=False, rotation=24, yoffset=0.03, fontsize=14)
+    labelLine(ax.get_lines()[2], x=55, align=False, rotation=28, yoffset=0.03, fontsize=14)
+    labelLine(ax.get_lines()[3], x=40, align=False, rotation=30, yoffset=0.035, fontsize=14)
+    labelLine(ax.get_lines()[4], x=45, align=False, rotation=32, yoffset=0.03, fontsize=14)
+    labelLine(ax.get_lines()[5], x=50, align=False, rotation=30, yoffset=0.03, fontsize=14)
+
     ax.set_xlim(0, 90.0)
     ax.set_ylim(0, 1.0)
-    ax.legend(fontsize=10)
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=16)
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=16)
+
     plt.savefig(filename + '.pdf', dpi=200)
     # plt.savefig(filename + '.png', dpi=300, transparent=True, bbox_inches='tight')
 
@@ -143,10 +155,10 @@ def perform_test(data, output_path):
         frac_paCumulat_deg, frac_paCumulat_deg_model, frac_paCumulat_deg_model_rand,
         frac_paCumulat_deg_model_25p_rand, frac_paCumulat_deg_model_50p_rand, frac_paCumulat_deg_model_75p_rand
     ], datalabel=[
-        'Observations', 'Model - Orthogonal Outflow', 'Model - Random Orientation',
-        'Model - 75% Orthogonal Outflow, 25% Random',
-        'Model - 50% Orthogonal Outflow, 50% Random',
-        'Model - 25% Orthogonal Outflow, 75% Random'
+        'Observations', 'Orthogonal', 'Random',
+        '75% Orthogonal',
+        '50% Orthogonal',
+        '25% Orthogonal'
     ], title='$\Delta$PA Cumulative Frequency Distribution', xlabel='$\Delta$PA - smallest angle between binary separation and outflow (degrees)', filename=os.path.join(output_path, 'OutflowPA_cumulat_deg'))
 
     createCumulatPlotCos([

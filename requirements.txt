@@ -5,3 +5,4 @@ scipy
 aplpy
 matplotlib
 snakemake
+matplotlib-label-lines
