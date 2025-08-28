@@ -171,9 +171,6 @@ perseus['RA'] = perseus['RA'].apply(ra_to_degrees)
 perseus['Dec'] = perseus['Dec'].apply(dec_to_degrees)
 # set distance to 300pc
 perseus['Dis'] = 300
-# fix per107
-perseus["Main"] = perseus["Main"].replace({"L1448 IRS3C": "Per-emb-107"})
-perseus["Source"] = perseus["Source"].apply(lambda x: str(x).replace("L1448 IRS3C", "Per-emb-107"))
 # add group column
 perseus['group'] = 'perseus'
 
@@ -301,7 +298,7 @@ per_keys = {
     'P35-A-P35-B' : 'Per-emb-35',
     'P36-A-P36-B' : 'Per-emb-36',
     'P44-A-P44-B' : 'Per-emb-44',
-    'L1448NW-A-L1448NW-B' : 'Per-emb-107',
+    'L1448NW-A-L1448NW-B' : 'L1448 IRS3C',
 }
 # merge datasets and filter for relevant targets
 sep = pd.concat([orion_sep[orion_sep['Pair'].isin(list(ori_keys.keys()))], perseus_sep[perseus_sep['Pair'].isin(list(per_keys.keys()))]]).reset_index(drop=True)
@@ -411,7 +408,7 @@ other_names = pd.DataFrame({
     "Per-emb-33": "L1448 IRS3B",
     "Per-emb-36": "NGC 1333 IRAS2B",
     "Per-emb-44": "SVS 13A",
-    "Per-emb-107": "L1448 IRS3C",
+    "L1448 IRS3C": "Per-emb-107",
 }, index=[0]).T.reset_index().rename(columns={'index': 'field', 0: 'other_names'})
 
 # start by grouping outflow data by field
