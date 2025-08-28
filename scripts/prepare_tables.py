@@ -7,6 +7,12 @@ from astropy import units as u
 from _create_figs import getIdx
 import os
 import io
+import glob
+import yaml
+from astropy.coordinates import SkyCoord
+from astropy.wcs import WCS
+import astropy.io.fits as fits
+import astropy.constants as const
 
 ### SCRIPT OPTIONS
 # output
@@ -309,12 +315,62 @@ sep = sep[['Pair', 'Tertiary', 'PSep', 'Class']].rename(columns={'PSep': 'separa
 sep = sep.sort_values(by='pair').reset_index(drop=True)
 # sep.to_csv("data/output/separations.csv",index=False)
 
+# CREATE temporary TABLE with velocity ranges and field coordinates from HDU DATA
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+IMAGE_DIRECTORY = config["data_dir"]
+files = glob.glob(f'{IMAGE_DIRECTORY}/*/*12co*.fits') + glob.glob(f'{IMAGE_DIRECTORY}/*/*spw39*.fits')
+
+def channel_to_velocity(wcs, channel):
+    pix = np.array([[0,0,channel]])
+    world = wcs.all_pix2world(pix, 0)
+    _, _, freq = world[0]
+    rest_freq = 230.538 * u.GHz
+    freq = freq * u.Hz
+    v = (rest_freq - freq) / rest_freq * const.c
+    return round(v.to(u.km / u.s).value, 4)
+
+hdu_data = []
+for file in files:
+    target_name = os.path.dirname(file).split('/')[-1]
+    hdu = fits.open(file)[0]
+    wcs = WCS(hdu.header, naxis=3)
+    center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
+
+    if target_name in outflow_data['field'].apply(str.casefold).values:
+        for i, row in outflow_data.loc[outflow_data['field'].apply(str.casefold) == target_name].iterrows():
+            red_channels = getIdx([row['red_channels']])
+            blue_channels = getIdx([row['blue_channels']])
+
+            if len(red_channels) != 0:
+                red_v_start = channel_to_velocity(wcs, red_channels[0])
+                red_v_end = channel_to_velocity(wcs, red_channels[-1])
+                red_v_range = f"{red_v_start} to {red_v_end}"
+            else:
+                red_v_range = np.nan
+            
+
+            if len(blue_channels) != 0:
+                blue_v_start = channel_to_velocity(wcs, blue_channels[0])
+                blue_v_end = channel_to_velocity(wcs, blue_channels[-1])
+                blue_v_range = f"{blue_v_start} to {blue_v_end}"
+            else:
+                blue_v_range = np.nan
+            
+            d = {'field2': target_name, 'source_a_ra': row['source_a_ra'], 'ra': center.ra.value, 'dec': center.dec.value, 'red_v_range': red_v_range, 'blue_v_range': blue_v_range}
+            hdu_data.append(d)
+    else:
+        d = {'field2': target_name, 'source_a_ra': np.nan, 'ra': center.ra.value, 'dec': center.dec.value, 'red_v_range': np.nan, 'blue_v_range': np.nan}
+        hdu_data.append(d)
+
+df_hdudata = pd.DataFrame(hdu_data).sort_values('source_a_ra').reset_index(drop=True)
+df_hdudata = df_hdudata.groupby(['field2']).agg('first').reset_index()
+
 ### CREATE by_outflow TABLE
-by_outflow = outflow_data
+# note to self this is not creating a copy, just an alias
+by_outflow = outflow_data.copy()
 # combine sources for 'both' outflow sources
 by_outflow.loc[by_outflow['outflow_source'] == 'both', 'outflow_source'] = by_outflow.loc[by_outflow['outflow_source'] == 'both']['source_a'] + '+' + by_outflow.loc[by_outflow['outflow_source'] == 'both']['source_b']
-# combine channel columns
-by_outflow['integrated_channels'] = (by_outflow['red_channels'].fillna('') + ', ' + by_outflow['blue_channels'].fillna('')).str.lstrip(', ').str.rstrip(', ')
 # note tertiary sources
 by_outflow['tertiary'] = by_outflow['binary_PA'].isna()
 # merge separations
@@ -359,15 +415,20 @@ other_names = pd.DataFrame({
 }, index=[0]).T.reset_index().rename(columns={'index': 'field', 0: 'other_names'})
 
 # start by grouping outflow data by field
-by_field = outflow_data.groupby(['field']).agg('first').reset_index()[['field', 'source_a_ra', 'source_a_dec', 'integrated_channels']]
+by_field = outflow_data.groupby(['field']).agg('first').reset_index()
 # select and rename columns
-by_field = by_field[['field', 'source_a_ra', 'source_a_dec', 'integrated_channels']].rename(columns={'source_a_ra': 'ra', 'source_a_dec': 'dec'})
+by_field = by_field[['field', 'source_a_ra', 'source_a_dec', 'red_channels', 'blue_channels']].rename(columns={'source_a_ra': 'ra', 'source_a_dec': 'dec'})
 # add in unmeasured sources
 by_field = pd.concat([by_field, sources_no_outflows.rename(columns={'Main': 'field'})], ignore_index=True)
 # add in n_sources column
 by_field = by_field.merge(n_sources, left_on='field', right_on='Main', how='left')
 # add other names column
 by_field = by_field.merge(other_names, on='field', how='left')
+# merge ra, dec, red_v, blue_v from hdudata
+by_field['field2'] = by_field['field'].apply(str.casefold)
+by_field = by_field.merge(df_hdudata, on='field2', suffixes=['_x', None])[['field', 'other_names', 'n_sources', 'ra', 'dec', 'red_v_range', 'blue_v_range']]
+# combine channel columns
+by_field['integrated_channels'] = (by_field['red_v_range'].fillna('') + ', ' + by_field['blue_v_range'].fillna('')).str.lstrip(', ').str.rstrip(', ')
 # remove duplicates
 by_field = by_field.drop_duplicates(subset=['field']).reset_index(drop=True)
 # format number columns
