@@ -285,6 +285,7 @@ ori_keys = {
     'H173-B+H173-A' : 'HOPS-173',
     'H75-B+H75-A' : 'HOPS-75',
     'H213-A+H213-B' : 'HOPS-213',
+    'H158-B+H158-A' : 'HOPS-158'
 }
 per_keys = {
     'P2-A-P2-B' : 'Per-emb-2',
