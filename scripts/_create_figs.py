@@ -8,16 +8,34 @@ import numpy as np
 import aplpy
 import astropy.wcs.wcs as wcs
 import pandas as pd
+import matplotlib.gridspec as gridspec
 
 """
 
 Creates a simple aplpy FITSFigure with a colorbar, scalebar, and beam
 
 """
-def create_fig(img, distance=0, colorbar_label="Intensity (Jy/Beam)", figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
+def create_fig(img, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, small_plot=False):
     # Create FITSFigure
     if not multiimage:
         figure.clear()
+
+    # if small_plot:
+    #     # Convert tuple to rect: full slot → half width
+    #     nrows, ncols, index = subplot
+    #     row = (index-1) // ncols
+    #     col = (index-1) % ncols
+        
+    #     # size of each grid cell
+    #     cell_width = 1.0 / ncols
+    #     cell_height = 1.0 / nrows
+        
+    #     # left, bottom of the chosen cell
+    #     left = col * cell_width
+    #     bottom = 1 - (row+1) * cell_height
+        
+    #     # shrink by half
+    #     subplot = [left, bottom, cell_width/2, cell_height/2]
 
     fig = aplpy.FITSFigure(img, figure=figure, subplot=subplot)
 
@@ -29,7 +47,7 @@ def create_fig(img, distance=0, colorbar_label="Intensity (Jy/Beam)", figure=plt
 
     # Colorbar
     fig.add_colorbar()
-    fig.colorbar.set_axis_label_text(colorbar_label)
+    fig.colorbar.set_axis_label_text("Intensity (Jy/Beam)")
     fig.colorbar.set_location('right')
     fig.colorbar.set_pad(0.0)
 
@@ -38,8 +56,8 @@ def create_fig(img, distance=0, colorbar_label="Intensity (Jy/Beam)", figure=plt
         fig.add_scalebar(1 * u.arcsecond)
         fig.scalebar.set_label('1"')
     else:
-        fig.add_scalebar((500 / (distance)) * u.arcsecond)
-        fig.scalebar.set_label('500 AU')
+        fig.add_scalebar((scalebar_au / (distance)) * u.arcsecond)
+        fig.scalebar.set_label(f"{scalebar_au} au")
         fig.scalebar.set_font_size(8)
 
     fig.scalebar.set_linewidth(3)
@@ -52,33 +70,10 @@ def create_fig(img, distance=0, colorbar_label="Intensity (Jy/Beam)", figure=plt
     fig.beam.set_edgecolor("black")
     fig.beam.set_facecolor("white")
 
+    figure.show()
     return fig
 
-"""
 
-Creates a simple aplpy FITSFigure with a colorbar, scalebar, and beam
-that has been cropped with parameters `center` and `size`
-
-"""
-def create_sub_fig(hdu, center, size, distance=0, colorbar_label="Intensity (Jy/Beam)", figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
-    # get the wcs
-    wcs_original = wcs.WCS(hdu)
-    wcs_2d = wcs_original.celestial
-
-    # make the cut
-    cut = Cutout2D(hdu.data[0,0,:,:], center, size, wcs=wcs_2d)
-
-    # create a header with the wcs
-    # CAUTION: lots of header data not being preserved here
-    new_header = cut.wcs.to_header()
-    for key in ['BUNIT', 'OBJECT', 'TELESCOP', 'INSTRUME', 'BMAJ', 'BMIN', 'BPA']:
-        if key in hdu.header:
-            new_header[key] = hdu.header[key]
-
-    # combine cut and wcs and an HDU
-    hdu_cut = fits.PrimaryHDU(data=cut.data, header=new_header)
-    
-    return create_fig(hdu_cut, distance, colorbar_label="Intensity (Jy/Beam)", figure=figure, subplot=subplot, multiimage=multiimage)
 
 """
 
@@ -86,10 +81,16 @@ Takes image data and image header and returns a cropped image
 packaged into a primary hdu, with a 2D WCS
 
 """
-def cut_fig(data, header, center, size):
+def cut_fig(data, header, center=None, size=None):
     # get the wcs
     wcs_original = wcs.WCS(header)
     wcs_2d = wcs_original.celestial
+
+    # center and size
+    if center == None:
+        center = SkyCoord(header['OBSRA'], header['OBSDEC'], unit=u.degree)
+    if size == None:
+        size = np.array([39, 39]) * u.arcsecond
 
     # make the cut
     cut = Cutout2D(data, center, size, wcs=wcs_2d)
@@ -105,18 +106,25 @@ def cut_fig(data, header, center, size):
     return fits.PrimaryHDU(data=cut.data, header=new_header)
 
 
+def create_cont_map(hdu, center=None, size=None, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, small_plot=False):
+
+    cut = cut_fig(hdu.data[0,0,:,:], hdu.header, center, size)
+    
+    return create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage, small_plot=small_plot)
+
+
 """
 
 Takes an image and creates a moment 8 map
 
 """
-def create_m8_map(hdu, center, size, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
+def create_m8_map(hdu, center=None, size=None, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # create map
     m8_map = np.max(hdu.data[0,:,:,:], axis=0)
 
     cut = cut_fig(m8_map, hdu.header, center, size)
     
-    return create_fig(cut, distance, colorbar_label="Intensity (Jy/bm)", figure=figure, subplot=subplot, multiimage=multiimage)
+    return create_fig(cut, distance=distance, figure=figure, subplot=subplot, multiimage=multiimage)
 
 
 """
@@ -126,11 +134,13 @@ Included channels are specified with channel_idx and
 sigma-clipping is specified with sigma; default is 3
 
 """
-def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
+def create_m0_map(hdu, channel_idx, center=None, size=None, sigma=3, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
     # sigma
     blank_channel = hdu.data[0,0,:,:]
     region_size = np.array([100, 100]) * u.pixel
     wcs_2d = wcs.WCS(hdu.header).celestial
+    if center == None:
+        center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
     region = Cutout2D(blank_channel, center, region_size, wcs=wcs_2d)
     mean = np.mean(region.data)
     std = np.std(region.data)
@@ -142,7 +152,7 @@ def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0, figure=pl
 
     cut = cut_fig(m0_map, hdu.header, center, size)
     
-    return create_fig(cut, distance, colorbar_label="Intensity (Jy/bm km/s)", figure=figure, subplot=subplot, multiimage=multiimage)
+    return create_fig(cut, distance=distance, figure=figure, subplot=subplot, multiimage=multiimage)
 
 
 """
@@ -150,7 +160,7 @@ def create_m0_map(hdu, center, size, channel_idx, sigma=3, distance=0, figure=pl
 Marks sources given rows from 'source_info.csv'
 
 """
-def mark_sources(fig, source_rows, use_short_label=False):
+def mark_sources(fig, source_rows, use_short_label=False, fontsize=4):
     marker_colors = ['black', 'magenta', 'red', 'darkred', 'darkblue']
     legend_handles = []
     sources_to_mark = source_rows.reset_index()[0:4]
@@ -162,7 +172,7 @@ def mark_sources(fig, source_rows, use_short_label=False):
         short_label = str(row['Source']).casefold().removeprefix(str(source_rows.index.tolist()[i]).casefold()+'-').upper()
         legend_handles.append(mlines.Line2D([], [], color=marker_colors[i], marker='x', markersize=4, linestyle='None', label=short_label if use_short_label else row['Source']))
 
-    fig.ax.legend(handles=legend_handles, fontsize=6, loc='upper right', bbox_to_anchor=(0.98,1))
+    fig.ax.legend(handles=legend_handles, fontsize=fontsize, loc='upper right', bbox_to_anchor=(0.98,1))
 
 
 """
@@ -192,6 +202,7 @@ def mark_sources_3(fig, field_rows):
             legend_handles.append(mlines.Line2D([], [], color='magenta', marker='x', markersize=6, linestyle='None', label=field['source_b']))
     fig.ax.legend(handles=legend_handles, loc='upper right', bbox_to_anchor=(1,1.15))
 
+
 """
 
 Plots a vector on the figure, starting from `origin`, pointing in
@@ -216,8 +227,32 @@ def plot_dotted_vector(fig, origin, angle_north_deg, color, length=0.005):
     fig.ax.plot(
         [origin_pix[0], origin_pix[0] + outflow_vector[0]], 
         [origin_pix[1], origin_pix[1] + outflow_vector[1]], 
-        linestyle="dashed", color=color, linewidth=0.5  # Dotted line
+        linestyle="dashed", color=color, linewidth=1  # Dotted line
     )
+
+def plot_outflow_and_separation_vectors(fig, outflow_data, target_name):
+    ### VECTORS
+    # plot binary separation angle
+    outflow = outflow_data.loc[outflow_data['field'] == target_name].groupby('field').first().reset_index()
+    center_origin = np.array([np.mean([outflow['source_a_ra'], outflow['source_b_ra']]), np.mean([outflow['source_a_dec'], outflow['source_b_dec']])])
+    separation_angle_north = outflow['binary_PA']
+    # draw separation vector in both directions
+    plot_vector(fig, center_origin, separation_angle_north, color='white', length=0.005)
+    plot_vector(fig, center_origin, separation_angle_north + 180, color='white', length=0.005)
+    
+    # plot each outflow vector
+    for j, source in outflow_data[outflow_data['field'] == target_name].reset_index(drop=True).iterrows():
+        # define vector origin at the outflow source
+        if source['outflow_source'] == 'both':
+            outflow_origin = center_origin
+        elif source['outflow_source'] == source['source_a']:
+            outflow_origin = np.array([source['source_a_ra'], source['source_a_dec']])
+        else:
+            outflow_origin = np.array([source['source_b_ra'], source['source_b_dec']])
+
+        # plot outflow vector
+        outflow_angle_north = source['outflow_PA']
+        plot_vector(fig, outflow_origin, outflow_angle_north, color='red', length=0.005)
 
 # helper function to extract channel indices from the data table
 def getIdx(listOf):

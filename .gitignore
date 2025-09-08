@@ -1,9 +1,16 @@
 *.FITS
 *.Fits
 *.fits
+
 .venv
+.snakemake
 __pycache__
 .DS_Store
+
 pwd.txt
-.snakemake
+
 doc/Frankie
+doc/Binaries_okular_jt_comments.pdf
+doc/eDisk_outflow_Nov2_ALP.pdf
+doc/meeting_notes.pptx
+doc/obs.tex

@@ -57,18 +57,13 @@ def make_compound_plots(field_list, output_name, rows, cols, wspace=0.35, hspace
 
         # open image
         image_filename = (glob.glob(f'{IMAGE_DIRECTORY}{target_name.casefold()}/*12co*.fits') + glob.glob(f'{IMAGE_DIRECTORY}{target_name.casefold()}/*spw39*.fits'))[0]
-        hdulist = fits.open(image_filename)    
-        hdu = hdulist[0]
-
-        # set center and size of cutout
-        center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
-        size = np.array([39, 39]) * u.arcsecond
+        hdu = fits.open(image_filename)  [0]
         distance = source_info.loc[target_name.casefold(), 'Dis'].iloc[0]
 
         if pd.isna(field['integrated_channels']):
             # m8 map
             # create figure
-            fig = create_m8_map(hdu, center, size, distance, figure=figure, subplot=(rows, cols, i+1), multiimage=True)
+            fig = create_m8_map(hdu, figure=figure, subplot=(rows, cols, i+1), multiimage=True)
             fig.set_title(f"{target_name} M8")   
         
         else:
@@ -76,7 +71,7 @@ def make_compound_plots(field_list, output_name, rows, cols, wspace=0.35, hspace
             # create figure
             outflow = outflow_data.loc[outflow_data['field'] == target_name].groupby('field').first().reset_index()
             channels = getIdx([outflow.at[0, 'red_channels'], outflow.at[0, 'blue_channels']])
-            fig = create_m0_map(hdu, center, size, channels, 3, distance, figure, subplot=(rows, cols, i+1), multiimage=True)
+            fig = create_m0_map(hdu, channels, sigma=3, distance=distance, figure=figure, subplot=(rows, cols, i+1), multiimage=True)
             fig.set_title(f"{target_name} M0")
 
             ### VECTORS

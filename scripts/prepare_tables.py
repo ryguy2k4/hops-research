@@ -206,7 +206,7 @@ df.loc[~no_binary, 'source_b'] = df.loc[~no_binary, 'Binary'].apply(lambda x: sp
 df.loc[no_binary, 'source_a'] = df.loc[no_binary, 'Outflow Source']
 df.loc[no_binary, 'source_b'] = None
 # select and rename columns
-df = df[['Field', 'Confidence', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Red)', 'Lobe PA Offset']].rename(columns={'Field': 'field', 'Average Angle (Red)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA', 'Lobe PA Offset': 'lobe_PA_offset', 'Confidence': 'confidence'})
+df = df[['Field', 'Confidence', 'source_a', 'source_b', 'Outflow Source', 'Blue Channels', 'Red Channels', 'Blue Center Corrected', 'Red Center Corrected', 'Average Angle (Blue)', 'Lobe PA Offset']].rename(columns={'Field': 'field', 'Average Angle (Blue)': 'outflow_PA', 'Outflow Source': 'outflow_source', 'Red Channels': 'red_channels', 'Blue Channels': 'blue_channels', 'Red Center Corrected': 'red_outflow_PA', 'Blue Center Corrected': 'blue_outflow_PA', 'Lobe PA Offset': 'lobe_PA_offset', 'Confidence': 'confidence'})
 
 # merge coordinates and distance
 new_rows = []

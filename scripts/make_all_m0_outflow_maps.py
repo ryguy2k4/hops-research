@@ -33,15 +33,11 @@ with PdfPages(output_pdf) as pdf:
 
         image_filename = (glob.glob(f'{IMAGE_DIRECTORY}{target_name.casefold()}/*12co*.fits') +
                           glob.glob(f'{IMAGE_DIRECTORY}{target_name.casefold()}/*spw39*.fits'))[0]
-        hdulist = fits.open(image_filename)
-        hdu = hdulist[0]
-
-        center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
-        size = np.array([39, 39]) * u.arcsecond
+        hdu = fits.open(image_filename)[0]
         distance = field['distance']
 
         channels = getIdx([field['red_channels'], field['blue_channels']])
-        fig = create_m0_map(hdu, center, size, channels, 3, distance)
+        fig = create_m0_map(hdu, channels, sigma=3, distance=distance)
         # Set figure size to letter (8.5 x 11 inches)
         fig._figure.set_size_inches(8.5, 11)
         fig.set_title(f"{target_name} 12CO M0")

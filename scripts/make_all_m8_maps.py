@@ -35,17 +35,11 @@ with PdfPages(output_pdf) as pdf:
 
         try:
             target_info = source_info.loc[target_name]
-
-            hdulist = fits.open(file)
-            hdu = hdulist[0]
-
-            # set center and size of cutout
-            center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
-            size = np.array([39, 39]) * u.arcsecond
+            hdu = fits.open(file)[0]
             distance = target_info.iloc[0]['Dis']
 
             # create figure
-            fig = create_m8_map(hdu, center, size, distance)
+            fig = create_m8_map(hdu, distance=distance)
             fig.set_title(f"{target_name} 12CO M8")
 
             # add a marker at each source

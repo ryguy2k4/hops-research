@@ -11,7 +11,7 @@ import glob
 import matplotlib.pyplot as plt
 import yaml
 
-from _create_figs import create_m0_map, create_sub_fig, create_m8_map, mark_sources, mark_sources_2, plot_vector, plot_dotted_vector, getIdx
+from _create_figs import create_m0_map, create_m8_map, mark_sources, mark_sources_2, plot_vector, plot_dotted_vector, getIdx, create_cont_map
 from matplotlib.backends.backend_pdf import PdfPages
 
 with open("config.yaml", "r") as f:
@@ -41,19 +41,14 @@ with PdfPages(output_pdf) as pdf:
         target_name = os.path.dirname(spw39).split('/')[-1]
         target_info = source_info.loc[target_name]
 
-        hdulist = fits.open(spw39)
-        hdu = hdulist[0]
-        # set center and size of cutout
-        center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
-        size = np.array([39, 39]) * u.arcsecond
+        hdu = fits.open(spw39)[0]
         distance = target_info.iloc[0]['Dis']
 
         # Continuum Map
         # create figure
-        hdulist_cont = fits.open(cont)
-        fig1 = create_sub_fig(hdulist_cont[0], center, size, figure=figure, subplot=(2, 2, 1), multiimage=True)
+        hdu_cont = fits.open(cont)[0]
+        fig1 = create_cont_map(hdu_cont, distance=distance, figure=figure, subplot=(2, 2, 1), multiimage=True)
         fig1.set_title(f"{target_name} Continuum")
-        fig1.show_colorscale(cmap='viridis')
         fig1.axis_labels.hide_y()
         fig1.colorbar.set_axis_label_text("")
         # add a marker at each source
@@ -63,7 +58,7 @@ with PdfPages(output_pdf) as pdf:
 
         # M8 Map
         # create figure
-        fig2 = create_m8_map(hdu, center, size, distance, figure=figure, subplot=(2, 2, 2), multiimage=True)
+        fig2 = create_m8_map(hdu, distance=distance, figure=figure, subplot=(2, 2, 2), multiimage=True)
         fig2.set_title(f"{target_name} 12CO M8")
         # add a marker at each source
         mark_sources(fig2, target_info)
@@ -84,7 +79,7 @@ with PdfPages(output_pdf) as pdf:
 
 
         # M0 Map with average vector
-        fig3 = create_m0_map(hdu, center, size, channels, 3, distance, figure=figure, subplot=(2, 2, 3), multiimage=True)
+        fig3 = create_m0_map(hdu, channels, sigma=3, distance=distance, figure=figure, subplot=(2, 2, 3), multiimage=True)
         fig3.axis_labels.hide_y()
         fig3.colorbar.set_axis_label_text("")
         fig3.set_title(f"{target_name} 12CO M0")
@@ -93,7 +88,7 @@ with PdfPages(output_pdf) as pdf:
         plot_vector(fig3, center_origin, separation_angle_north + 180, color='white', length=0.005)
 
         # M0 Map with both vectors
-        fig4 = create_m0_map(hdu, center, size, channels, 3, distance, figure=figure, subplot=(2, 2, 4), multiimage=True)
+        fig4 = create_m0_map(hdu, channels, sigma=3, distance=distance, figure=figure, subplot=(2, 2, 4), multiimage=True)
         fig4.set_title(f"{target_name} 12CO M0")
         # draw separation vector in both directions
         plot_vector(fig4, center_origin, separation_angle_north, color='white', length=0.005)
