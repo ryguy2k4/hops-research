@@ -230,7 +230,7 @@ def plot_dotted_vector(fig, origin, angle_north_deg, color, length=0.005):
         linestyle="dashed", color=color, linewidth=1  # Dotted line
     )
 
-def plot_outflow_and_separation_vectors(fig, outflow_data, target_name):
+def plot_outflow_and_separation_vectors(fig, outflow_data, target_name, delta_pa_label=False):
     ### VECTORS
     # plot binary separation angle
     outflow = outflow_data.loc[outflow_data['field'] == target_name].groupby('field').first().reset_index()
@@ -253,6 +253,16 @@ def plot_outflow_and_separation_vectors(fig, outflow_data, target_name):
         # plot outflow vector
         outflow_angle_north = source['outflow_PA']
         plot_vector(fig, outflow_origin, outflow_angle_north, color='red', length=0.005)
+
+        # add delta PA label
+        if delta_pa_label:
+            angle = np.abs(outflow_angle_north - separation_angle_north) % 180
+            angle = np.min([angle, 180 - angle])
+
+            source_label = source['outflow_source']
+            if source_label == 'both':
+                source_label = source['source_a'] + '+' + source['source_b']
+            fig.ax.text(30, fig.ax.get_xlim()[1] - 50 - 40 * (j), f"{source_label} : {np.abs(angle):.2f}°")
 
 # helper function to extract channel indices from the data table
 def getIdx(listOf):

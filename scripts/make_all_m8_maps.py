@@ -40,6 +40,8 @@ with PdfPages(output_pdf) as pdf:
 
             # create figure
             fig = create_m8_map(hdu, distance=distance)
+            # Set figure size to letter (8.5 x 11 inches)
+            fig._figure.set_size_inches(8.5, 11)
             fig.set_title(f"{target_name} 12CO M8")
 
             # add a marker at each source

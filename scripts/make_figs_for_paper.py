@@ -12,7 +12,7 @@ import pandas as pd
 import glob
 import yaml
 
-from _create_figs import create_m0_map, create_m8_map, getIdx, plot_vector, mark_sources
+from _create_figs import create_m0_map, create_m8_map, getIdx, plot_vector, mark_sources, plot_outflow_and_separation_vectors
 
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
@@ -74,31 +74,8 @@ def make_compound_plots(field_list, output_name, rows, cols, wspace=0.35, hspace
             fig = create_m0_map(hdu, channels, sigma=3, distance=distance, figure=figure, subplot=(rows, cols, i+1), multiimage=True)
             fig.set_title(f"{target_name} M0")
 
-            ### VECTORS
-            # plot binary separation angle
-            center_origin = np.array([np.mean([outflow['source_a_ra'], outflow['source_b_ra']]), np.mean([outflow['source_a_dec'], outflow['source_b_dec']])])
-            separation_angle_north = outflow['binary_PA']
-            # draw separation vector in both directions
-            plot_vector(fig, center_origin, separation_angle_north, color='white', length=0.005)
-            plot_vector(fig, center_origin, separation_angle_north + 180, color='white', length=0.005)
-            
-            # plot each outflow vector
-            for j, source in outflow_data[outflow_data['field'] == target_name].reset_index(drop=True).iterrows():
-                # define vector origin at the outflow source
-                if source['outflow_source'] == 'both':
-                    outflow_origin = center_origin
-                elif source['outflow_source'] == source['source_a']:
-                    outflow_origin = np.array([source['source_a_ra'], source['source_a_dec']])
-                else:
-                    outflow_origin = np.array([source['source_b_ra'], source['source_b_dec']])
-
-                # plot outflow vector
-                outflow_angle_north = source['outflow_PA']
-                plot_vector(fig, outflow_origin, outflow_angle_north, color='red', length=0.005)
-                
-                # calculate delta_PA
-                angle = np.abs(outflow_angle_north - separation_angle_north) % 180
-                angle = np.min([angle, 180 - angle])
+            # Plot Vectors
+            plot_outflow_and_separation_vectors(fig, outflow_data, target_name)     
 
         # manage axis labels
 

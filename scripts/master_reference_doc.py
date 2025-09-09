@@ -11,7 +11,7 @@ import glob
 import matplotlib.pyplot as plt
 import yaml
 
-from _create_figs import create_m0_map, create_m8_map, mark_sources, mark_sources_2, plot_vector, plot_dotted_vector, getIdx, create_cont_map
+from _create_figs import create_m0_map, create_m8_map, mark_sources, mark_sources_2, plot_vector, plot_dotted_vector, getIdx, create_cont_map, plot_outflow_and_separation_vectors
 from matplotlib.backends.backend_pdf import PdfPages
 
 with open("config.yaml", "r") as f:

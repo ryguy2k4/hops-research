@@ -8,7 +8,7 @@ import glob
 import yaml
 from matplotlib.backends.backend_pdf import PdfPages
 
-from _create_figs import create_m0_map, mark_sources, plot_vector, getIdx
+from _create_figs import create_m0_map, mark_sources, plot_vector, getIdx, plot_outflow_and_separation_vectors
 
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
@@ -42,30 +42,8 @@ with PdfPages(output_pdf) as pdf:
         fig._figure.set_size_inches(8.5, 11)
         fig.set_title(f"{target_name} 12CO M0")
 
-        center_origin = np.array([np.mean([field['source_a_ra'], field['source_b_ra']]),
-                                  np.mean([field['source_a_dec'], field['source_b_dec']])])
-        separation_angle_north = field['binary_PA']
-        plot_vector(fig, center_origin, separation_angle_north, color='white', length=0.005)
-        plot_vector(fig, center_origin, separation_angle_north + 180, color='white', length=0.005)
-
-        for j, source in outflow_data[outflow_data['field'] == target_name].reset_index(drop=True).iterrows():
-            if source['outflow_source'] == 'both':
-                outflow_origin = center_origin
-            elif source['outflow_source'] == source['source_a']:
-                outflow_origin = np.array([source['source_a_ra'], source['source_a_dec']])
-            else:
-                outflow_origin = np.array([source['source_b_ra'], source['source_b_dec']])
-
-            outflow_angle_north = source['outflow_PA']
-            plot_vector(fig, outflow_origin, outflow_angle_north, color='red', length=0.005)
-
-            angle = np.abs(outflow_angle_north - separation_angle_north) % 180
-            angle = np.min([angle, 180 - angle])
-
-            source_label = source['outflow_source']
-            if source_label == 'both':
-                source_label = source['source_a'] + '+' + source['source_b']
-            fig.ax.text(30, fig.ax.get_xlim()[1] - 50 - 40 * (j), f"{source_label} : {np.abs(angle):.2f}°")
+        # Plot Vectors
+        plot_outflow_and_separation_vectors(fig, outflow_data, target_name, delta_pa_label=True)
 
         target_info = source_info.loc[target_name.casefold()]
         mark_sources(fig, target_info)

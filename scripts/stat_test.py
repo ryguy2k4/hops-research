@@ -159,7 +159,7 @@ def perform_test(data, output_path):
         '75% Orthogonal',
         '50% Orthogonal',
         '25% Orthogonal'
-    ], title='$\Delta$PA Cumulative Frequency Distribution', xlabel='$\Delta$PA - smallest angle between binary separation and outflow (degrees)', filename=os.path.join(output_path, 'OutflowPA_cumulat_deg'))
+    ], title='$\\Delta$PA Cumulative Frequency Distribution', xlabel='$\\Delta$PA - smallest angle between binary separation and outflow (degrees)', filename=os.path.join(output_path, 'OutflowPA_cumulat_deg'))
 
     createCumulatPlotCos([
         paCumulat_cos, paCumulat_cos_model, paCumulat_cos_model_rand
@@ -167,7 +167,7 @@ def perform_test(data, output_path):
         frac_paCumulat_cos, frac_paCumulat_cos_model, frac_paCumulat_cos_model_rand
     ], datalabel=[
         'Observations', 'Model - Orthogonal Outflow', 'Model - Random Orientation'
-    ], title='Cumulative Frequency Distribution', xlabel='cos($\Delta$PA)', filename=os.path.join(output_path, 'OutflowPA_cumulat_cos'))
+    ], title='Cumulative Frequency Distribution', xlabel='cos($\\Delta$PA)', filename=os.path.join(output_path, 'OutflowPA_cumulat_cos'))
 
 # SET OUTPUT
 output_folder = "results/stat_test"
