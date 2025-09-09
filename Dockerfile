@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     wget \
     curl \
+    coinor-cbc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies

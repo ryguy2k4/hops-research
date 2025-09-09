@@ -30,7 +30,7 @@ ALL_TARGETS = [
     "HOPS-312",
     "HOPS-364",
     "HOPS-45",
-    "HOPS-361", # file is named 361-N
+    "HOPS-361",
     "HOPS-366", 
     "HOPS-384",
     "HOPS-304",
@@ -185,9 +185,6 @@ orion['DE-'] = orion["DE-"].apply(lambda x: -1 if x == "-" else 1)
 orion['Dec'] = orion['DE-'] * (orion['DEd'] + orion['DEm'] / 60 + orion['DEs'] / 3600)
 # select columns and sort
 orion = orion[['Main', 'Source', 'RA', 'Dec', 'Dis', 'LBol', 'TBol', 'Class', 'SigmaYSO']]
-# fix HOPS-361-N
-orion["Main"] = orion["Main"].replace({"HOPS-361": "HOPS-361-N"})
-orion["Source"] = orion["Source"].apply(lambda x: str(x).replace("HOPS-361", "HOPS-361-N"))
 # add group column
 orion['group'] = 'orion'
 
@@ -279,7 +276,7 @@ ori_keys = {
     'H366-A+H366-B' : 'HOPS-366',
     'H193-B+H193-A' : 'HOPS-193',
     'H304-B+H304-A' : 'HOPS-304',
-    'H361-C-A+H361-C-B' : 'HOPS-361-N',
+    'H361-C-A+H361-C-B' : 'HOPS-361',
     'H384-A+H384-A-B' : 'HOPS-384',
     'H363-B+H363-A' : 'HOPS-363',
     'H173-B+H173-A' : 'HOPS-173',
