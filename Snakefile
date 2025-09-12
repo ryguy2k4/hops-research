@@ -10,10 +10,9 @@ rule runall:
         "results/figs_for_paper/fig_2.pdf",
         "results/m0_outflow_maps.pdf",
         "results/all_m8_maps.pdf",
-        "results/histogram/histogram.pdf",
-        "results/stat_test/OutflowPA_cumulat_cos.pdf",
-        "results/stat_test/OutflowPA_cumulat_deg.pdf",
-        "results/stat_test/test_results.txt",
+        "results/stat_test/histogram.pdf",
+        "results/stat_test/DeltaPA_cumulat_deg.pdf",
+        "results/stat_test/p-values.pdf",
         "results/master_reference.pdf"
 
 rule prepare_tables:
