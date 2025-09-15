@@ -92,18 +92,21 @@ plt.savefig(os.path.join(output_folder, 'DeltaPA_cumulat_deg.pdf'), dpi=200)
 
 # p-value plot
 fig2, ax2 = plt.subplots(figsize=(11,8))
-ax2.plot(data1['% random'], data1['p'])
-plt.xlabel('Percent of Misaligned (Random) Outflows')
-plt.ylabel('P-Value')
-plt.title("Percent of Misaligned Outflows vs P-value")
+ax2.plot(100 - data1['% random'], data1['p'], color=colors[0])
+less_than_01 = 100 - data1.loc[data1['p']<0.1].iloc[0]['% random']
+less_than_005 = 100 - data1.loc[data1['p']<0.05].iloc[0]['% random']
+less_than_001 = 100 - data1.loc[data1['p']<0.01].iloc[0]['% random']
+plt.axhline(0.1, ls='dashed', label=f'% Orthogonal = {less_than_01}', color=colors[1])
+plt.axhline(0.05, ls='dashdot', label=f'% Orthogonal = {less_than_005}', color=colors[4])
+plt.axhline(0.01, ls='dotted', label=f'% Orthogonal = {less_than_001}', color=colors[5])
 
-less_than_01 = data1.loc[data1['p']<0.1].iloc[0]['% random']
-less_than_001 = data1.loc[data1['p']<0.01].iloc[0]['% random']
-plt.axhline(0.1, color='k', ls='dashed', label=f'% Random = {less_than_01}')
-# plt.axvline(less_than_01, color='k', ls='dashed')
-plt.axhline(0.01, color='k', ls='dotted', label=f'% Random = {less_than_001}')
-# plt.axvline(less_than_001, color='k', ls='dotted')
-plt.legend()
+ax2.set_title("% Orthogonal Outflows vs p-value", fontsize=28, pad=10)
+ax2.set_xlabel("% Orthogonal Outflows", fontsize=20, labelpad=15)
+ax2.set_ylabel('p-value', fontsize=20, labelpad=15)
+ax2.set_xlim(0,100)
+ax2.set_xticklabels(ax2.get_xticklabels(), fontsize=16)
+ax2.set_yticklabels(ax2.get_yticklabels(), fontsize=16)
+ax2.legend(fontsize=13)
 plt.savefig(os.path.join(output_folder, 'p-values.pdf'), dpi=200)
 
 # Delta PA Histrogram (nothing special)
