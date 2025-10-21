@@ -6,6 +6,8 @@ rule runall:
         "results/figs_for_paper/appendix-2.pdf",
         "results/figs_for_paper/appendix-3.pdf",
         "results/figs_for_paper/appendix-4.pdf",
+        "results/figs_for_paper/appendix-5.pdf",
+        "results/figs_for_paper/appendix-6.pdf",
         "results/figs_for_paper/fig_1.pdf",
         "results/figs_for_paper/fig_2.pdf",
         "results/m0_outflow_maps.pdf",
@@ -51,6 +53,8 @@ rule make_figs_for_paper:
         "results/figs_for_paper/appendix-2.pdf",
         "results/figs_for_paper/appendix-3.pdf",
         "results/figs_for_paper/appendix-4.pdf",
+        "results/figs_for_paper/appendix-5.pdf",
+        "results/figs_for_paper/appendix-6.pdf",
         "results/figs_for_paper/fig_1.pdf",
         "results/figs_for_paper/fig_2.pdf"
     shell:
