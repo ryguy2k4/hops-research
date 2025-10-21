@@ -8,7 +8,6 @@ import numpy as np
 import aplpy
 import astropy.wcs.wcs as wcs
 import pandas as pd
-import matplotlib.gridspec as gridspec
 
 """
 
@@ -20,34 +19,17 @@ def create_fig(img, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)
     if not multiimage:
         figure.clear()
 
-    # if small_plot:
-    #     # Convert tuple to rect: full slot → half width
-    #     nrows, ncols, index = subplot
-    #     row = (index-1) // ncols
-    #     col = (index-1) % ncols
-        
-    #     # size of each grid cell
-    #     cell_width = 1.0 / ncols
-    #     cell_height = 1.0 / nrows
-        
-    #     # left, bottom of the chosen cell
-    #     left = col * cell_width
-    #     bottom = 1 - (row+1) * cell_height
-        
-    #     # shrink by half
-    #     subplot = [left, bottom, cell_width/2, cell_height/2]
-
     fig = aplpy.FITSFigure(img, figure=figure, subplot=subplot)
 
     # Display image
-    fig.show_colorscale(cmap='viridis', stretch='sqrt')
+    fig.show_colorscale(cmap='inferno', stretch='sqrt')
 
     # Title
     fig.set_title(img.header['OBJECT'])
 
     # Colorbar
     fig.add_colorbar()
-    fig.colorbar.set_axis_label_text("Intensity (Jy/Beam)")
+    fig.colorbar.set_axis_label_text("Intensity (Jy/bm)")
     fig.colorbar.set_location('right')
     fig.colorbar.set_pad(0.0)
 
@@ -113,6 +95,18 @@ def create_cont_map(hdu, center=None, size=None, distance=0, scalebar_au=500, fi
     return create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage, small_plot=small_plot)
 
 
+def create_cont_map_2(hdu, center=None, size=None, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, small_plot=False):
+
+    cut = cut_fig(hdu.data[0,0,:,:], hdu.header, center, size)
+    
+    fig = create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage, small_plot=small_plot)
+    fig.axis_labels.hide()
+    # fig.colorbar.hide()
+    fig.ticks.hide()
+    fig.tick_labels.hide()
+    fig.scalebar.set_color('white')
+    return fig
+
 """
 
 Takes an image and creates a moment 8 map
@@ -152,7 +146,9 @@ def create_m0_map(hdu, channel_idx, center=None, size=None, sigma=3, distance=0,
 
     cut = cut_fig(m0_map, hdu.header, center, size)
     
-    return create_fig(cut, distance=distance, figure=figure, subplot=subplot, multiimage=multiimage)
+    fig = create_fig(cut, distance=distance, figure=figure, subplot=subplot, multiimage=multiimage)
+    fig.colorbar.set_axis_label_text("Intensity (Jy/bm km/s)")
+    return fig
 
 
 """
@@ -161,9 +157,9 @@ Marks sources given rows from 'source_info.csv'
 
 """
 def mark_sources(fig, source_rows, use_short_label=False, fontsize=4):
-    marker_colors = ['black', 'magenta', 'red', 'darkred', 'darkblue']
+    marker_colors = ["dodgerblue", "magenta", "chartreuse", "springgreen", "deepskyblue"]
     legend_handles = []
-    sources_to_mark = source_rows.reset_index()[0:4]
+    sources_to_mark = source_rows.sort_values('Source').reset_index()[0:4]
     for i, row in sources_to_mark.iterrows():
         center2 = SkyCoord(row['RA'], row['Dec'], unit=u.degree)
         fig.show_markers(center2.ra.deg, center2.dec.deg, coords_frame='world', marker='x', s=25, c=marker_colors[i], linewidths=1, label=row['Source'])
@@ -216,7 +212,7 @@ def plot_vector(fig, origin, angle_north_deg, color, length=0.005):
     tip_pix = fig.world2pixel(tip[0], tip[1])
     outflow_vector = np.array([tip_pix[0] - origin_pix[0], tip_pix[1] - origin_pix[1]])
     fig.ax.quiver(origin_pix[0], origin_pix[1], outflow_vector[0], outflow_vector[1],
-                angles='xy', scale_units='xy', scale=1, color=color, width=0.005)
+                angles='xy', scale_units='xy', scale=1, color=color, width=0.0075)
     
 def plot_dotted_vector(fig, origin, angle_north_deg, color, length=0.005):
     angle_east_rad = np.radians(90 - angle_north_deg)
@@ -252,7 +248,7 @@ def plot_outflow_and_separation_vectors(fig, outflow_data, target_name, delta_pa
 
         # plot outflow vector
         outflow_angle_north = source['outflow_PA']
-        plot_vector(fig, outflow_origin, outflow_angle_north, color='red', length=0.005)
+        plot_vector(fig, outflow_origin, outflow_angle_north, color='#00FFFF', length=0.005)
 
         # add delta PA label
         if delta_pa_label:
