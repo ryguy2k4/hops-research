@@ -62,43 +62,16 @@ def make_mixed_cumulates(pct_rand_list, include_obs=False):
 # generate cumulative distributions and p-values for simulated data
 data1, _ = make_mixed_cumulates(range(0, 101, 1), include_obs=False)
 data1['% orthogonal'] = 100 - data1['% random']
-plot_data, cumulates = make_mixed_cumulates([0, 25, 50, 75, 100], include_obs=True)
-
-# CUMULATIVE PLOT
-fig1, ax1 = plt.subplots(figsize=(11,8))
-# plot each distribution
-colors = ['#4477AA', '#AA3377', '#66CCEE', '#CCBB44', '#228833', '#EE6677']
-line_labels = ['Observations', '100% Orthogonal', '75% Orthogonal', '50% Orthogonal', '25% Orthogonal', 'Random']
-lines = []
-for i, item in enumerate(cumulates):
-    line, = ax1.step(item[0], item[1], color=colors[i], linewidth=2.0)
-    lines.append(line)
-# Plot Settings
-ax1.set_title('$\\Delta$PA Cumulative Frequency Distribution', fontsize=28, pad=10)
-ax1.set_xlabel('$\\Delta$PA - smallest angle between binary separation and outflow (degrees)', fontsize=20, labelpad=15)
-ax1.set_ylabel('frequency', fontsize=20, labelpad=15)
-ax1.set_xlim(0, 90.0)
-ax1.set_ylim(0, 1.0)
-ax1.set_xticklabels(ax1.get_xticklabels(), fontsize=16)
-ax1.set_yticklabels(ax1.get_yticklabels(), fontsize=16)
-labelLine(lines[0], label=line_labels[0], x=16, align=False, rotation=0, yoffset=-0.018, fontsize=14)
-labelLine(lines[1], label=line_labels[1], x=35, align=False, rotation=24, yoffset=0.03, fontsize=14)
-labelLine(lines[2], label=line_labels[2], x=40, align=False, rotation=28, yoffset=0.03, fontsize=14)
-labelLine(lines[3], label=line_labels[3], x=45, align=False, rotation=30, yoffset=0.035, fontsize=14)
-labelLine(lines[4], label=line_labels[4], x=50, align=False, rotation=32, yoffset=0.03, fontsize=14)
-labelLine(lines[5], label=line_labels[5], x=55, align=False, rotation=30, yoffset=0.03, fontsize=14)
-legend_labels = [f"p={round(p, 3)}" if (p != -1) else "Observations" for p in plot_data['p']]
-ax1.legend(lines, legend_labels, fontsize=13)
-fig1.savefig(os.path.join(output_folder, 'DeltaPA_cumulat_deg.pdf'), dpi=200)
 
 # P-VALUE PLOT
+colors = ['#4477AA', '#AA3377', '#66CCEE', '#CCBB44', '#228833', '#EE6677']
 fig2, ax2 = plt.subplots(figsize=(11,8))
 ax2.plot(data1['% orthogonal'], data1['p'], color=colors[0])
 less_than_01 = data1.loc[data1['p']<0.1].iloc[0]['% orthogonal']
 less_than_005 = data1.loc[data1['p']<0.05].iloc[0]['% orthogonal']
 less_than_001 = data1.loc[data1['p']<0.01].iloc[0]['% orthogonal']
 peak = data1['% orthogonal'].iloc[data1['p'].argmax()]
-print(data1['p'].max())
+print(peak)
 
 ax2.axvline(peak, ls='dotted', label=f"Orthogonal = {peak}% at maximum p-value", color='k')
 ax2.axvline(less_than_01, ls='dotted', label=f'Orthogonal = {int(less_than_01)}% at p=0.1', color=colors[1])
@@ -113,6 +86,35 @@ ax2.set_xticklabels(ax2.get_xticklabels(), fontsize=16)
 ax2.set_yticklabels(ax2.get_yticklabels(), fontsize=16)
 ax2.legend(fontsize=13)
 fig2.savefig(os.path.join(output_folder, 'p-values.pdf'), dpi=200)
+
+# generate cumulative distributions for cumulative plot
+plot_data, cumulates = make_mixed_cumulates([100-peak, 25, 50, 75, 100], include_obs=True)
+
+# CUMULATIVE PLOT
+fig1, ax1 = plt.subplots(figsize=(11,8))
+# plot each distribution
+line_labels = ['Observations', f'{peak}% Orthogonal', '75% Orthogonal', '50% Orthogonal', '25% Orthogonal', 'Random']
+lines = []
+for i, item in enumerate(cumulates):
+    line, = ax1.step(item[0], item[1], color=colors[i], linewidth=2.0)
+    lines.append(line)
+# Plot Settings
+ax1.set_title('$\\Delta$PA Cumulative Frequency Distribution', fontsize=28, pad=10)
+ax1.set_xlabel('$\\Delta$PA - smallest angle between binary separation and outflow (degrees)', fontsize=20, labelpad=15)
+ax1.set_ylabel('frequency', fontsize=20, labelpad=15)
+ax1.set_xlim(0, 90.0)
+ax1.set_ylim(0, 1.0)
+ax1.set_xticklabels(ax1.get_xticklabels(), fontsize=16)
+ax1.set_yticklabels(ax1.get_yticklabels(), fontsize=16)
+labelLine(lines[0], label=line_labels[0], x=16, align=False, rotation=0, yoffset=-0.018, fontsize=14)
+labelLine(lines[1], label=line_labels[1], x=35, align=False, rotation=26, yoffset=0.03, fontsize=14)
+labelLine(lines[2], label=line_labels[2], x=40, align=False, rotation=28, yoffset=0.03, fontsize=14)
+labelLine(lines[3], label=line_labels[3], x=45, align=False, rotation=30, yoffset=0.035, fontsize=14)
+labelLine(lines[4], label=line_labels[4], x=50, align=False, rotation=32, yoffset=0.03, fontsize=14)
+labelLine(lines[5], label=line_labels[5], x=55, align=False, rotation=30, yoffset=0.03, fontsize=14)
+legend_labels = [f"p={round(p, 3)}" if (p != -1) else "Observations" for p in plot_data['p']]
+ax1.legend(lines, legend_labels, fontsize=13)
+fig1.savefig(os.path.join(output_folder, 'DeltaPA_cumulat_deg.pdf'), dpi=200)
 
 # DELTA PA HISTOGRAM
 fig3, ax3 = plt.subplots(figsize=(11,8))
