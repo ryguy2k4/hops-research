@@ -14,7 +14,7 @@ import pandas as pd
 Creates a simple aplpy FITSFigure with a colorbar, scalebar, and beam
 
 """
-def create_fig(img, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, small_plot=False):
+def create_fig(img, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, use_offset_labels=False):
     # Create FITSFigure
     if not multiimage:
         figure.clear()
@@ -52,6 +52,36 @@ def create_fig(img, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)
     fig.beam.set_edgecolor("black")
     fig.beam.set_facecolor("white")
 
+    # Offset Tick Labels
+    if use_offset_labels:
+        # hide aplpy ticks
+        fig.tick_labels.hide()
+        # enable plain Matplotlib ticks
+        fig.ax.tick_params(axis='both', which='both', direction='out', length=5, labelsize=10)
+        fig.ax.xaxis.set_visible(True)
+        fig.ax.yaxis.set_visible(True)
+
+        # create offset ticks
+        tick_spacing = 5  # arcsec
+        xticks_new = np.arange(-20, 21, tick_spacing)
+        yticks_new = np.arange(-20, 21, tick_spacing)
+        # convert offsets to pixel positions
+        pixscale = np.mean(np.abs(fig._wcs.pixel_scale_matrix.diagonal())) * 3600
+        x_center = fig._data.shape[1]/2
+        y_center = fig._data.shape[0]/2
+        xticks_pix_new = xticks_new / pixscale + x_center
+        yticks_pix_new = yticks_new / pixscale + y_center
+
+        # Apply new tick positions and labels
+        fig.ax.set_xticks(xticks_pix_new)
+        fig.ax.set_yticks(yticks_pix_new)
+        fig.ax.set_xticklabels([f"{x:.0f}" for x in xticks_new])
+        fig.ax.set_yticklabels([f"{y:.0f}" for y in yticks_new])
+        fig.axis_labels.set_xtext("RA Offset (arcsec)")
+        fig.axis_labels.set_ytext("Dec Offset (arcsec)")
+        fig.axis_labels.set_xpad(3)
+        fig.axis_labels.set_ypad(3)
+
     figure.show()
     return fig
 
@@ -88,18 +118,18 @@ def cut_fig(data, header, center=None, size=None):
     return fits.PrimaryHDU(data=cut.data, header=new_header)
 
 
-def create_cont_map(hdu, center=None, size=None, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, small_plot=False):
+def create_cont_map(hdu, center=None, size=None, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, use_offset_labels=False):
 
     cut = cut_fig(hdu.data[0,0,:,:], hdu.header, center, size)
     
-    return create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage, small_plot=small_plot)
+    return create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage, use_offset_labels=use_offset_labels)
 
 
-def create_cont_map_2(hdu, center=None, size=None, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, small_plot=False):
+def create_cont_map_2(hdu, center=None, size=None, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, use_offset_labels=False):
 
     cut = cut_fig(hdu.data[0,0,:,:], hdu.header, center, size)
     
-    fig = create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage, small_plot=small_plot)
+    fig = create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage, use_offset_labels=use_offset_labels)
     fig.axis_labels.hide()
     # fig.colorbar.hide()
     fig.ticks.hide()
@@ -112,13 +142,13 @@ def create_cont_map_2(hdu, center=None, size=None, distance=0, scalebar_au=500, 
 Takes an image and creates a moment 8 map
 
 """
-def create_m8_map(hdu, center=None, size=None, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
+def create_m8_map(hdu, center=None, size=None, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, use_offset_labels=False):
     # create map
     m8_map = np.max(hdu.data[0,:,:,:], axis=0)
 
     cut = cut_fig(m8_map, hdu.header, center, size)
     
-    return create_fig(cut, distance=distance, figure=figure, subplot=subplot, multiimage=multiimage)
+    return create_fig(cut, distance=distance, figure=figure, subplot=subplot, multiimage=multiimage, use_offset_labels=use_offset_labels)
 
 
 """
@@ -128,7 +158,7 @@ Included channels are specified with channel_idx and
 sigma-clipping is specified with sigma; default is 3
 
 """
-def create_m0_map(hdu, channel_idx, center=None, size=None, sigma=3, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False):
+def create_m0_map(hdu, channel_idx, center=None, size=None, sigma=3, distance=0, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, use_offset_labels=False):
     # sigma
     blank_channel = hdu.data[0,0,:,:]
     region_size = np.array([100, 100]) * u.pixel
@@ -146,7 +176,7 @@ def create_m0_map(hdu, channel_idx, center=None, size=None, sigma=3, distance=0,
 
     cut = cut_fig(m0_map, hdu.header, center, size)
     
-    fig = create_fig(cut, distance=distance, figure=figure, subplot=subplot, multiimage=multiimage)
+    fig = create_fig(cut, distance=distance, figure=figure, subplot=subplot, multiimage=multiimage, use_offset_labels=use_offset_labels)
     fig.colorbar.set_axis_label_text("Intensity (Jy/bm km/s)")
     return fig
 

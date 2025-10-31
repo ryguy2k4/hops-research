@@ -124,7 +124,7 @@ def make_compound_plots(field_list, output_name, rows, cols, figsize=None, v_pad
         # M8 Map
         if pd.isna(field['integrated_channels']):
             # Create Figure
-            fig = create_m8_map(hdu_spw39, distance=distance, figure=figure, subplot=get_subplot_params(subplot_num, rows=rows, cols=cols, v_pad_frac=v_pad_frac), multiimage=True)
+            fig = create_m8_map(hdu_spw39, distance=distance, figure=figure, subplot=get_subplot_params(subplot_num, rows=rows, cols=cols, v_pad_frac=v_pad_frac), multiimage=True, use_offset_labels=True)
             fig.set_title(f"{target_name} M8")   
         
         # M0 Map
@@ -132,7 +132,7 @@ def make_compound_plots(field_list, output_name, rows, cols, figsize=None, v_pad
             # Create Figure
             outflow = outflow_data.loc[outflow_data['field'] == target_name].groupby('field').first().reset_index()
             channels = getIdx([outflow.at[0, 'red_channels'], outflow.at[0, 'blue_channels']])
-            fig = create_m0_map(hdu_spw39, channels, sigma=3, distance=distance, figure=figure, subplot=get_subplot_params(subplot_num, rows=rows, cols=cols, v_pad_frac=v_pad_frac), multiimage=True)
+            fig = create_m0_map(hdu_spw39, channels, sigma=3, distance=distance, figure=figure, subplot=get_subplot_params(subplot_num, rows=rows, cols=cols, v_pad_frac=v_pad_frac), multiimage=True, use_offset_labels=True)
             fig.set_title(f"{target_name} M0")
 
             # Plot Vectors
@@ -155,7 +155,7 @@ def make_compound_plots(field_list, output_name, rows, cols, figsize=None, v_pad
 
         distance = target_info.iloc[0]['Dis']
         size = np.array([1075/distance, 1000/distance]) * u.arcsecond
-        fig1 = create_cont_map_2(hdu_cont, size=size, distance=distance, scalebar_au=100, figure=figure, subplot=get_subplot_params(subplot_num, rows=rows, cols=cols, v_pad_frac=v_pad_frac), multiimage=True)
+        fig1 = create_cont_map_2(hdu_cont, size=size, distance=distance, scalebar_au=100, figure=figure, subplot=get_subplot_params(subplot_num, rows=rows, cols=cols, v_pad_frac=v_pad_frac), multiimage=True, use_offset_labels=True)
         fig1.set_title("Continuum")
 
         # mark sources
