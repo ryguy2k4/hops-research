@@ -62,7 +62,7 @@ def create_fig(img, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)
         fig.ax.yaxis.set_visible(True)
 
         # create offset ticks
-        tick_spacing = 5  # arcsec
+        tick_spacing = 10  # arcsec
         xticks_new = np.arange(-20, 21, tick_spacing)
         yticks_new = np.arange(-20, 21, tick_spacing)
         # convert offsets to pixel positions
@@ -122,20 +122,41 @@ def create_cont_map(hdu, center=None, size=None, distance=0, scalebar_au=500, fi
 
     cut = cut_fig(hdu.data[0,0,:,:], hdu.header, center, size)
     
-    return create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage, use_offset_labels=use_offset_labels)
-
-
-def create_cont_map_2(hdu, center=None, size=None, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, use_offset_labels=False):
-
-    cut = cut_fig(hdu.data[0,0,:,:], hdu.header, center, size)
-    
-    fig = create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage, use_offset_labels=use_offset_labels)
-    fig.axis_labels.hide()
-    # fig.colorbar.hide()
-    fig.ticks.hide()
-    fig.tick_labels.hide()
+    fig = create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage)
     fig.scalebar.set_color('white')
+
+    if use_offset_labels:
+        # need to do this separately because the scale is different here
+        # hide aplpy ticks
+        fig.tick_labels.hide()
+        # enable plain Matplotlib ticks
+        fig.ax.tick_params(axis='both', which='both', direction='out', length=5, labelsize=10)
+        fig.ax.xaxis.set_visible(True)
+        fig.ax.yaxis.set_visible(True)
+
+        # create offset ticks
+        tick_spacing = 1  # arcsec
+        xticks_new = np.arange(-1.5, 2.5, tick_spacing)
+        yticks_new = np.arange(-1.5, 2.5, tick_spacing)
+        # convert offsets to pixel positions
+        pixscale = np.mean(np.abs(fig._wcs.pixel_scale_matrix.diagonal())) * 3600
+        x_center = fig._data.shape[1]/2
+        y_center = fig._data.shape[0]/2
+        xticks_pix_new = xticks_new / pixscale + x_center
+        yticks_pix_new = yticks_new / pixscale + y_center
+
+        # Apply new tick positions and labels
+        fig.ax.set_xticks(xticks_pix_new)
+        fig.ax.set_yticks(yticks_pix_new)
+        fig.ax.set_xticklabels([f"{x:.1f}" for x in xticks_new])
+        fig.ax.set_yticklabels([f"{y:.1f}" for y in yticks_new])
+        fig.axis_labels.set_xtext("RA Offset (arcsec)")
+        fig.axis_labels.set_ytext("Dec Offset (arcsec)")
+        fig.axis_labels.set_xpad(3)
+        fig.axis_labels.set_ypad(3)
+
     return fig
+
 
 """
 
@@ -192,7 +213,7 @@ def mark_sources(fig, source_rows, use_short_label=False, fontsize=4):
     sources_to_mark = source_rows.sort_values('Source').reset_index()[0:4]
     for i, row in sources_to_mark.iterrows():
         center2 = SkyCoord(row['RA'], row['Dec'], unit=u.degree)
-        fig.show_markers(center2.ra.deg, center2.dec.deg, coords_frame='world', marker='x', s=25, c=marker_colors[i], linewidths=1, label=row['Source'])
+        fig.show_markers(center2.ra.deg, center2.dec.deg, coords_frame='world', marker='x', s=50, c=marker_colors[i], linewidths=1, label=row['Source'])
 
         # Create legend handle for this source (only if not already added)
         short_label = str(row['Source']).casefold().removeprefix(str(source_rows.index.tolist()[i]).casefold()+'-').upper()
@@ -235,7 +256,7 @@ Plots a vector on the figure, starting from `origin`, pointing in
 the direction of `angle` with length `length` (default 0.005)
 
 """
-def plot_vector(fig, origin, angle_north_deg, color, length=0.005):
+def plot_vector(fig, origin, angle_north_deg, color, length=0.0025):
     angle_east_rad = np.radians(90 - angle_north_deg)
     origin_pix = fig.world2pixel(origin[0], origin[1])
     tip = origin[0] + length * np.cos(angle_east_rad), origin[1] + length * np.sin(angle_east_rad)
@@ -244,7 +265,7 @@ def plot_vector(fig, origin, angle_north_deg, color, length=0.005):
     fig.ax.quiver(origin_pix[0], origin_pix[1], outflow_vector[0], outflow_vector[1],
                 angles='xy', scale_units='xy', scale=1, color=color, width=0.0075)
     
-def plot_dotted_vector(fig, origin, angle_north_deg, color, length=0.005):
+def plot_dotted_vector(fig, origin, angle_north_deg, color, length=0.0025):
     angle_east_rad = np.radians(90 - angle_north_deg)
     origin_pix = fig.world2pixel(origin[0], origin[1])
     tip = origin[0] + length * np.cos(angle_east_rad), origin[1] + length * np.sin(angle_east_rad)
@@ -263,8 +284,8 @@ def plot_outflow_and_separation_vectors(fig, outflow_data, target_name, delta_pa
     center_origin = np.array([np.mean([outflow['source_a_ra'], outflow['source_b_ra']]), np.mean([outflow['source_a_dec'], outflow['source_b_dec']])])
     separation_angle_north = outflow['binary_PA']
     # draw separation vector in both directions
-    plot_vector(fig, center_origin, separation_angle_north, color='white', length=0.005)
-    plot_vector(fig, center_origin, separation_angle_north + 180, color='white', length=0.005)
+    plot_vector(fig, center_origin, separation_angle_north, color='white')
+    plot_vector(fig, center_origin, separation_angle_north + 180, color='white')
     
     # plot each outflow vector
     for j, source in outflow_data[outflow_data['field'] == target_name].reset_index(drop=True).iterrows():
@@ -278,7 +299,7 @@ def plot_outflow_and_separation_vectors(fig, outflow_data, target_name, delta_pa
 
         # plot outflow vector
         outflow_angle_north = source['outflow_PA']
-        plot_vector(fig, outflow_origin, outflow_angle_north, color='#00FFFF', length=0.005)
+        plot_vector(fig, outflow_origin, outflow_angle_north, color='#00FFFF')
 
         # add delta PA label
         if delta_pa_label:

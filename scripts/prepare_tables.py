@@ -372,16 +372,19 @@ by_outflow['tertiary'] = by_outflow['binary_PA'].isna()
 by_outflow = pd.merge(by_outflow, sep, left_on=['field', 'tertiary'], right_on=['pair', 'tertiary'], how='left')
 # define type column
 by_outflow['type'] = by_outflow['tertiary'].map({True: 'Tertiary', False: 'Binary'})
-# select columns
-by_outflow = by_outflow[['field', 'confidence', 'source_a_ra', 'type', 'separation', 'class', 'outflow_source', 'outflow_PA', 'lobe_PA_offset', 'binary_PA', 'delta_PA']]
 # format missing values
 by_outflow = by_outflow.fillna('-')
-by_outflow[['outflow_PA', 'lobe_PA_offset', 'binary_PA', 'delta_PA']] = by_outflow[['outflow_PA', 'lobe_PA_offset', 'binary_PA', 'delta_PA']].replace('-', np.nan).astype(float).round(0).astype('Int64')
+by_outflow[['red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'lobe_PA_offset', 'binary_PA', 'delta_PA']] = by_outflow[['red_outflow_PA', 'blue_outflow_PA', 'outflow_PA', 'lobe_PA_offset', 'binary_PA', 'delta_PA']].replace('-', np.nan).astype(float).round(0).astype('Int64')
 # sort dataframe
 by_outflow = by_outflow.sort_values('source_a_ra').drop('source_a_ra',axis=1).reset_index(drop=True)
+# select columns
+by_outflow_full = by_outflow[['field', 'outflow_source', 'confidence', 'red_outflow_PA', 'blue_outflow_PA', 'lobe_PA_offset', 'outflow_PA']]
+by_outflow = by_outflow[['field', 'type', 'separation', 'class', 'outflow_source', 'confidence', 'outflow_PA', 'binary_PA', 'delta_PA']]
 # save to CSV
+by_outflow_full.to_csv('data/output/data_by_outflow_full.csv', index=False)
 by_outflow.to_csv('data/output/data_by_outflow.csv', index=False)
 # save to LaTeX table
+write_latex_table(by_outflow_full, 'by-outflow-full.tex')
 write_latex_table(by_outflow, 'by-outflow.tex')
 
 ### CREATE by_field TABLE
@@ -405,7 +408,7 @@ other_names = pd.DataFrame({
     "Per-emb-27": "NGC 1333 IRS2A",
     "Per-emb-33": "L1448 IRS3B",
     "Per-emb-36": "NGC 1333 IRAS2B",
-    "Per-emb-44": "SVS 13A",
+    "Per-emb-44": "NGC 1333 SVS 13A",
     "L1448 IRS3C": "Per-emb-107",
 }, index=[0]).T.reset_index().rename(columns={'index': 'field', 0: 'other_names'})
 
