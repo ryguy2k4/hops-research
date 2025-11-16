@@ -94,5 +94,5 @@ rule perform_stat_test:
         "results/stat_test/OutflowPA_cumulat_deg.pdf",
         "results/stat_test/test_results.txt"
     shell:
-        "python3 scripts/stat_test.py"
+        "python3 scripts/stat_test-combined.py"
 
