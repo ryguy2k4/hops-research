@@ -409,7 +409,7 @@ other_names = pd.DataFrame({
     "Per-emb-33": "L1448 IRS3B",
     "Per-emb-36": "NGC 1333 IRAS2B",
     "Per-emb-44": "NGC 1333 SVS 13A",
-    "L1448 IRS3C": "Per-emb-107",
+    "L1448 IRS3C": "L1448NW",
 }, index=[0]).T.reset_index().rename(columns={'index': 'field', 0: 'other_names'})
 
 # start by grouping outflow data by field
