@@ -27,7 +27,7 @@ HOPS-203,1O,Inconclusive,HC,3,"A, B, C",A+B,Not visually distinct,A+B,Can't dist
 HOPS-203,TO,Inconclusive,HC,3,"A, B, C",,,C,,"U-shape, wider, but distinct",Not present/apparent,,10,96-100,,-52.99,-105.17,-79.08,280.92,,,,,280.92,
 HOPS-173,1O,Disk Frag,LC,2,"A, B",A+B,Visually distinct and touching,A+B,Can't distinguish outflow source. ,Not present/apparent,"Sharp v-shape, faint, low S/N",,7.5,,102,,,,,-85.86,-140.16,-113.01,66.99,66.99,
 HOPS-193,1O,Disk Frag,HC,2,"A, B",A+B,"Visually distinct, separated",A+B,Can't distinguish outflow source,"C-shape, wide, faint, low S/N","Sharp v-shape, wide, faint, low S/N",,8.5,97-99,104,-45.11,-136.01,-90.56,269.44,39.26,156.43,97.845,277.845,273.6425,8.405
-HOPS-158,1O,Disk Frag,LC,2,"A, B",A+B,,A+B,,,,,7,90-95,101-103,31.91,98.4,65.155,65.155,-116.2,-149.2,-132.7,47.3,56.2275,17.855
+HOPS-158,1O,Disk Frag,HC,2,"A, B",A+B,,A+B,,,,,7,90-95,101-103,31.91,98.4,65.155,65.155,-116.2,-149.2,-132.7,47.3,56.2275,17.855
 HOPS-395,1O,Disk Frag,HC,2,"A, B",A+B,"touching, elongated",B,,"Diffuse v-shape, narrow and short","Extremely narrow, jetlike","High inclination, both lobes are in the red",5,94-95,98,10.5,-8.5,1,1,164.14,170.53,167.335,347.335,174.1675,13.665
 HOPS-288,1O,Turbulent Frag,HC,3,"AA, AB, B",AA+AB,"Not visually distinct, touching, elongated",AA+AB,Can't distinguish outflow source,"Sharp v-shape, distinct, interacts with outflow from B",Appears to be shared with AA+AB,,5,85-91,,-100.13,-147.13,-123.63,236.37,,,,,236.37,
 HOPS-288,TO,Turbulent Frag,HC,3,"AA, AB, B",,,B,,Appears to be shared with AA+AB,"Sharp v-shape, narrow, distinct",,5,,102-108,,,,,-139.36,-157.1,-148.23,31.77,31.77,

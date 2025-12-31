@@ -19,6 +19,13 @@ def create_fig(img, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)
     if not multiimage:
         figure.clear()
 
+    if np.nanmax(img.data) < 0.1:
+        # Jy → mJy
+        units = "mJy/bm"
+        img.data *= 1e3
+    else:
+        units = "Jy/bm"
+
     fig = aplpy.FITSFigure(img, figure=figure, subplot=subplot)
 
     # Display image
@@ -29,7 +36,7 @@ def create_fig(img, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)
 
     # Colorbar
     fig.add_colorbar()
-    fig.colorbar.set_axis_label_text("Intensity (Jy/bm)")
+    fig.colorbar.set_axis_label_text(f"Intensity ({units})")
     fig.colorbar.set_location('right')
     fig.colorbar.set_pad(0.0)
 
@@ -120,7 +127,16 @@ def cut_fig(data, header, center=None, size=None):
 
 def create_cont_map(hdu, center=None, size=None, distance=0, scalebar_au=500, figure=plt.figure(figsize=(6,6)), subplot=(1,1,1), multiimage=False, use_offset_labels=False):
 
-    cut = cut_fig(hdu.data[0,0,:,:], hdu.header, center, size)
+    # crop_center should determine the crop
+    # field_center should determine the offset labels
+    if center == None:
+        field_center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
+        crop_center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
+    else:
+        field_center = SkyCoord(hdu.header['OBSRA'], hdu.header['OBSDEC'], unit=u.degree)
+        crop_center = center
+
+    cut = cut_fig(hdu.data[0,0,:,:], hdu.header, crop_center, size)
     
     fig = create_fig(cut, distance=distance, scalebar_au=scalebar_au, figure=figure, subplot=subplot, multiimage=multiimage)
     fig.scalebar.set_color('white')
@@ -135,13 +151,12 @@ def create_cont_map(hdu, center=None, size=None, distance=0, scalebar_au=500, fi
         fig.ax.yaxis.set_visible(True)
 
         # create offset ticks
-        tick_spacing = 1  # arcsec
-        xticks_new = np.arange(-1.5, 2.5, tick_spacing)
+        tick_spacing = 0.5  # arcsec
+        xticks_new = np.arange(-2, 3, tick_spacing)
         yticks_new = np.arange(-1.5, 2.5, tick_spacing)
         # convert offsets to pixel positions
         pixscale = np.mean(np.abs(fig._wcs.pixel_scale_matrix.diagonal())) * 3600
-        x_center = fig._data.shape[1]/2
-        y_center = fig._data.shape[0]/2
+        x_center, y_center = fig.world2pixel(field_center.ra, field_center.dec)
         xticks_pix_new = xticks_new / pixscale + x_center
         yticks_pix_new = yticks_new / pixscale + y_center
 
@@ -154,6 +169,11 @@ def create_cont_map(hdu, center=None, size=None, distance=0, scalebar_au=500, fi
         fig.axis_labels.set_ytext("Dec Offset (arcsec)")
         fig.axis_labels.set_xpad(3)
         fig.axis_labels.set_ypad(3)
+
+        # fix limits
+        ny, nx = fig._data.shape
+        fig.ax.set_xlim(-0.5, nx - 0.5)
+        fig.ax.set_ylim(-0.5, ny - 0.5)
 
     return fig
 
@@ -196,9 +216,15 @@ def create_m0_map(hdu, channel_idx, center=None, size=None, sigma=3, distance=0,
     m0_map = np.sum(channels, axis=0)
 
     cut = cut_fig(m0_map, hdu.header, center, size)
+
+    if np.nanmax(cut.data) < 0.1:
+        units = "mJy/bm km/s"
+    else:
+        units = "Jy/bm km/s"
     
     fig = create_fig(cut, distance=distance, figure=figure, subplot=subplot, multiimage=multiimage, use_offset_labels=use_offset_labels)
-    fig.colorbar.set_axis_label_text("Intensity (Jy/bm km/s)")
+
+    fig.colorbar.set_axis_label_text(f"Intensity ({units})")
     return fig
 
 
@@ -213,7 +239,9 @@ def mark_sources(fig, source_rows, use_short_label=False, fontsize=4):
     sources_to_mark = source_rows.sort_values('Source').reset_index()[0:4]
     for i, row in sources_to_mark.iterrows():
         center2 = SkyCoord(row['RA'], row['Dec'], unit=u.degree)
-        fig.show_markers(center2.ra.deg, center2.dec.deg, coords_frame='world', marker='x', s=50, c=marker_colors[i], linewidths=1, label=row['Source'])
+        fig.show_markers(center2.ra.deg, center2.dec.deg, coords_frame='world', marker='x', s=50, c='k', linewidths=2, zorder=2, label=row['Source'])
+        fig.show_markers(center2.ra.deg, center2.dec.deg, coords_frame='world', marker='x', s=50, c=marker_colors[i], linewidths=1, zorder=3, label=row['Source'])
+
 
         # Create legend handle for this source (only if not already added)
         short_label = str(row['Source']).casefold().removeprefix(str(source_rows.index.tolist()[i]).casefold()+'-').upper()

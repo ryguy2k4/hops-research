@@ -80,6 +80,122 @@ ALL_TARGETS = [
     "L1448 IRS3C"
 ]
 
+CONT_SOURCES = [
+    "HH270VLA1-A",
+    "HH270VLA1-B",
+    "HOPS-323-A",
+    "HOPS-323-B",
+    "HOPS-312-A",
+    "HOPS-312-B",
+    "HOPS-364-A",
+    "HOPS-364-B",
+    "HOPS-45-A",
+    "HOPS-45-B",
+    "HOPS-361-C-A",
+    "HOPS-361-C-B",
+    "HOPS-366-A",
+    "HOPS-366-B",
+    "HOPS-384-A",
+    "HOPS-384-A-B",
+    "HOPS-304-A",
+    "HOPS-304-B",
+    "HOPS-357-A",
+    "HOPS-357-B",
+    "HOPS-363-A",
+    "HOPS-363-B",
+    "HOPS-400-A",
+    "HOPS-400-B",
+    "HOPS-290-A",
+    "HOPS-290-B",
+    "HOPS-56-A-A",
+    "HOPS-56-A-B",
+    "HOPS-56-A-C",
+    # "HOPS-56-B",
+    "HOPS-193-A",
+    "HOPS-193-B",
+    "HOPS-242-A",
+    "HOPS-242-B",
+    "HOPS-70-A-A",
+    "HOPS-70-A-B",
+    "HOPS-138-A",
+    "HOPS-138-B",
+    "HOPS-85-A",
+    "HOPS-85-B",
+    "HOPS-182-A",
+    "HOPS-182-B",
+    "HOPS-28-A",
+    "HOPS-28-B",
+    "HOPS-92-A-A",
+    "HOPS-92-A-B",
+    "HOPS-92-B",
+    "HOPS-32-A",
+    "HOPS-32-B",
+    "HOPS-158-A",
+    "HOPS-158-B",
+    "HOPS-75-A",
+    "HOPS-75-B",
+    "HOPS-395-A",
+    "HOPS-395-B",
+    "HOPS-43-A",
+    "HOPS-43-B",
+    "HOPS-255-A",
+    "HOPS-255-B",
+    "HOPS-213-A",
+    "HOPS-213-B",
+    "HOPS-77-A-A",
+    "HOPS-77-A-B",
+    "HOPS-77-B",
+    "HOPS-281-A",
+    "HOPS-281-B",
+    "HOPS-173-A",
+    "HOPS-173-B",
+    "HOPS-282-A",
+    "HOPS-282-B",
+    "HOPS-84-A",
+    "HOPS-84-B",
+    "HOPS-288-A-A",
+    "HOPS-288-A-B",
+    "HOPS-288-B",
+    "HOPS-248-A",
+    "HOPS-248-B",
+    "HOPS-168-A",
+    "HOPS-168-B",
+    "HOPS-203-A",
+    "HOPS-203-B",
+    # "HOPS-203-C",
+    "HOPS-163-A",
+    "HOPS-163-B",
+    # "HOPS-12-A",
+    "HOPS-12-B-A",
+    "HOPS-12-B-B",
+    "HOPS-261-A",
+    "HOPS-261-B",
+
+    "Per-emb-2-A",
+    "Per-emb-2-B",
+    "Per-emb-12-A",
+    "Per-emb-12-B",
+    "Per-emb-17-A",
+    "Per-emb-17-B",
+    "Per-emb-18-A",
+    "Per-emb-18-B",
+    "Per-emb-22-A",
+    "Per-emb-22-B",
+    "Per-emb-27-A",
+    "Per-emb-27-B",
+    "Per-emb-33-A",
+    "Per-emb-33-B",
+    "Per-emb-33-C",
+    "Per-emb-35-A",
+    "Per-emb-35-B",
+    "Per-emb-36-A",
+    "Per-emb-36-B",
+    "Per-emb-44-A",
+    "Per-emb-44-B",
+    "L1448 IRS3C-A",
+    "L1448 IRS3C-B",
+]
+
 def write_latex_table(df, filename):
     table = Table.from_pandas(df)
     latex_buffer = io.StringIO()
@@ -190,6 +306,15 @@ orion['group'] = 'orion'
 
 ### MERGE ORION and PERSEUS into `source_info`
 source_info = pd.concat([orion, perseus]).sort_values(by=['RA']).reset_index(drop=True)
+
+# add manual source offsets
+offsets = pd.read_csv("data/input/offsets.csv")
+source_info['RA'] = source_info['RA'] + offsets['ra_offset'] / 3600
+source_info['Dec'] = source_info['Dec'] + offsets['dec_offset'] / 3600
+
+# add indicator column if sources should be marked in continuum plots
+source_info['important'] = source_info['Source'].isin(CONT_SOURCES)
+
 source_info.to_csv("data/output/source_info.csv",index=False)
 
 ### PARSE `notes.txt`

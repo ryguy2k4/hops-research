@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import glob
 import yaml
+from astropy.coordinates import SkyCoord
 
 import sys
 from _create_figs import create_m0_map, create_m8_map, mark_sources, getIdx, plot_outflow_and_separation_vectors, create_cont_map
@@ -99,17 +100,15 @@ def make_compound_plots(field_list, output_name, rows, cols, figsize=None, v_pad
         subplot_num += cols
 
         distance = target_info.iloc[0]['Dis']
-        # size = np.array([1075/distance, 1000/distance]) * u.arcsecond
         size = np.array([3, 3]) * u.arcsecond
-        fig1 = create_cont_map(hdu_cont, size=size, distance=distance, scalebar_au=100, figure=figure, subplot=(rows, cols, subplot_num), multiimage=True, use_offset_labels=True)
+        center = SkyCoord(target_info[target_info['important']==True]['RA'].mean(), target_info[target_info['important']==True]['Dec'].mean(), unit=u.degree)
+        fig1 = create_cont_map(hdu_cont, size=size, center=center, distance=distance, scalebar_au=100, figure=figure, subplot=(rows, cols, subplot_num), multiimage=True, use_offset_labels=True)
         fig1.set_title("Continuum")
 
         # mark sources
-        mark_sources(fig1, target_info, fontsize=8, use_short_label=True)
+        mark_sources(fig1, target_info[target_info['important']==True], fontsize=8, use_short_label=True)
 
         # Manage Axis Labels
-        if (subplot_num-1) % cols != cols - 1:
-            fig1.colorbar.set_axis_label_text("")
         if (subplot_num-1) % cols != 0:
             fig1.axis_labels.hide_y()
         if (rows > 1) & ((subplot_num-1) < (rows*cols - cols)):
