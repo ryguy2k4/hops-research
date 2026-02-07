@@ -8,9 +8,8 @@ __pycache__
 .DS_Store
 
 pwd.txt
+notebooks/remote_access.ipynb
 
 doc/Frankie
-doc/eDisk_outflow_Nov2_ALP.pdf
-doc/meeting_notes.pptx
-doc/obs.tex
-doc/comments
+doc/manuscript
+doc/poster
