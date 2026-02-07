@@ -312,6 +312,9 @@ offsets = pd.read_csv("data/input/offsets.csv")
 source_info['RA'] = source_info['RA'] + offsets['ra_offset'] / 3600
 source_info['Dec'] = source_info['Dec'] + offsets['dec_offset'] / 3600
 
+offsets = offsets.iloc[0:26]
+write_latex_table(offsets[['Main', 'Source', 'ra_offset', 'dec_offset']], 'offsets.tex')
+
 # add indicator column if sources should be marked in continuum plots
 source_info['important'] = source_info['Source'].isin(CONT_SOURCES)
 

@@ -1,0 +1,896 @@
+%% Beginning of file 'sample631.tex'
+%%
+%% Modified 2022 May  
+%%
+%% This is a sample manuscript marked up using the
+%% AASTeX v6.31 LaTeX 2e macros.
+%%
+%% AASTeX is now based on Alexey Vikhlinin's emulateapj.cls 
+%% (Copyright 2000-2015).  See the classfile for details.
+
+%% AASTeX requires revtex4-1.cls and other external packages such as
+%% latexsym, graphicx, amssymb, longtable, and epsf.  Note that as of 
+%% Oct 2020, APS now uses revtex4.2e for its journals but remember that 
+%% AASTeX v6+ still uses v4.1. All of these external packages should 
+%% already be present in the modern TeX distributions but not always.
+%% For example, revtex4.1 seems to be missing in the linux version of
+%% TexLive 2020. One should be able to get all packages from www.ctan.org.
+%% In particular, revtex v4.1 can be found at 
+%% https://www.ctan.org/pkg/revtex4-1.
+
+%% The first piece of markup in an AASTeX v6.x document is the \documentclass
+%% command. LaTeX will ignore any data that comes before this command. The 
+%% documentclass can take an optional argument to modify the output style.
+%% The command below calls the preprint style which will produce a tightly 
+%% typeset, one-column, single-spaced document.  It is the default and thus
+%% does not need to be explicitly stated.
+%%
+%% using aastex version 6.3
+\documentclass[linenumbers,twocolumn, twocolappendix]{aastex631}
+\usepackage{hyperref}  % For referencing
+\usepackage{multirow}  % For merging rows
+\usepackage{amsmath}
+\usepackage{float}
+
+\usepackage{amsfonts} % optional
+\usepackage{graphicx} % often included
+\usepackage[T1]{fontenc}
+
+
+%% The default is a single spaced, 10 point font, single spaced article.
+%% There are 5 other style options available via an optional argument. They
+%% can be invoked like this:
+%%
+%% \documentclass[arguments]{aastex631}
+%% 
+%% where the layout options are:
+%%
+%%  twocolumn   : two text columns, 10 point font, single spaced article.
+%%                This is the most compact and represent the final published
+%%                derived PDF copy of the accepted manuscript from the publisher
+%%  manuscript  : one text column, 12 point font, double spaced article.
+%%  preprint    : one text column, 12 point font, single spaced article.  
+%%  preprint2   : two text columns, 12 point font, single spaced article.
+%%  modern      : a stylish, single text column, 12 point font, article with
+%% 		  wider left and right margins. This uses the Daniel
+%% 		  Foreman-Mackey and David Hogg design.
+%%  RNAAS       : Supresses an abstract. Originally for RNAAS manuscripts 
+%%                but now that abstracts are required this is obsolete for
+%%                AAS Journals. Authors might need it for other reasons. DO NOT
+%%                use \begin{abstract} and \end{abstract} with this style.
+%%
+%% Note that you can submit to the AAS Journals in any of these 6 styles.
+%%
+%% There are other optional arguments one can invoke to allow other stylistic
+%% actions. The available options are:
+%%
+%%   astrosymb    : Loads Astrosymb font and define \astrocommands. 
+%%   tighten      : Makes baselineskip slightly smaller, only works with 
+%%                  the twocolumn substyle.
+%%   times        : uses times font instead of the default
+%%   linenumbers  : turn on lineno package.
+%%   trackchanges : required to see the revision mark up and print its output
+%%   longauthor   : Do not use the more compressed footnote style (default) for 
+%%                  the author/collaboration/affiliations. Instead print all
+%%                  affiliation information after each name. Creates a much 
+%%                  longer author list but may be desirable for short 
+%%                  author papers.
+%% twocolappendix : make 2 column appendix.
+%%   anonymous    : Do not show the authors, affiliations and acknowledgments 
+%%                  for dual anonymous review.
+%%
+%% these can be used in any combination, e.g.
+%%
+%% \documentclass[twocolumn,linenumbers,trackchanges]{aastex631}
+%%
+%% AASTeX v6.* now includes \hyperref support. While we have built in specific
+%% defaults into the classfile you can manually override them with the
+%% \hypersetup command. For example,
+%%
+%% \hypersetup{linkcolor=red,citecolor=green,filecolor=cyan,urlcolor=magenta}
+%%
+%% will change the color of the internal links to red, the links to the
+%% bibliography to green, the file links to cyan, and the external links to
+%% magenta. Additional information on \hyperref options can be found here:
+%% https://www.tug.org/applications/hyperref/manual.html#x1-40003
+%%
+%% Note that in v6.3 "bookmarks" has been changed to "true" in hyperref
+%% to improve the accessibility of the compiled pdf file.
+%%
+%% If you want to create your own macros, you can do so
+%% using \newcommand. Your macros should appear before
+%% the \begin{document} command.
+%%
+\newcommand{\vdag}{(v)^\dagger}
+\newcommand\aastex{AAS\TeX}
+\newcommand\latex{La\TeX}
+
+%% Reintroduced the \received and \accepted commands from AASTeX v5.2
+%\received{March 1, 2021}
+%\revised{April 1, 2021}
+%\accepted{\today}
+
+%% Command to document which AAS Journal the manuscript was submitted to.
+%% Adds "Submitted to " the argument.
+%\submitjournal{PSJ}
+
+%% For manuscript that include authors in collaborations, AASTeX v6.31
+%% builds on the \collaboration command to allow greater freedom to 
+%% keep the traditional author+affiliation information but only show
+%% subsets. The \collaboration command now must appear AFTER the group
+%% of authors in the collaboration and it takes TWO arguments. The last
+%% is still the collaboration identifier. The text given in this
+%% argument is what will be shown in the manuscript. The first argument
+%% is the number of author above the \collaboration command to show with
+%% the collaboration text. If there are authors that are not part of any
+%% collaboration the \nocollaboration command is used. This command takes
+%% one argument which is also the number of authors above to show. A
+%% dashed line is shown to indicate no collaboration. This example manuscript
+%% shows how these commands work to display specific set of authors 
+%% on the front page.
+%%
+%% For manuscript without any need to use \collaboration the 
+%% \AuthorCollaborationLimit command from v6.2 can still be used to 
+%% show a subset of authors.
+%
+%\AuthorCollaborationLimit=2
+%
+%% will only show Schwarz & Muench on the front page of the manuscript
+%% (assuming the \collaboration and \nocollaboration commands are
+%% commented out).
+%%
+%% Note that all of the author will be shown in the published article.
+%% This feature is meant to be used prior to acceptance to make the
+%% front end of a long author article more manageable. Please do not use
+%% this functionality for manuscripts with less than 20 authors. Conversely,
+%% please do use this when the number of authors exceeds 40.
+%%
+%% Use \allauthors at the manuscript end to show the full author list.
+%% This command should only be used with \AuthorCollaborationLimit is used.
+
+%% The following command can be used to set the latex table counters.  It
+%% is needed in this document because it uses a mix of latex tabular and
+%% AASTeX deluxetables.  In general it should not be needed.
+%\setcounter{table}{1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% The following section outlines numerous optional output that
+%% can be displayed in the front matter or as running meta-data.
+%%
+%% If you wish, you may supply running head information, although
+%% this information may be modified by the editorial offices.
+%\shorttitle{AASTeX v6.3.1 Sample article}
+%\shortauthors{Schwarz et al.}
+%%
+%% You can add a light gray and diagonal water-mark to the first page 
+%% with this command:
+%% \watermark{text}
+%% where "text", e.g. DRAFT, is the text to appear.  If the text is 
+%% long you can control the water-mark size with:
+%% \setwatermarkfontsize{dimension}
+%% where dimension is any recognized LaTeX dimension, e.g. pt, in, etc.
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\graphicspath{{./}{figures/}}
+%% This is the end of the preamble.  Indicate the beginning of the
+%% manuscript itself with \begin{document}.
+%%\usepackage[justification=centering]{caption}
+
+\begin{document}
+
+\title{The Dominant Close-Companion Star Formation Pathway}
+
+%% LaTeX will automatically break titles if they run longer than
+%% one line. However, you may use \\ to force a line break if
+%% you desire. In v6.31 you can include a footnote in the title.
+
+%% A significant change from earlier AASTEX versions is in the structure for 
+%% calling author and affiliations. The change was necessary to implement 
+%% auto-indexing of affiliations which prior was a manual process that could 
+%% easily be tedious in large author manuscripts.
+%%
+%% The \author command is the same as before except it now takes an optional
+%% argument which is the 16 digit ORCID. The syntax is:
+%% \author[xxxx-xxxx-xxxx-xxxx]{Author Name}
+%%
+%% This will hyperlink the author name to the author's ORCID page. Note that
+%% during compilation, LaTeX will do some limited checking of the format of
+%% the ID to make sure it is valid. If the "orcid-ID.png" image file is 
+%% present or in the LaTeX pathway, the OrcID icon will appear next to
+%% the authors name.
+%%
+%% Use \affiliation for affiliation information. The old \affil is now aliased
+%% to \affiliation. AASTeX v6.31 will automatically index these in the header.
+%% When a duplicate is found its index will be the same as its previous entry.
+%%
+%% Note that \altaffilmark and \altaffiltext have been removed and thus 
+%% can not be used to document secondary affiliations. If they are used latex
+%% will issue a specific error message and quit. Please use multiple 
+%% \affiliation calls for to document more than one affiliation.
+%%
+%% The new \altaffiliation can be used to indicate some secondary information
+%% such as fellowships. This command produces a non-numeric footnote that is
+%% set away from the numeric \affiliation footnotes.  NOTE that if an
+%% \altaffiliation command is used it must come BEFORE the \affiliation call,
+%% right after the \author command, in order to place the footnotes in
+%% the proper location.
+%%
+%% Use \email to set provide email addresses. Each \email will appear on its
+%% own line so you can put multiple email address in one \email call. A new
+%% \correspondingauthor command is available in V6.31 to identify the
+%% corresponding author of the manuscript. It is the author's responsibility
+%% to make sure this name is also in the author list.
+%%
+%% While authors can be grouped inside the same \author and \affiliation
+%% commands it is better to have a single author for each. This allows for
+%% one to exploit all the new benefits and should make book-keeping easier.
+%%
+%% If done correctly the peer review system will be able to
+%% automatically put the author and affiliation information from the manuscript
+%% and save the corresponding author the trouble of entering it by hand.
+
+\author[0009-0009-5567-2107]{Ryan Sponzilli}
+\affiliation{Department of Astronomy, University of Illinois, 1002 West Green St, Urbana, IL 61801, USA}
+\correspondingauthor{Ryan Sponzilli}
+\email{ryants4@illinois.edu}
+
+\author[0000-0002-4540-6587]{Leslie W. Looney}
+\affiliation{Department of Astronomy, University of Illinois, 1002 West Green St, Urbana, IL 61801, USA}
+
+\author[0000-0002-6195-0152]{John J. Tobin}
+\affiliation{National Radio Astronomy Observatory, 520 Edgemont Rd., Charlottesville, VA 22903 USA}
+
+\author{Frankie J. Encalada}
+\affiliation{Department of Astronomy, University of Illinois, 1002 West Green St, Urbana, IL 61801, USA}
+
+\author[0000-0001-7387-3898]{Austen Fourkas}
+\affiliation{Department of Astronomy, University of Illinois, 1002 West Green St, Urbana, IL 61801, USA}
+
+%% listed alphabetically
+\author[0000-0002-7506-5429]{Guillem Anglada}
+\affiliation{TBD}
+
+\author[0000-0001-5653-7817]{Hector Arce}
+\affiliation{TBD}
+
+\author[0000-0002-5216-8062]{Erin Cox}
+\affiliation{TBD}
+
+\author[0000-0002-9289-2450]{James Di Francesco}
+\affiliation{TBD}
+
+\author[0000-0003-3682-854X]{Nicole Karnath}
+\affiliation{TBD}
+
+\author[0000-0001-5253-1338]{Kaitlin Kratter}
+\affiliation{TBD}
+
+\author[0000-0002-7402-6487]{Zhi-Yun Li}
+\affiliation{TBD}
+
+\author[0000-0001-7629-3573]{Tom Megeath}
+\affiliation{TBD}
+
+\author[0009-0001-6486-6909]{Nadia Murillo}
+\affiliation{TBD}
+
+\author[0000-0003-1252-9916]{Stella Offner}
+\affiliation{Department of Astronomy, University of Texas at Austin, TX 78712, USA}
+
+\author[0000-0002-6737-5267]{Mayra Osorio}
+\affiliation{TBD}
+
+\author[0000-0001-7474-6874]{Sarah Sadavoy}
+\affiliation{TBD}
+
+\author[0000-0002-0549-544X]{Rajeeb Sharma}
+\affiliation{TBD}
+
+
+
+
+%% Note that the \and command from previous versions of AASTeX is now
+%% depreciated in this version as it is no longer necessary. AASTeX 
+%% automatically takes care of all commas and "and"s between authors names.
+
+%% AASTeX 6.31 has the new \collaboration and \nocollaboration commands to
+%% provide the collaboration status of a group of authors. These commands 
+%% can be used either before or after the list of corresponding authors. The
+%% argument for \collaboration is the collaboration identifier. Authors are
+%% encouraged to surround collaboration identifiers with ()s. The 
+%% \nocollaboration command takes no argument and exists to indicate that
+%% the nearby authors are not part of surrounding collaborations.
+
+%% Mark off the abstract in the ``abstract'' environment. 
+\begin{abstract}
+Understanding the formation pathway for close-companion protostars is central to unraveling the processes that govern stellar multiplicity and very early star formation. We analyze a remarkably large sample of Class 0/I close-companion protostellar systems ($\lesssim$500 au) using ALMA observations of 11 systems in Perseus and 40 systems in Orion. These companions are thought to form either directly at these small scales via disk fragmentation, or at larger scales ($>$1000 au) via turbulent fragmentation followed by inward migration. The relative prevalence of these formation pathways remains uncertain, yet is critical to a comprehensive picture of star formation. We examine the distribution of position angles of companion protostars relative to the position angles of their molecular outflows. The outflow is a useful proxy for the angular momentum vector of the system, orthogonal to the disk major axis. We use a simple model to account for a random sampling of inclinations and orbital phase in each system, finding that the observations are consistent with a distribution where the outflows are preferentially orthogonal to the companions. Based on this analysis, we suggest disk fragmentation is the dominant formation pathway for close-companion protostellar systems.
+\end{abstract}
+
+%% Keywords should appear after the \end{abstract} command. 
+%% The AAS Journals now uses Unified Astronomy Thesaurus concepts:
+%% https://astrothesaurus.org
+%% You will be asked to selected these concepts during the submission process
+%% but this old "keyword" functionality is maintained in case authors want
+%% to include these concepts in their preprints.
+%\keywords{Classical Novae (251) --- Ultraviolet astronomy(1736) --- History of astronomy(1868) --- Interdisciplinary astronomy(804)}
+
+%% From the front matter, we move on to the body of the paper.
+%% Sections are demarcated by \section and \subsection, respectively.
+%% Observe the use of the LaTeX \label
+%% command after the \subsection to give a symbolic KEY to the
+%% subsection for cross-referencing in a \ref command.
+%% You can use LaTeX's \ref and \label commands to keep track of
+%% cross-references to sections, equations, tables, and figures.
+%% That way, if you change the order of any elements, LaTeX will
+%% automatically renumber them.
+%%
+%% We recommend that authors also use the natbib \citep
+%% and \citet commands to identify citations.  The citations are
+%% tied to the reference list via symbolic KEYs. The KEY corresponds
+%% to the KEY in the \bibitem in the reference list below. 
+
+\section{Introduction} 
+\label{sec:intro}
+It is well established that nearly half of all solar-type stars reside in binary or higher order systems \citep[e.g.,][]{Raghavan_et_al_2010, Offner_et_al_2023}. Young stellar objects (YSOs) are found to have even higher rates of multiplicity \citep[e.g.,][]{Looney_et_al_2000, Tobin_et_al_2022}. This implies that star formation is inherently a process that, more often than not, creates more than one star. The specifics of how that occurs and the evolution of such systems are an active question of research at this time \citep{Offner_et_al_2023}.
+
+Stars are born within molecular clouds through gravitational collapse. Gravitational collapse happens when internal sources of support (thermal, magnetic, turbulence, etc.) are weaker than the gravitational potential  \citep{Shu_et_al_1987, mckee&ostriker_2007}. During gravitational collapse, denser clumps collapse more rapidly, causing an inside-out collapse. This results in a dense central core and a broader less dense envelope. Core collapse and the conservation of angular momentum produce a protostar surrounded by a flattened, rotating disk, embedded inside an infalling envelope of gas and dust \citep{Adams_et_al_1987}.
+
+YSOs are classified according to their spectral energy distributions as Class 0, I, Flat Spectrum (FS), II, and III \citep{Lada&Wilking_1984, Adams_et_al_1987, Greene_et_al_1994, Andre_et_al_1993}. The observational classes roughly correspond to evolutionary stage. Class 0 sources are low-mass protostars lacking the bulk of their final mass, and deeply embedded within their infalling, large mass reservoir envelope \citep{Andre_et_al_1993}. Submillimeter interferometry is required to observe compact structures and disks in Class 0 sources. Subsequent stages follow the dissipation of the envelope and growth of the protostar.
+
+Star formation not only involves the infall phenomena of gravitational collapse but also outflow phenomena in the form of jets, winds, and molecular outflows. Jets and winds drive molecular outflows by shocking and entraining ambient material. Highly collimated jets with velocities ranging from 100-1000 km/s are believed to be launched from protostars through dynamical interactions of accreted material with magnetic fields \citep[e.g.,][]{Frank_2014, Bally_2016}. Disk winds are launched from various radii on a rotating protostellar disk \citep[e.g.,][]{Feeney-Johansson_et_al_2024}, and may be ejecting material directly from the disk surface \citep{pascucci_2023}. Molecular outflows are typically launched perpendicular to the disk axis \cite[e.g.,][]{Hsieh_2023, Lee_et_al_2016}. Molecular outflows often have clearly defined edges of parabolic or conical shapes resulting in typical v-shaped morphologies seen on one or both sides of the protostar. Molecular outflows can be used as a proxy for the angular momentum of a system \citep[e.g.,][]{Offner_et_al_2016}, so we can measure the position angle (PA) of the observed outflow to determine the angular momentum direction of the protostar.
+
+The distribution of binary separations appears bimodal with one peak at scales $\sim$100 au and a second peak at scales $>$1000 au \citep{Tobin_et_al_2016, Tobin_et_al_2022}. The bimodal distribution is suggestive of two distinct formation mechanisms acting at different scales, independently producing wide-separation systems and close-separation systems. These two mechanisms are believed to be turbulent fragmentation \citep{Tohline_2002, Offner_et_al_2023, Offner_et_al_2010}, and disk fragmentation \citep{Tohline_2002, Kratter&Lodado_2016}. Fragmentation is the process by which self-gravitating objects develop substructures that evolve and collapse independently \citep{Offner_et_al_2023}. Fragmentation occurs on multiple scales within molecular clouds. It proceeds from clouds, to clumps, to cores, to embedded protostars with disks, to companion systems. \citep{Pokhrel_et_al_2018}. 
+
+Turbulent fragmentation occurs following the collapse of a core as turbulence in the core spontaneously leads to fragmentation. Turbulence is chaotic and unpredictable motion in a gas characterized by rapid fluctuations in velocity, pressure, and/or density. Turbulence is created within clouds and cores by phenomena like supernova explosions, stellar winds, and protostellar outflows. Through turbulence, multiple density enhancements can arise and fragmentation follows. Turbulent fragmentation will preferentially produce wide-separation protostellar systems on core scales ($>$1000 au), and importantly, their angular momentum vectors would not be correlated with each other in any way as a result of the turbulent process \citep{Offner_et_al_2016}. 
+
+In disk fragmentation, the initial free-fall collapse proceeds straightforwardly, and a single protostar and disk result. Typical dust disk radii for Class 0 and I YSOs are $\sim$45 au and $\sim$37 au \citep{Tobin_2020}. The singular disk then fragments via gravitational instability and a second protostar forms. Disk fragmentation will preferentially produce close-companion protostellar systems on disk scales ($<$500 au). These two close-companions would share a common direction of angular momentum since they were born from a common disk \citep{Bate_2018}. In this paper, we will refer to close-companions as protostars separated by $\lesssim$500 au. The slight fuzziness of this boundary is due to the maximum separation in our sample being 572.5 au.
+
+Over time, dynamical interactions can cause the migration of one or more companion protostars \citep{Offner_et_al_2010, Bate_2012}, making it difficult to decipher how that protostar formed. It may have formed via turbulent fragmentation with an initial separation $>$1000 au and then migrated inward to a separation $<$500 au. Because of this, it is an open question whether close-multiple systems were formed from disk fragmentation at these scales, or whether they formed from turbulent fragmentation followed by inward migration. 
+
+In this paper, we compare angular momentum directions among protostars in close-binaries, using outflow measurements as a proxy. We look at preferential alignment with the binary separation PA (the relative position angles of the companion protostars, which indicates the orientation of the circum-multiple disk) to understand how close-companion systems form. We use new data from the Atacama Large Millimeter/Submillimeter Array (ALMA) to probe the origins of these close-companion systems. In Section \ref{sec:obs} we present the observations. In Section \ref{sec:results} we present our outflow measurements and compare possible models of formation. In Section \ref{sec:dis} we discuss how various close-companion systems appear consistent or inconsistent with the two formation pathways: turbulent fragmentation and disk fragmentation. In Section \ref{sec:conc} we present conclusions.
+
+\section{Observations} \label{sec:obs}
+
+\subsection{Sample Selection} \label{sec:obs:sample-selection}
+The NSF's Karl G. Jansky Very Large Array (VLA) performed the VLA Nascent Disk and Multiplicity Survey (VANDAM) for both Orion and Perseus. From the VANDAM Orion survey (9 mm and 30 au resolution) as well as from a complete survey of the protostellar population in Orion taken in ALMA Cycle 3/4 (102 Class 0 protostars and 229 Class I protostars; 0.87 mm and 40 au resolution), we have identified 40 close-companion protostars in Orion. From the VANDAM Perseus survey (8 mm and 20 au resolution) as well as from the results of a previous ALMA Cycle 2 program \citep{Tobin_et_al_2018}, we have identified 11 close-companion protostars in Perseus. Per-emb-5 was originally included, but is now known not to be a binary system \citep{Reynolds_et_al_2024}. With the 51 systems selected from these surveys, we are examining the outflow kinematics of a remarkably large sample size of Class 0/I close-companion systems. 
+
+\subsection{Orion Data} \label{sec:obs:orion}
+The Orion multiple systems were observed with the 12m telescopes on ALMA, project code: 2018.1.01038.S. The observations were in Band 6 at 1.3 mm. The sources were observed in two different groups: Orion A and Orion B. In Orion A, we observed in 7 execution blocks on 14 Oct 2018 (three times), 16 Oct 2018 (twice), and 19 Oct 2018 (twice) with $\sim$45 antennas operating and sampling baselines between $\sim$15 - $\sim$2500 meters. The mean precipitable water vapor (pwv) was $\sim$1 mm. In Orion B, we observed in 5 execution blocks with $\sim48$ antennas on 26 Oct 2018, 28 Oct 2018 (three times), and 23 Nov 2018. The mean pwv was $\sim1$ mm. All proposed targets were detected. In the following analysis we will only discuss the $^{12}$CO ($J=2\rightarrow1$) data.
+
+The correlator was configured for the first baseband to observe two $\sim$59~MHz spectral windows with 30.5 kHz channels centered on $^{13}$CO ($J=2\rightarrow1$) and C$^{18}$O ($J=2\rightarrow1$). Then the second baseband was configured with four 59 MHz spectral windows with 122 kHz channels centered on H$_2$CO ($J=3_{03}\rightarrow2_{02}$), ($J=3_{22}\rightarrow2_{21}$),  ($J=3_{21}\rightarrow2_{20}$), and SO ($J_N = 6_5\rightarrow5_4$). The third baseband was configured with one 938 MHz spectral window with 488 kHz channels centered on $^{12}$CO ($J=2\rightarrow1$). The fourth baseband was configured to observe a 1.875 GHz continuum band centered at 233.5 GHz with 1920 977 kHz channels.
+
+The raw visibility data were reduced using the ALMA pipeline integrated within CASA 5.6.1 \citep{CASA}. We additionally performed self-calibration with CASA 5.6.1 on the continuum data to increase the signal to noise ratio. We performed self-calibration of the continuum data on all sources using two rounds of phase-only self-calibration where the first solution interval corresponded to the length of a single scan and the second solution interval corresponded to 18.15s or 6.05s; 6.05s corresponds to the length of a single integration. Following phase-only self-calibration, we also applied amplitude self-calibration, using a solution interval that was the length of a scan, and we used the option \texttt{solnorm=True} to normalize the amplitude solutions to 1, rather than allowing them to scale freely, which prevents the flux density from being significantly altered erroneously. Following the completion of self-calibration on the continuum, the solutions were also applied to the spectral line spectral windows. We used Briggs weighting with a \texttt{robust=0.5} with calls to \texttt{tclean} for both the dust continuum and the spectral lines. The continuum images were produced using standard calls to the ALMA pipeline tasks \texttt{hif\_makeimlist} and \texttt{hif\_makeimages}. We used options of the \texttt{hif\_editimlist} task to image the spectral windows with the desired channel binning and frequency range. For $^{12}$CO, we used 1~km~s$^{-1}$ channels and imaged $\pm$100~km~s$^{-1}$ of the source velocity. 
+
+The $^{12}$CO cubes typically had 1372$\times$1372 pixels, a pixel scale of 0\farcs034, and a synthesized beam of 0\farcs22$\times$0\farcs17. The continuum images were typically 1280$\times$1280 pixels and a pixel scale of 0\farcs031, and the synthesized beam was 0\farcs21$\times$0\farcs15. The noise in the 1.3~mm continuum was $\sim$0.2~mJy~beam$^{-1}$m, and the noise in the $^{12}$CO cubes was $\sim$2~mJy~beam$^{-1}$.
+
+\subsection{Perseus Data} \label{sec:obs:perseus}
+The Perseus multiple systems were observed with the 12m telescopes on ALMA, project code: 2017.1.00053.S. The observations were in Band 6 at 1.3 mm. The sources were observed in 5 execution blocks throughout 2017 December, 2018 January, and 2018 September with 43-45 antennas operating and sampling baselines between $\sim$15 - $\sim$2500 meters. The observations were executed within $\sim$1.1 hour block, and the total time spent on each source was $\sim$17.6-20.2 minutes. The pwv ranged from 0.54 - 2.57~mm during the different executions.  All proposed targets were detected. In the following analysis we will only discuss the $^{12}$CO ($J=2\rightarrow1$) data. 
+
+The correlator was configured for the first baseband to observe a 2 GHz continuum band centered at 232.5 GHz and observed in TDM mode with 128 channels. Then the second baseband was configured with two 234~MHz spectral windows with 488 kHz channels centered on $^{12}$CO ($J=2\rightarrow1$) and N$_2$D$^{+}$ ($J=3\rightarrow2$) and $^{13}$CS ($J=5\rightarrow4$). The third baseband was configured with four 59~MHz spectral windows with 122 kHz channels centered on H$_2$CO ($J=3_{03}\rightarrow2_{02}$), ($J=3_{22}\rightarrow2_{21}$),  ($J=3_{21}\rightarrow2_{20}$), and SO ($J_N = 6_5\rightarrow5_4$). The fourth baseband was configured with two 59 MHz spectral windows with 61 kHz channels centered on $^{13}$CO ($J=2\rightarrow1$) and C$^{18}$O ($J=2\rightarrow1$).
+
+The raw visibility data were reduced by the ALMA pipeline integrated within CASA 5.4.0 \citep{CASA}. We additionally performed self-calibration on the continuum data to increase the signal to noise ratio. We performed self-calibration of the continuum data on all sources also using CASA 5.6.1, using two rounds of phase-only self-calibration where the first solution interval corresponded to the length of a single scan and the second solution interval corresponded to 12.1s or 6.05s; 6.05s corresponds to the length of a single integration. Again, afterwards we also applied amplitude self-calibration using a solution interval that was the length of a scan with the \texttt{solnorm=True} option. Following the completion of self-calibration on the continuum, the solutions were also applied to the spectral line spectral windows. The data were imaged using a custom recipe of the ALMA imaging pipeline in CASA version 5.4.0, using Briggs weighting with \texttt{robust=0.5} for all images. The continuum images were produced using standard calls to the ALMA pipeline tasks \texttt{hif\_makeimlist} and \texttt{hif\_makeimages}. We used options of the \texttt{hif\_editimlist} task to image the spectral windows with the desired channel binning and frequency range. For $^{12}$CO, we used 0.66~km~s$^{-1}$ channels and imaged $\pm$100~km~s$^{-1}$ of the source velocity. 
+
+The $^{12}$CO cubes typically had 1000$\times$1000 pixels, a pixel scale of 0\farcs041, and a synthesized beam of 0\farcs29$\times$0\farcs21. The continuum images were typically 1372$\times$1372 pixels, a pixel scale of 0\farcs03, and the synthesized beam was 0\farcs28$\times$0\farcs21. The noise in the 1.3~mm continuum was $\sim$0.5~mJy~beam$^{-1}$, and the noise in the $^{12}$CO cubes was 3.7~mJy~beam$^{-1}$.
+
+One source, Per-emb-107 (L1448 IRS3C), was not self-calibrated in the same way as the others because it had been unintentionally left out of the original processing. Instead of manually processing the data, we imaged those data with the ALMA pipeline included in CASA 6.6.1 using automated self-calibration through the imaging service available on the NRAO archive. Comparison of self-calibration done through the automated imaging service versus the manual self-calibration showed very similar results, and the ALMA imaging pipeline was executed in a very similar way to all the other images as well.
+
+\section{Results} \label{sec:results}
+
+\subsection{Outflow Emission and Measurements} \label{sec:results:measurments}
+
+\begin{figure*}[ht!]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/fig_1.pdf}
+\caption{A subset of four typical close-binary systems with one outflow. These are integrated intensity (moment 0) maps of $^{12}$CO, and the integrated channels are listed in Table \ref{table:by_field}. Below each moment map is a zoom-in panel of the continuum sources, with a box size of 1075 au by 1000 au. The angular box size varies between $\sim$2.33" and $\sim$3.33" depending on the exact distance of the source. The source markers may be slightly offset in the image due to differences in resolution between these images and the resolutions in the papers from which we took the coordinates. The white arrows indicate the separation direction, and the cyan arrow(s) indicates the blue-shifted direction of the measured outflow. All images are shown in Appendix \ref{sec:appendix}; these systems are representative.}
+\label{fig:fig_1}
+\end{figure*}
+
+In each field, ALMA recorded data for multiple molecular emission lines; we analyze the $^{12}$CO molecular line data since $^{12}$CO is expected to trace molecular outflows \citep[e.g.,][]{Tobin_et_al_2018}. We measure outflow PAs by eye with a protractor on the $^{12}$CO data within Cube Analysis and Rendering Tool for Astronomy \citep[CARTA;][]{carta}. The measured data is presented in Table \ref{table:by_ouflow}, along with adopted uncertainties; however, example systems are given in Figures 1 and 2, see below for more details.
+
+Of the 40 close-companion systems from the Orion sample, we measured at least one clear outflow in 27 of them. We define a single outflow as a pair of redshifted and blueshifted lobes, although sometimes one lobe is not detected. Of the remaining 13 systems, seven had unclear or complex structures which in some cases resembled outflows, but were not unambiguous. For these systems, we were unable to confidently determine an outflow PA. The other six unmeasured systems did not have any extended structure in the $^{12}$CO emission. See \ref{sec:appendix:fields-without-emission} regarding these six. We measured at least one outflow PA in all of the Perseus systems. In total we measure at least one outflow in 38 systems.
+
+For each outflow PA measurement, we classify it as either HIGH confidence or LOW confidence. Factors that make a measurement LOW confidence include: a large PA offset between outflow lobes, low signal, and extremely wide outflow cavities ($\sim$180$^\circ$). These factors make it difficult to accurately measure a PA, and we adopt a higher uncertainty for them. Specific factors for each outflow are described in \ref{sec:appendix:fields-with-emission}.
+
+Each Perseus system has previously been examined and had its outflow PAs measured \citep[e.g.][]{Plunkett_2013, Lee_et_al_2016, Stephens_et_al_2017, Dunham_et_al_2024}. In this analysis, we have independently remeasured outflows in each Perseus system and note agreements and a few discrepancies with prior work in \ref{sec:appendix:fields-with-emission}.
+
+A significant fraction of our systems with measured outflows (9 of 38; $\sim$24\%) have more than one distinct outflow. For these systems we measured a PA for both outflows. We can further categorize these systems into binaries where each companion drives its own outflow, and hierarchical triples where the inner binary drives one outflow and the tertiary companion drives another. Four systems are of the former type: HOPS-290, Per-emb-12, Per-emb-27, and Per-emb-35. Five systems are of the latter type: HOPS-12, HOPS-92, HOPS-203, HOPS-288, and Per-emb-33. Among all 38 systems with measured outflow PAs, the maximum binary separation is 572.5 au, the minimum is 24.1 au, and the median is 99.6 au. Two of the hierarchical triples are not close-companions, but the other three are close-companions. We discuss this further in \ref{sec:dis:hierarchical-triples}. 
+
+Figure \ref{fig:fig_1} illustrates four systems with good examples of outflows. The edges of the conical/parabolic shapes of the molecular outflow are seen on either side of each system. They form a v-shape with an apparent cavity that points back to their origin near the continuum sources that denote the protostar locations. Figure \ref{fig:fig_2} contains two examples of systems with multiple outflows. Almost all of our observed outflow morphologies appear consistent with being driven by a slow, wide-angle wind characterized by small scales ($<$2000 au), striking conical or parabolic shapes, semi-opening angles of 10$^\circ$-40$^\circ$, and an inner low-brightness cavity \citep[e.g.,][]{pascucci_2023, Feeney-Johansson_et_al_2024}.
+
+We calculate the binary separation PA in order to compare it to the outflow direction. In the case of higher-order systems, we consider the innermost binary. The separation vectors are calculated with the coordinates from each YSO obtained from \cite{Tobin_et_al_2022}, \cite{Reynolds_et_al_2024}, and \cite{Tobin_et_al_2018}. We calculate $\Delta$PA for each sample, the difference between the measured outflow PA and the observed separation PA. A value of $\Delta$PA near 90$^\circ$ indicates an outflow that is orthogonal to the binary separation PA, at least in projection. We cannot calculate a $\Delta$PA for multiple-outflow systems of the hierarchical triple type since it does not make sense to compare the outflow of the tertiary to the separation of the inner binary. This leaves us with 42 values for $\Delta$PA: 34 single outflow binaries and 4 where each binary component drives its own outflow (8 PAs, 2 per binary system). The observed distribution is shown in Figure \ref{fig:histogram}.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig_2.pdf}
+\caption{A subset of two close-multiple systems with more complex outflow phenomena. These are integrated intensity (moment 0) maps of $^{12}$CO, and the integrated channels are listed in Table \ref{table:by_field}. Below each moment map is a zoom-in panel of the continuum sources, with a box size of 1075 au by 1000 au. The angular box size varies between $\sim$2.33" and $\sim$3.33" depending on the exact distance of the source. The source markers may be slightly offset in the image due to differences in resolution between these images and the resolutions in the papers from which we took the coordinates. The white arrows indicate the separation direction, and the cyan arrow(s) indicates the blue-shifted direction of the measured outflow. All images are shown in Appendix \ref{sec:appendix}; these systems are representative. We categorize HOPS-288 (left) as a hierarchical triple with two outflows. We categorize HOPS-290 (right) as a binary with two outflows.}
+\label{fig:fig_2}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/histogram.pdf}
+\caption{The observed distribution of $\Delta$PA values. The distribution includes 42 values for $\Delta$PA: 34 single outflow binaries and 4 where each binary component drives its own outflow.}
+\label{fig:histogram}
+\end{figure}
+
+\subsection{Model Comparisons} \label{sec:results:models}
+
+We cannot distinguish whether any individual value of $\Delta$PA $\not\approx$ 90$^\circ$ is a projection effect of inclination or if it is actually a misaligned outflow. Even $\Delta$PA $\approx$ 90$^\circ$ could be due to a projection effect. To account for this, we generate 101 models ranging from 0\% preferentially aligned ($\Delta$PA is random) to 100\% preferentially aligned ($\Delta$PA = 90$^\circ$). For each of these simulated distributions, we compare them to our observed distribution of $\Delta$PA with a Kolmogorov-Smirnov (KS) test. Using these p-values we can note below which fraction of preferentially aligned outflows the observations are no longer consistent.
+
+The 101 distributions were constructed with Monte Carlo style simulations, ran 100,000 times each. For the orthogonal PA model distribution, a binary separation PA and is sampled from a uniform random distribution between 0$^\circ$ and 90$^\circ$ and the inclination is similarly randomly sampled between 0$^\circ$ and 90$^\circ$. However the inclination is sampled in a uniform distribution of $cos~i$ which leads to an inclination distribution that has a mean of 60$^\circ$. Next, the binary separation PA is projected to a 2-D plane using the inclination. The expected orthogonal outflow position angles was found by subtracting the 2-D projection from 90$^\circ$. For the random PA model distribution, we similarly generate a binary separation PA and inclination angle and then perform a projection. Next, we generate a random offset for the outflow PA, drawing from a uniform random distribution between 0$^\circ$ and 90$^\circ$. Subtracting the projected separation angle from the random offset yields the simulated random distribution. Distributions between 100\% Orthogonal and 0\% Orthogonal are created by concatenating the corresponding percentages of these two distributions together. 
+
+Figure \ref{fig:cumulat} provides a snapshot of five of these models: 100\% Orthogonal, 75\% Orthogonal, 50\% Orthogonal, 25\% Orthogonal, and Random (0\% Orthogonal). Visually, it is apparent that our observed distribution of $\Delta$PA most closely matches a model where all outflows are orthogonal. Our KS tests show that the observed $\Delta$PA distribution is consistent with being dominantly orthogonal. Using a significance level of p = 0.05, we fail to reject the null hypothesis of a dominantly orthogonal model; at this threshold, our data are consistent with a $\sim$71\% orthogonal model. The highest KS-test p-value (p $\sim$0.68) occurs for a $\sim$95\% orthogonal distribution, indicating this model provides the closest match to the data. However, we emphasize that these p-values reflect only statistical consistency with, rather than proof of, the null model.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/DeltaPA_cumulat_deg.pdf}
+\caption{The cumulative frequency distribution of $\Delta$PA. We plot the observed data along with five of our simulated distributions. The observations most closely match the simulated distribution of 100\% orthogonal outflows.}
+\label{fig:cumulat}
+\end{figure}
+
+% \clearpage
+% \startlongtable
+\begin{deluxetable*}{llllllllll}
+\tablenum{1}
+\tablecaption{All Measured Outflows}
+\tablehead{
+    \colhead{Field} & 
+    \colhead{Confidence\tablenotemark{a}} & 
+    \colhead{Type\tablenotemark{b}} & 
+    \colhead{Sep\tablenotemark{c, d}\ (au)} & 
+    \colhead{Class\tablenotemark{d}} &
+    \colhead{Source\tablenotemark{e}} &
+    \colhead{PA\ ($^\circ$)} & 
+    \colhead{Lobe Offset\tablenotemark{f}\ ($^\circ$)} &
+    \colhead{Binary PA\ ($^\circ$)} & 
+    \colhead{$\Delta$PA\ ($^\circ$)}
+}
+\startdata
+Per-emb-22 & HIGH & Binary & 225.4 & 0 & A+B & 309 & 8 & 265 & 44 \\
+L1448 IRS3C & HIGH & Binary & 75.3 & 0 & A+B & 307 & 6 & 11 & 63 \\
+Per-emb-33 & HIGH & Binary & 79.6 & 0 & A+B & 303 & \nodata & 329 & 26 \\
+Per-emb-33 & HIGH & Tertiary & 263.2 & 0 & C & 288 & \nodata & \nodata & \nodata \\
+Per-emb-17 & HIGH & Binary & 83.4 & 0 & A+B & 236 & 16 & 147 & 89 \\
+Per-emb-35 & HIGH & Binary & 572.5 & I & A & 119 & \nodata & 64 & 55 \\
+Per-emb-35 & HIGH & Binary & 572.5 & I & B & 310 & 5 & 64 & 66 \\
+Per-emb-27 & HIGH & Binary & 186.0 & 0 & A & 203 & 24 & 195 & 8 \\
+Per-emb-27 & HIGH & Binary & 186.0 & 0 & B & 294 & \nodata & 195 & 81 \\
+Per-emb-36 & LOW & Binary & 93.3 & I & A+B & 226 & 36 & 0 & 46 \\
+Per-emb-44 & LOW & Binary & 90.1 & 0 & A+B & 139 & 48 & 268 & 51 \\
+Per-emb-12 & HIGH & Binary & 549.0 & 0 & B & 208 & 6 & 308 & 80 \\
+Per-emb-12 & HIGH & Binary & 549.0 & 0 & A & 180 & 19 & 308 & 53 \\
+Per-emb-18 & HIGH & Binary & 25.5 & 0 & A+B & 167 & \nodata & 259 & 87 \\
+Per-emb-2 & HIGH & Binary & 24.1 & 0 & B & 126 & 2 & 327 & 21 \\
+HOPS-32 & HIGH & Binary & 162.2 & 0 & B & 339 & 4 & 233 & 74 \\
+HOPS-12 & HIGH & Tertiary & 1853.5 & 0 & A & 337 & \nodata & \nodata & \nodata \\
+HOPS-12 & HIGH & Binary & 80.6 & 0 & B-A & 337 & 2 & 45 & 68 \\
+HOPS-92 & HIGH & Tertiary & 498.8 & FS & B & 89 & \nodata & \nodata & \nodata \\
+HOPS-92 & HIGH & Binary & 108.4 & FS & A-A+A-B & 256 & \nodata & 209 & 47 \\
+HOPS-84 & HIGH & Binary & 275.5 & I & A+B & 263 & 3 & 209 & 53 \\
+HOPS-75 & LOW & Binary & 99.8 & 0 & A+B & 280 & \nodata & 187 & 87 \\
+HOPS-182 & HIGH & Binary & 381.5 & 0 & A+B & 55 & 16 & 198 & 37 \\
+HOPS-168 & HIGH & Binary & 73.7 & 0 & A+B & 339 & 5 & 59 & 79 \\
+HOPS-203 & HIGH & Binary & 49.7 & 0 & A+B & 324 & \nodata & 201 & 57 \\
+HOPS-203 & HIGH & Tertiary & 1085.5 & 0 & C & 281 & \nodata & \nodata & \nodata \\
+HOPS-173 & LOW & Binary & 103.0 & 0 & A+B & 67 & \nodata & 146 & 79 \\
+HOPS-193 & HIGH & Binary & 100.0 & I & A+B & 274 & 8 & 177 & 83 \\
+HOPS-158 & LOW & Binary & 46.0 & FS & A+B & 56 & 18 & 115 & 59 \\
+HOPS-395 & HIGH & Binary & 65.4 & 0 & B & 174 & 346 & 263 & 89 \\
+HOPS-288 & HIGH & Binary & 61.3 & 0 & A-A+A-B & 236 & \nodata & 150 & 86 \\
+HOPS-288 & HIGH & Tertiary & 221.9 & 0 & B & 32 & \nodata & \nodata & \nodata \\
+HOPS-290 & HIGH & Binary & 332.7 & 0 & A & 114 & 4 & 298 & 5 \\
+HOPS-290 & HIGH & Binary & 332.7 & 0 & B & 49 & 3 & 298 & 70 \\
+HOPS-281 & HIGH & Binary & 311.6 & FS & A+B & 206 & 3 & 253 & 47 \\
+HOPS-282 & HIGH & Binary & 70.1 & I & A+B & 3 & 4 & 263 & 80 \\
+HOPS-384 & LOW & Binary & 49.0 & 0 & A+A-B & 4 & \nodata & 40 & 35 \\
+HOPS-304 & LOW & Binary & 272.7 & FS & A+B & 152 & 30 & 252 & 80 \\
+HOPS-400 & HIGH & Binary & 184.0 & 0 & A & 87 & 19 & 158 & 71 \\
+HOPS-213 & LOW & Binary & 114.4 & FS & A+B & 84 & 5 & 319 & 55 \\
+HOPS-312 & HIGH & Binary & 134.7 & 0 & A+B & 36 & 1 & 137 & 80 \\
+HOPS-363 & LOW & Binary & 79.5 & FS & A+B & 273 & 24 & 124 & 31 \\
+HOPS-323 & HIGH & Binary & 273.6 & I & A+B & 123 & 7 & 224 & 79 \\
+HOPS-366 & HIGH & Binary & 61.1 & I & A+B & 317 & \nodata & 37 & 80 \\
+HOPS-361 & HIGH & Binary & 37.6 & 0 & C-A+C-B & 21 & \nodata & 288 & 87 \\
+HOPS-364 & HIGH & Binary & 65.5 & I & A+B & 96 & 18 & 301 & 24 \\
+HH270VLA1 & HIGH & Binary & 99.4 & 0 & A+B & 230 & 1 & 124 & 74 \\
+\enddata
+\tablecomments{\tablenotemark{a}For all angle measurements, we adopt an uncertainty of 10$^\circ$ for outflows with HIGH confidence and an uncertainty of 30$^\circ$ for outflows with LOW confidence. \tablenotemark{b}Whether the outflow is launched from a binary or from a tertiary source. For tertiaries we do not calculate Binary PA or $\Delta$PA. \tablenotemark{c}For tertiaries this is the separation from the inner binary. \tablenotemark{d}This data is from Table 3 and Table 4 in \cite{Tobin_et_al_2022}. \tablenotemark{e}If two sources are listed with a '+', we could not distinguish from which source the outflow is driven. \tablenotemark{f}{The discrepancy between measured lobe PAs. Only applicable for binaries with more than one measured lobe.}}
+\label{table:by_ouflow}
+\end{deluxetable*}
+
+\section{Discussion} \label{sec:dis}
+Close-companion protostars are thought to form either directly at these $\lesssim$ 500 au scales via disk fragmentation, or they form on $>$1000 au scales via turbulent fragmentation and then migrate to separations $\lesssim$500 au. Numerical simulations of star formation in \cite{Bate_2012} and \cite{Offner_et_al_2010} suggest that inward migration of YSOs from separations $>$1000 au to $\lesssim$500 au can occur on timescales of order 0.1 Myr. This is comparable to the combined protostellar Class 0 and I lifetime of $\sim$0.5 Myr \citep{Dunham_2014}, meaning that migration may have already taken place in some of our observed systems. If this is the case in any of our systems, the relative alignment between the angular momentum of close-companion protostars should reveal whether migration has taken place. Disk fragmentation predicts that the individual circumstellar disks and outflows are preferentially aligned (at least over the dynamical time of the outflow) because they have formed out of a common structure \citep{Bate_2018}, and in turbulent fragmentation with inward migration, the protostars are not expected to be preferentially aligned \citep{Offner_et_al_2016}.
+
+\subsection{Close-Companion Binaries with One Outflow} \label{sec:dis:binaries-one-outflow}
+$\sim$75\% (28/38) of our measured sample consists of close-binary systems that launch a single outflow. We do not know the extent to which each source is contributing to the outflow; it may be that we are observing a collective outflow from both sources, or that we are observing an outflow exclusive to one source. 
+
+A numerical simulation of multiple-star formation in \cite{Peters_et_al_2014} finds that stars formed from material of a common angular momentum will tend to have aligned outflow axes, resulting in a collective outflow with poor collimation as a result of variations in angular momentum among the protostars launching the outflows. The stars in the simulation form in a rotationally flattened structure with a diameter $\sim$0.03 pc or $\sim$6000 au. In the simulation, the protostars then evolve separately and become misaligned on timescales $\sim$0.03 Myr, as gravitational instability disrupts the disk. Because this outflow alignment acted on stars formed from material of a common angular momentum, this alignment process is dependent on recent disk fragmentation. This would suggest that in each of our systems with multiple sources and one outflow, we are seeing a collective outflow where the angular momentum vectors of each source are somewhat aligned, and would be expected to become misaligned (less collimated) with further evolution. In some systems, we note visible evidence of an overlapping and aligned outflow. This means that there are two distinct sets of edges of two overlapping outflows pointing in the same direction. These cases are noted in \ref{sec:appendix:fields-with-emission}. This may be hinting at the idea of collective outflows. 
+
+Our observations and subsequent statistical testing in \ref{sec:results:models} suggest that the observed distribution of $\Delta$PA is consistent with almost every system launching an outflow at 90$^\circ$ to the binary separation PA; this means that all the values of $\Delta$PA $<$90$^\circ$ can be attributed to a projection effect of inclination. Therefore, an aligned angular momentum perpendicular to the circum-multiple disk among sources in these close-binary systems is consistent with the observations. Based solely on outflow alignments, these close-binary systems launching a single outflow are consistent with disk fragmentation. \cite{Reynolds_et_al_2024} made classifications on five of the systems that we categorize as binaries with one outflow. Their classifications are based on ALMA Band 6 (1.3 mm) data, the same as our observations in this paper. Per-emb-2, Per-emb-17, Per-emb-18, and Per-emb-22 were classified as likely disk fragmentation candidates due to strong disk alignment and bright circum-multiple material in some cases. Our findings are consistent with these classifications.
+
+\subsection{Close-Companion Binaries with Two Outflows} \label{sec:dis:binaries-two-outflows}
+Four of 38 of our measured samples are close-binary systems where each companion launches its own distinct outflow. These are HOPS-290, Per-emb-12, Per-emb-27, and Per-emb-35. The two outflows in these systems have an outflow PA difference of 65$^\circ$, 28$^\circ$, 91$^\circ$, and 166$^\circ$ respectively. In the case of Per-emb-12, the red lobes seem to be merging collectively while the blue lobes appear to be interacting and deflecting off of each other \citep[e.g.,][]{Encalada_2024}. The low outflow PA difference of 28$^\circ$ and the nuances of the morphology suggest that we can consider the outflows on these companions to be aligned and consistent with disk fragmentation. The orthogonal outflow on Per-emb-27 and the outflows oriented antiparallel to each other in Per-emb-35 suggest that they were not formed from the same disk, and that turbulent fragmentation and inward migration is more likely. \cite{Tobin_et_al_2016} also notes that because Per-emb-27 has a close separation but drives orthogonal outflows, it may have resulted from migration. \cite{Reynolds_et_al_2024} classifies Per-emb-27 and Per-emb-35 as likely turbulent fragmentation candidates because Per-emb-27 has strongly misaligned disks, and Per-emb-35 has a wider separation (570 au) and lacks circum-multiple material. We leave HOPS-290 as inconclusive.
+
+\subsection{Hierarchical Triples with Two Outflows} \label{sec:dis:hierarchical-triples}
+Five of 38 of our measured samples are hierarchical triple systems where the inner close-binary system presumably launches a collective outflow and the tertiary source also launches its own outflow. These systems are HOPS-12, HOPS-92, HOPS-203, HOPS-288, and Per-emb-33. The two outflows in these systems have an outflow PA difference of 0$^\circ$, 193$^\circ$, 43$^\circ$, 156$^\circ$, and 15$^\circ$ respectively. 
+
+Note that the tertiaries in HOPS-12 and HOPS-203 are not close-companions, they lie $>$1000 au from the inner binary. The other three, HOPS-92, HOPS-288, and Per-emb-33, are close-companions of the inner binary ($<$500 au). HOPS-12 is a peculiar case because its tertiary source lies $\sim$1800 au from the inner binary, yet the outflows are aligned within 1$^\circ$. This close alignment would suggest disk fragmentation, possibly followed by outward migration. Outflow alignment on larger scales like this is also seen in the larger L1448 region, which includes Per-emb-33, Per-emb-22, and L1448 IRS3C. They are quite closely aligned with outflow PAs of 303$^\circ$, 309$^\circ$, and 307$^\circ$ respectively.
+
+HOPS-92 and HOPS-288 both have misaligned outflows but are close-companions to the inner binary. These may be turbulent fragmentation with inward migration candidates. The outflow misalignment of HOPS-203 is ambiguous and the separation from the inner binary is not too extreme at $\sim$1000 au. The formation mechanism here is inconclusive. 
+
+Per-emb-33 may be the most clear-cut case. With a small outflow PA difference of 15$^\circ$, the outflows are more or less aligned, and all three sources are close-companions of each other, suggesting disk fragmentation. \cite{Reynolds_et_al_2021} examines Per-emb-33 (L1448 IRS3B) in more detail and concludes that disk fragmentation is the most likely formation mechanism; they note that the circum-multiple disk is in Keplerian rotation, and that Toomre's Q suggests recent fragmentation via gravitational instability.
+
+\subsection{Summary} \label{sec:dis:summary}
+We find that $\sim$75\% of our measured sample is consistent with disk fragmentation, $\sim$10\% is consistent with turbulent fragmentation followed by inward migration, and $\sim$5\% is inconclusive (32, 4, and 2 out of 38, respectively). Systems consistent with disk fragmentation have aligned and usually collective outflows that are orthogonal to the circumbinary disk. Systems consistent with turbulent fragmentation with inward migration have more than one distinct outflow, which are not aligned with each other. These findings are also consistent with our KS tests which suggest that at least $\sim$71\% of protostellar multiples have values of $\Delta$PA indicative of disk fragmentation.
+
+\section{Conclusions} \label{sec:conc}
+Based on our large sample of 51 close-companion Class 0/I protostellar systems, our measurements of 42 outflow PAs in 38 systems, and the preceding discussion, we draw attention to the following conclusions:
+
+\begin{itemize}
+    \item 38 out of 51 systems ($\sim$72\%) contain identifiable and measurable molecular outflows.
+    \item We measure only one outflow in 29 of the 38 systems with measured outflows ($\sim$75\%). We can not distinguish if the outflow is from a single source or the collective system. However, there is some evidence that suggests a collective origin. 
+    \item In the remaining 9 systems ($\sim$25\%), we measure two outflows; 4 are binaries in which each companion drives its own outflow and 5 are hierarchical triples in which the inner binary drives one outflow and the tertiary companion drives another.
+    \item KS tests show that our observed $\Delta$PA (difference between the outflow PA and binary separation PA) distribution is consistent with being dominantly orthogonal. Using a significance level of 0.05 the data is consistent with at least $\sim$71\% of protostellar multiples exhibiting outflows launching at 90$^\circ$ to the circum-multiple plane, which is indicative of disk fragmentation.
+    \item We find that turbulent fragmentation with inward migration candidate systems often have two outflows, while disk fragmentation candidate systems often form a single collective outflow.
+    \item We posit that disk fragmentation is the dominant formation pathway for close-companion protostellar systems, and turbulent fragmentation followed by inward migration is a less common formation pathway.
+\end{itemize}
+
+%% IMPORTANT! The old "\acknowledgment" command has be depreciated. It was
+%% not robust enough to handle our new dual anonymous review requirements and
+%% thus been replaced with the acknowledgment environment. If you try to 
+%% compile with \acknowledgment you will get an error print to the screen
+%% and in the compiled pdf.
+%% 
+%% Also note that the akcnowlodgment environment does not support long amounts of text. If you have a lot of people and institutions to acknowledge, do not use this command. Instead, create a new \section{Acknowledgments}.
+\begin{acknowledgments}
+This paper makes use of the following ALMA data: ADS/JAO.ALMA$\#$2018.1.01038.S and ADS/JAO.ALMA$\#$2017.1.00053.S. ALMA is a partnership of ESO (representing its member states), NSF (USA) and NINS (Japan), together with NRC (Canada), NSTC and ASIAA (Taiwan), and KASI (Republic of Korea), in cooperation with the Republic of Chile. The Joint ALMA Observatory is operated by ESO, AUI/NRAO and NAOJ. The National Radio Astronomy Observatory and Green Bank Observatory are facilities of the U.S. National Science Foundation operated under cooperative agreement by Associated Universities, Inc. L.W.L. acknowledges support from NSF AST-NSF AST 2108794. F.J.E. acknowledges support from NRAO SOSPA6-010 363369. J.J.T. acknowledges support from  NASA XRP 80NSSC22K1159. This research made use of APLpy, an open-source plotting package for Python \citep{aplpy2012, aplpy2019}. This work made use of Astropy, a community-developed core Python package and an ecosystem of tools and resources for astronomy \citep{astropy:2013, astropy:2018, astropy:2022}.
+
+The final maps and the scripts used to make them (as well as the selfcal script) are available in the Illinois Data Bank citep{TBD}. The ALMA data and reduction scripts are available from the ALMA archive.
+\end{acknowledgments}
+
+%% To help institutions obtain information on the effectiveness of their 
+%% telescopes the AAS Journals has created a group of keywords for telescope 
+%% facilities.
+%
+%% Following the acknowledgments section, use the following syntax and the
+%% \facility{} or \facilities{} macros to list the keywords of facilities used 
+%% in the research for the paper.  Each keyword is check against the master 
+%% list during copy editing.  Individual instruments can be provided in 
+%% parentheses, after the keyword, but they are not verified.
+
+\vspace{5mm}
+\facilities{ALMA}
+
+%% Similar to \facility{}, there is the optional \software command to allow 
+%% authors a place to specify which programs were used during the creation of 
+%% the manuscript. Authors should list each code and include either a
+%% citation or url to the code inside ()s when available.
+
+\software{Astropy \citep{astropy:2013, astropy:2018, astropy:2022}, APLpy \citep{aplpy2012, aplpy2019}, CARTA \citep{carta}, CASA \citep{CASA}} 
+
+%% Appendix material should be preceded with a single \appendix command.
+%% There should be a \section command for each appendix. Mark appendix
+%% subsections with the same markup you use in the main body of the paper.
+
+%% Each Appendix (indicated with \section) will be lettered A, B, C, etc.
+%% The equation counter will reset when it encounters the \appendix
+%% command and will number appendix equations (A1), (A2), etc. The
+%% Figure and Table counter will not reset.
+
+
+
+%% For this sample we use BibTeX plus aasjournals.bst to generate the
+%% the bibliography. The sample631.bib file was populated from ADS. To
+%% get the citations to show in the compiled file do the following:
+%%
+%% pdflatex sample631.tex
+%% bibtext sample631
+%% pdflatex sample631.tex
+%% pdflatex sample631.tex
+
+\bibliography{main}{}
+\bibliographystyle{aasjournal}
+
+\appendix
+
+\section{All Fields with Notes} \label{sec:appendix}
+
+\subsection{Overview and Descriptive Terminology} \label{sec:appendix:overview}
+We present the $^{12}$CO maps of all 51 fields in two sections: fields with outflow emission and fields without outflow emission. Each section lists the fields in order of ascending right ascension. Fields with at least one measured outflow are displayed in integrated intensity maps (moment 0) in which we selectively integrated channels that highlight the outflow morphology. Channels near the systemic velocity were omitted to better show the outflow material. Data below 3${\sigma}$ were clipped to guarantee the significance of the data. These fields are also annotated with the binary separation direction and the outflow direction(s). Table \ref{table:by_field} notes which channels were integrated. Fields with no measured outflows are displayed with maximum intensity maps (moment 8) and no clipping. 
+
+In this appendix, we have a paragraph for each field describing the characteristics of the system, the outflow morphology, and any other nuances or idiosyncrasies. Outflows that we attribute a LOW confidence in measurements are explicitly noted and reasons provided. Every other outflow is HIGH confidence. Note that some of the characteristics described may not be visible in the maps provided; some descriptions are provided of emission and structure in velocity channels that were not included in the maps. Outflows in systems with more than one outflow may appear tangled up in the moment maps, but they have been disentangled and measured separately by looking at specific velocity ranges. Additionally, the Perseus outflows note measurements from prior studies for comparison.
+
+For the sake of consistency in the qualitative descriptions, we clearly define a few ideas. We define one outflow as a pair of redshifted and blueshifted lobes, although sometimes one lobe is not present. We refer to the redshifted side of the outflow as the red lobe and/or red channels and the blueshifted side as the blue lobe and/or blue channels. We describe outflow shapes as being v-shaped or u-shaped. A v-shape is composed of two straight lines like a cone, while a u-shaped is composed of two curved lines like a parabola. We refer to these lines as the edges of the outflow, and the space between them as the cavity. We call an outflow sharp if its edges are clearly defined and contained, and diffuse if its edges are not clearly defined or blurry. In some cases, we note that there may be an overlapping aligned outflow present. This means that there is evidence of two overlapping v-shapes pointing in the same direction. This may be hinting at the idea of collective outflows. However, in each of these cases, we treat it as a single outflow. We attempt to distinguish which source in a system is launching the outflow, and the observations fall into three categories: the outflow is clearly coming from one particular source; the outflow is coming from in between two sources and/or they both appear to feed the outflow; or the sources are too close together to resolve the outflow source. The determinations are made by eye using the $^{12}$CO data for the outflow positions and the continuum data for the source positions. 
+
+We measure outflow PAs by eye with a protractor on the $^{12}$CO data within Cube Analysis and Rendering Tool for Astronomy \citep[CARTA;][]{carta}. Measurements of each outflow were made by considering the position of the outflow in all velocity channels where it is present. We did not consult any moment maps (e.g., moment 0 or 8) during the measuring process. All angles are measured counterclockwise from north. For each apparent lobe of the outflow, we measured the PAs of the two edges of the outflow and then subtract to calculate the center PA. If an outflow has two lobes, we measured each separately and report the lobe-averaged PA and the lobe PA offset--the discrepancy between the red and blue lobe PAs. If only one lobe was detected, then only a single PA is used. The PAs are specified such that they always refer to the direction of the blue lobe.
+
+\begin{deluxetable*}{llllll}
+\tablenum{2}
+\tablecaption{Data by Field}
+\tablehead{
+    \colhead{Field} & 
+    \colhead{Other Name} & 
+    \colhead{\# of Sources} & 
+    \colhead{RA\ (ICRS)} & 
+    \colhead{Dec\ (ICRS)} & 
+    \colhead{Integrated Velocities\ ($km~s^{-1}$)}
+}
+\startdata
+Per-emb-22 & L1448 IRS2 & 2 & 51.34337 & 30.75368 & 7.3 to 17.2, -3.92 to 0.04 \\
+L1448 IRS3C & Per-emb-107 & 2 & 51.39862 & 30.75948 & 6.26 to 14.84, -1.0 to 2.96 \\
+Per-emb-33 & L1448 IRS3B & 3 & 51.40159 & 30.75409 & 6.64 to 13.24 \\
+Per-emb-17 & \nodata & 2 & 51.91293 & 30.21752 & 7.96 to 11.92, 0.04 to 2.68 \\
+Per-emb-35 & \nodata & 2 & 52.15454 & 31.22522 & 9.94 to 12.58 \\
+Per-emb-27 & NGC 1333 IRS2A & 2 & 52.23154 & 31.24362 & 11.26 to 14.56, -1.28 to 3.34 \\
+Per-emb-36 & NGC 1333 IRAS2B & 2 & 52.23906 & 31.23771 & 11.92 to 15.22, 0.04 to 3.34 \\
+Per-emb-44 & SVS 13A & 2 & 52.26569 & 31.26772 & 16.54 to 20.5, -33.62 to -26.36 \\
+Per-emb-12 & NGC 1333 IRAS4A & 2 & 52.2939 & 31.22526 & 9.94 to 13.24, -2.6 to 2.02 \\
+Per-emb-18 & \nodata & 2 & 52.29691 & 31.30863 & 10.6 to 13.9 \\
+Per-emb-2 & IRAS 03292+3039 & 5 & 53.07471 & 30.82992 & 9.28 to 12.58, 1.36 to 4.0 \\
+HOPS-32 & \nodata & 2 & 83.64769 & -5.66653 & 10.0 to 14.0, 3.0 to 6.0 \\
+HOPS-28 & \nodata & 2 & 83.69714 & -5.69895 & \nodata \\
+HOPS-45 & \nodata & 2 & 83.77691 & -5.55976 & \nodata \\
+HOPS-12 & \nodata & 3 & 83.7873 & -5.93194 & 11.0 to 15.0, 0.0 to 5.0 \\
+HOPS-92 & \nodata & 3 & 83.82641 & -5.00916 & 14.0 to 20.0, 1.0 to 5.0 \\
+HOPS-56 & \nodata & 4 & 83.83119 & -5.25916 & \nodata \\
+HOPS-70 & \nodata & 5 & 83.84341 & -5.13476 & \nodata \\
+HOPS-84 & \nodata & 2 & 83.86067 & -5.06532 & 12.0 to 15.0, 6.0 to 8.0 \\
+HOPS-75 & \nodata & 2 & 83.86118 & -5.10297 & 14.0 to 16.0 \\
+HOPS-85 & \nodata & 2 & 83.86747 & -5.06147 & \nodata \\
+HOPS-77 & \nodata & 3 & 83.88143 & -5.0965 & \nodata \\
+HOPS-182 & \nodata & 3 & 84.07828 & -6.36963 & 12.0 to 15.0, -4.0 to 1.0 \\
+HOPS-168 & \nodata & 2 & 84.07896 & -6.75655 & 12.0 to 23.0, -1.0 to 6.0 \\
+HOPS-203 & \nodata & 3 & 84.09528 & -6.76852 & 4.0 to 8.0 \\
+HOPS-173 & \nodata & 2 & 84.10853 & -6.41813 & 10.0 to 10.0 \\
+HOPS-193 & \nodata & 2 & 84.12619 & -6.02146 & 12.0 to 12.0, 5.0 to 7.0 \\
+HOPS-163 & \nodata & 2 & 84.32199 & -6.60506 & \nodata \\
+HOPS-158 & \nodata & 2 & 84.352 & -6.97582 & 9.0 to 11.0, -2.0 to 3.0 \\
+HOPS-138 & \nodata & 2 & 84.70138 & -7.04548 & \nodata \\
+HOPS-395 & \nodata & 2 & 84.82122 & -7.40683 & 6.0 to 6.0, 2.0 to 3.0 \\
+HOPS-288 & \nodata & 3 & 84.98333 & -7.50766 & 10.0 to 16.0, -7.0 to -1.0 \\
+HOPS-290 & \nodata & 2 & 84.98888 & -7.49242 & 7.0 to 10.0, -1.0 to 2.0 \\
+HOPS-281 & \nodata & 2 & 85.10262 & -7.71897 & 7.0 to 13.0, -1.0 to 2.0 \\
+HOPS-282 & \nodata & 2 & 85.1087 & -7.62559 & 7.0 to 9.0, 1.0 to 3.0 \\
+HOPS-242 & \nodata & 2 & 85.20226 & -8.18582 & \nodata \\
+HOPS-255 & \nodata & 2 & 85.21074 & -8.09687 & \nodata \\
+HOPS-261 & \nodata & 2 & 85.32872 & -7.92471 & \nodata \\
+HOPS-248 & \nodata & 2 & 85.34223 & -7.96752 & \nodata \\
+HOPS-357 & \nodata & 2 & 85.41307 & -1.86872 & \nodata \\
+HOPS-384 & \nodata & 10 & 85.43391 & -1.9128 & 16.0 to 20.0 \\
+HOPS-304 & \nodata & 2 & 85.44139 & -1.94076 & 15.0 to 17.0, 2.0 to 6.0 \\
+HOPS-400 & \nodata & 2 & 85.68856 & -1.27052 & 11.0 to 16.0, 3.0 to 6.0 \\
+HOPS-213 & \nodata & 2 & 85.70035 & -8.669 & 5.0 to 6.0, 0.0 to 1.0 \\
+HOPS-312 & \nodata & 2 & 85.77375 & -1.26521 & 5.0 to 6.0, -4.0 to -1.0 \\
+HOPS-363 & \nodata & 2 & 86.67969 & 0.01453 & 15.0 to 17.0, 0.0 to 1.0 \\
+HOPS-323 & \nodata & 2 & 86.69863 & 0.00689 & 13.0 to 15.0, 2.0 to 7.0 \\
+HOPS-366 & \nodata & 2 & 86.7667 & 0.36955 & 20.0 to 28.0, -12.0 to -5.0 \\
+HOPS-361 & \nodata & 13 & 86.76931 & 0.36328 & -11.0 to -4.0 \\
+HOPS-364 & \nodata & 2 & 86.90235 & 0.33499 & 14.0 to 17.0, 3.0 to 7.0 \\
+HH270VLA1 & \nodata & 2 & 87.89415 & 2.94608 & 12.0 to 17.0, 2.0 to 8.0 \\
+\enddata
+\tablecomments{Fields with no integrated velocities are fields in which no outflows were measured. We display them with maximum intensity (moment 8) maps.}
+\label{table:by_field}
+\end{deluxetable*}
+
+\subsection{Fields with Outflow Emission} \label{sec:appendix:fields-with-emission}
+
+\begin{figure*}[ht!]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/appendix-1.pdf}
+\caption{All Fields (1 of 6). Same as Figure \ref{fig:fig_1}, but for all fields. Fields with no measured outflows are displayed with maximum intensity (moment 8) maps, as labeled in the map title.}
+\label{fig:appendix-1}
+\end{figure*}
+
+\subsubsection{Per-emb-22}
+Per-emb-22 (also known as L1448 IRS2) contains two sources with a separation of 225.4 au. We measured one outflow with two lobes. The lobe-averaged PA is 129$^\circ$, and the lobe PA offset is 8$^\circ$. The blue lobe is a sharp v-shape that launches from Per-emb-22-B. We note a u-shaped arc of emission that is coincident with the v-shape at the system velocity, but recedes from the source in higher velocity channels. Per-emb-22-A has much fainter emission that is potentially also contributing to the outflow, or its own overlapping and aligned outflow. The red lobe appears to have sharp aligned v-shapes launching from both sources, but they are ambiguous. Ultimately, we treat it as a single outflow, measure one PA, and cannot confidently determine which source it originates from due to ambiguity.
+
+\cite{Stephens_et_al_2017} measured an outflow PA of 118$^\circ$, which differs from our measurement by 11$^\circ$. \cite{Reynolds_et_al_2024} classifies this system as a likely disk fragmentation candidate due to the aligned orientations of the components.
+
+\subsubsection{L1448 IRS3C}
+L1448 IRS3C (also known as Per-emb-107 and L1448NW) contains two sources with a separation of 75.3 au. We measured one outflow with two lobes. The lobe-averaged PA is 127$^\circ$, and the lobe PA offset is 6$^\circ$. The blue lobe is a diffuse v-shape that is only visible in a few channels. The red lobe is a diffuse v-shape with much more signal than the blue lobe. The outflow origin is not distinguishable.
+
+\subsubsection{Per-emb-33}
+Per-emb-33 (also known as L1448 IRS3B) contains three sources in a hierarchical triple system in which we measure two outflows. However, \cite{Reynolds_et_al_2024} detects a fourth compact continuum source, but it is uncertain whether it is protostellar or not. Also in the field is the wide ($>$ 2000 au) companion L1448 IRS3A, but we do not include it in this analysis. The inner binary (Per-emb-33-A and Per-emb-33-B) has a separation of 79.6 au and the tertiary (Per-emb-33-C) is 263.2 au from the inner binary. All three sources are embedded within a spiral structure seen in continuum. In the blue channels there is a jet-like structure launching from the system, but we cannot confidently determine the presence of an outflow lobe, distinguish which source it launches from, nor measure an outflow PA. In the red channels, both the binary and tertiary appear to launch separate outflows, but they are overlapping. The binary has a broader sharp v-shape, and we cannot distinguish which binary source launches it. Within the cavity of this outflow lies the tertiary which is launching its own sharp v-shaped outflow. This outflow is narrower and lies entirely within the cavity of the binary's outflow. Both outflows share a northern edge. The outflow PA of the binary is 123$^\circ$. The outflow PA of the tertiary is  108$^\circ$. 
+
+\cite{Lee_2015} measured a single outflow PA of 122$^\circ$, corresponding to the wider outflow from the inner binary, which differs from our measurement by 1$^\circ$. \cite{Reynolds_et_al_2021} examines this system in more detail, also noting an outflow, and concludes that disk fragmentation is the most likely formation mechanism.
+
+\subsubsection{Per-emb-17}
+Per-emb-17 contains two sources with a separation of 83.4 au. We measured one outflow with two lobes. The lobe-averaged PA is 56$^\circ$. and the lobe PA offset is 16$^\circ$. The blue lobe is a diffuse v-shape a lot of extraneous emission with some vague structure in the cavity. The red lobe is a sharp v-shape. The outflow origin is not distinguishable.
+
+\cite{Stephens_et_al_2017} measures an outflow PA of 57$^\circ$, which differs from our measurement by 1$^\circ$. \cite{Dunham_et_al_2024} measures an outflow PA of 64$^\circ$, which differes from our measurement by 8$^\circ$, and also determines an outflow opening angle of 69$^\circ$ $\pm$ 8$^\circ$. \cite{Reynolds_et_al_2024} classifies this system as a likely disk fragmentation candidate.
+
+\subsubsection{Per-emb-35}
+Per-emb-35 contains two sources with a separation of 572.5 au. We measured two outflows. On Per-emb-35-A we observe a diffuse v-shaped blue lobe. In lower blue velocity channels a lobe can also be seen on the opposite side, but we cannot confidently measure an outflow PA. The outflow PA is 299$^\circ$. The northwest lobe of Per-emb-35-B is visible in both red and blue channels. We assign this lobe as the blue lobe since the red channels also contain the southeast lobe. The lobe-averaged PA is 130$^\circ$ and the lobe PA offset is 5$^\circ$. The outflows on the two sources are quite closely aligned.
+
+\cite{Stephens_et_al_2017} measures two outflow PAs of 123$^\circ$ and 169$^\circ$. That corresponds to our measurements of 119$^\circ$ (299$^\circ$ when flipped) and 130$^\circ$. These differ from our measurements by 4$^\circ$ and 39$^\circ$ respectively. \cite{Reynolds_et_al_2024} classifies this system as a turbulent fragmentation candidate.
+
+\subsubsection{Per-emb-27}
+Per-emb-27 (also known as NGC 1333 IRS2A) contains two sources with a separation of 186.0 au. We measured two outflows. Per-emb-27-A drives an outflow with two sharp v-shaped lobes. The lobe-averaged PA is 23$^\circ$ and the lobe PA offset is 24$^\circ$. Per-emb-27-B drives a second outflow, roughly perpendicular to the other outflow. This outflow is slightly peculiar, in that it has a distorted and narrow shape where the edges twist around each other and alter the pointing direction. There is no evidence of a blue lobe. The outflow PA is 114$^\circ$.
+
+\cite{Plunkett_2013} measures two outflow PAs of 14$^\circ$ and 104$^\circ$, differing from our measurements by 9$^\circ$ and 10$^\circ$ respectively. \cite{Dunham_et_al_2024} only measures the outflow associated with Per-emb-27-A, at 14$^\circ$, in agreement with \cite{Plunkett_2013} but differing from our measurement by 9$^\circ$. \cite{Dunham_et_al_2024} also determines an outflow opening angle of 65$^\circ$ $\pm$ 11$^\circ$. \cite{Reynolds_et_al_2024} classifies this system as a turbulent fragmentation candidate.
+
+\subsubsection{Per-emb-36}
+Per-emb-36 (also known as NGC 1333 IRAS2B) contains two sources with a separation of 93.3 au. We measured one outflow with two lobes. The lobe-averaged PA is 46$^\circ$ and the lobe PA offset is 36$^\circ$. The blue lobe is extremely wide, almost a full 180$^\circ$ \citep{Dunham_et_al_2024}. The red lobe is a diffuse v-shape. There is extraneous emission north of the system that does not appear to be related to an outflow. The outflow origin is not distinguishable. Due to the wide outflow and large lobe PA offset, we label our measurements LOW confidence.
+
+\cite{Plunkett_2013} measures an outflow PA of 24$^\circ$, and \cite{Dunham_et_al_2024} measures an outflow PA of 13$^\circ$ along with an outflow opening angle of 162$^\circ$ $\pm$ 31$^\circ$. These differ from our measurement by 22$^\circ$ and 33$^\circ$ respectively. \cite{Reynolds_et_al_2024} classifies the formation mechanism of this system as inconclusive.
+
+\subsubsection{Per-emb-44}
+Per-emb-44 (also known as SVS 13A) contains two sources with a separation of 90.1 au. We measured one outflow with one lobe. The lobe-averaged PA is 319$^\circ$ and the lobe offset PA is 48$^\circ$. The continuum data exhibits a spiral structure around the binary. The blue channels contain emission that could be attributed to an outflow in velocity channels as high as 69 km/s. The blue lobe is a wide u-shape, the base of which lies slightly behind the binary sources. The red lobe is a sharp u-shape. The outflow origin is not distinguishable. Due to the large lobe offset PA, we label these measurements LOW confidence.
+
+\cite{Plunkett_2013} measures an outflow PA of 130$^\circ$, as does \cite{Lee_et_al_2016}. These differ from our measurement by 11$^\circ$. \cite{Dunham_et_al_2024} measures an outflow PA of 140$^\circ$, differing from our measurement by 21$^\circ$. They also determine an outflow opening angle of 144$^\circ$ $\pm$ 20$^\circ$. 
+
+\subsubsection{Per-emb-12}
+Per-emb-12 (also known as NGC 1333 IRAS4A) contains two sources with a separation of 549.0 au. We measured two outflows. Both Per-emb-12-A and Per-emb-12-B appear to drive outflows, which have sharp v-shapes. The two blue lobes are not overlapping, but appear to be deflecting off each other and not pointing in the same direction. The two red lobes appear to be overlapping and pointing in the same direction, however they are seen individually launching an outflow. The lobe-averaged PA of the outflow launched by Per-emb-12-A is 0$^\circ$ and the lobe PA offset is 19$^\circ$. The lobe-averaged PA of the outflow launched by Per-emb-12-B is 28$^\circ$ and the lobe PA offset is 6$^\circ$.
+
+\cite{Plunkett_2013} measures a single outflow PA of 35$^\circ$ and \cite{Lee_et_al_2016} measures a single outflow PA of 19$^\circ$. They attributed only a single outflow PA to this system, whereas we measure two separate outflow PAs, one driven from each source. These compare to our PAs of 0$^\circ$ and 28$^\circ$, which if you averaged as a single outflow would be 14$^\circ$.
+
+\begin{figure*}[ht!]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/appendix-2.pdf}
+\caption{All Fields (2 of 6). Same as Figure \ref{fig:fig_1}, but for all fields. Fields with no measured outflows are displayed with maximum intensity (moment 8) maps, as labeled in the map title.}
+\label{fig:appendix-2}
+\end{figure*}
+
+\subsubsection{Per-emb-18}
+Per-emb-18 contains two sources with a separation of 25.5 au. We measured one outflow with one lobe. The outflow PA is 347$^\circ$. The blue channels contain some filamentary structure, but neither are in the position where an outflow should be nor resemble an outflow. Therefore, we cannot confidently determine the presence of an outflow lobe, nor measure an outflow PA. The red lobe has a sharp v-shape on the north side and also exhibits a diffuse v-shape on the south side of the binary, indicating an edge-on disk. There is extraneous emission with an arc-like structure southwest of the system in the red channels. The outflow origin is not distinguishable.
+
+\cite{Lee_et_al_2016} measures an outflow PA of 150$^\circ$, differing from our measurement by 17$^\circ$. \cite{Reynolds_et_al_2024} classifies this system as a likely disk fragmentation candidate.
+
+\subsubsection{Per-emb-2}
+Per-emb-2 contains five sources, of which two form a close-companion system with a separation of 24.1 au. We measured one outflow with two lobes. The lobe-average PA is 306$^\circ$ and the lobe PA offset is 2$^\circ$. In continuum, there is a large cloud-like structure containing four different embedded sources. Both lobes have a sharp v-shape with no extraneous emission. The blue lobe is closer to sources C and D while the red lobe is closer sources A and B. Ultimately, the outflow origin is not distinguishable.
+
+\cite{Stephens_et_al_2017} measures an outflow PA of 129$^\circ$, and \cite{Dunham_et_al_2024} measures an outflow PA of 131$^\circ$ along with an outflow opening angle of 40$^\circ$ $\pm$ 8$^\circ$. These differ from our measurements by 5$^\circ$ and 3$^\circ$ respectively. \cite{Reynolds_et_al_2024} classifies this system as a likely disk fragmentation candidate.
+
+\subsubsection{HOPS-32}
+HOPS-32 contains two sources with a separation of 162.2 au. We measured one outflow with two lobes. The lobe-average PA is 159$^\circ$ and the lobe PA offset is 4$^\circ$. The outflow is launched from HOPS-32-B. The blue lobe exhibits sharp v-shapes on both sides of the binary, indicating an edge-on disk. The red lobe contains a faint and sharp v-shape on the south side of the binary.
+
+\subsubsection{HOPS-45}
+HOPS-45 contains two sources with a separation of 120.7 au. We did not measure any outflows in this field. The blue channels have some sort of compact ring that arcs around the binary with no clear directionality. The red channels contain a possible small v-shaped lobe, but we cannot confidently determine the presence of an outflow lobe nor measure an outflow PA.
+
+\subsubsection{HOPS-12}
+HOPS-12 contains three sources in a hierarchical triple system in which we measure two outflows The inner binary (HOPS-12-B-A and HOPS-12-B-B) has a separation of 80.6 au and the tertiary (HOPS-12-A) is 1853.5 au from the inner binary. The inner binary has two sharp v-shaped lobes. The outflow origin is not distinguishable. The lobe-averaged PA is 157$^\circ$ and the lobe PA offset is 2$^\circ$. The tertiary has a diffuse u-shaped miniature red lobe. This outflow is very small compared to any other in this sample. In the red channels there is some structure but we cannot confidently determine the presence of an outflow lobe, nor measure a PA. The outflow PA is 157$^\circ$, aligned with the outflow of the inner binary.
+
+\subsubsection{HOPS-92}
+HOPS-92 contains three sources in a hierarchical triple system in which we measure two outflows, each only having one lobe. The inner binary (HOPS-92-A-A and HOPS-92-A-B) has a separation of 108.4 au and the tertiary is 498.8 au from the inner binary. The inner binary drives an outflow with a sharp u-shaped red lobe. We cannot confidently determine the presence of a blue lobe. This outflow appears like it may be two overlapping outflows since there are two sets of u-shape edges visible, but ultimately we treat it as a single outflow, measure one PA, and cannot confidently resolve which binary source it launches from. The outflow PA is 76$^\circ$. The tertiary drives an outflow that is pointed almost 180$^\circ$ away from the previous outflow. It has a blue lobe with a sharp v-shape. We cannot confidently determine the presence of a red lobe. The outflow PA is 269$^\circ$.
+
+\cite{Federman_2023} notes that based on the appearance of the disk, we are viewing the disk of HOPS-92 nearly face-on. This means we are looking down the outflow cavity.
+
+\subsubsection{HOPS-56}
+HOPS-56 contains four sources. Sources A, B, and C are close-companions at similar distances from each other. Source D is much farther away. We could not confidently identify nor measure any outflows in this field. In the blue channels there is some filamentary and arcing structure near the three close-companions, but nothing that we can confidently identify as an outflow. In the red channels there are two small shell-like structures launching from the close-companions, but the shapes are vague and we cannot confidently determine the presence of an outflow lobe, nor measure an outflow PA. Source D looks like it has one edge of a v-shaped outflow pointing south, but we do not measure it due to low signal-to-noise and the lack of second edge.
+
+\subsubsection{HOPS-70}
+HOPS-70 contains five sources, four of which form binary pairs. We could not confidently identify nor measure any outflows in this field. In the blue channels, both binary systems have arcing shapes that may be outflow-related. The red channels also contain some filamentary structures, but no definite outflow shapes.
+
+\cite{Federman_2023} notes that based on the appearance of the disk, we are viewing the disk of HOPS-70 nearly face-on. This means we are looking down the outflow cavity.
+
+\subsubsection{HOPS-84}
+HOPS-84 contains two sources with a separation of 275.5 au. We measured one outflow with two lobes. The lobe-average PA is 83$^\circ$ and the lobe PA offset is 3$^\circ$. The blue lobe has a sharp v-shape. There is a lot of emission inside the cavity, almost in a spiraling structure. The red lobe has a faint outline of a v-shape, but signal to noise is quite low. It is possible there are two overlapping aligned outflows present, since in the blue lobe each disk seems to launch an outflow. Ultimately, we treat it as a single outflow, measure one PA, and cannot confidently determine which source it originates from due to ambiguity.
+
+\begin{figure*}[ht!]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/appendix-3.pdf}
+\caption{All Fields (3 of 6). Same as Figure \ref{fig:fig_1}, but for all fields. Fields with no measured outflows are displayed with maximum intensity (moment 8) maps, as labeled in the map title.}
+\label{fig:appendix-3}
+\end{figure*}
+
+\subsubsection{HOPS-75}
+HOPS-75 contains two sources with a separation of 99.8 au. We measured one outflow with one lobe. The outflow PA is 100$^\circ$. The blue channels possess a diffuse u-shape structure that is significantly offset from the binary, so we cannot confidently measure an outflow PA. The red lobe is and diffuse v-shape, buried under other emission. There is lots of extraneous emission in the field. The outflow origin is not distinguishable. Due to the general messiness and ambiguity of the emission we label these measurements LOW confidence.
+
+\subsubsection{HOPS-85}
+HOPS-85 contains two sources with a separation of 40.2 au. We could not confidently identify nor measure any outflows in this field. The blue channels have a ring/shell structure pointing away from the binary. The red channels have a similar structure, but it is at 90$^\circ$ to the other one. While there are some directional structures, it is ambiguous.
+
+\cite{Federman_2023} notes that based on the appearance of the disk, we are viewing the disk of HOPS-85 nearly face-on. This means we are looking down the outflow cavity.
+
+\subsubsection{HOPS-77}
+HOPS-77 contains three sources in a hierarchical triple system. We could not confidently identify nor measure any outflows in this field. The blue channels have no emission structure in the vicinity of the sources. The red channels contain a potential outflow lobe on the inner binary, but it is ambiguous.
+
+
+\subsubsection{HOPS-182}
+HOPS-182 contains three sources, of which two form a close-companion system with a separation of 381.5 au. We measured one outflow with two lobes. The lobe-average PA is 235$^\circ$ and the lobe PA offset is 16$^\circ$. In higher velocity channels the blue lobe is a diffuse u-shape launching from HOPS-182-A. In lower blue velocity channels there appears to be diffuse u-shaped overlapping aligned outflows launching from both source A and B. The red lobe has a diffuse v-shape that in lower velocity channels appears to launch from HOPS-182-A, but in higher velocity channels it looks like both may be launching an outflow or feeding into the same one. Ultimately, we treat it as a single outflow, measure one PA, and cannot confidently determine which source it originates from due to ambiguity. There is a third source much farther from the binary, HOPS-182-C, which appears to have a sharp v-shaped outflow in velocity ranges 3 to 5 $km~s^{-1}$, a blueshifted velocity. We do not measure this outflow on source C.
+
+\subsubsection{HOPS-168}
+HOPS-168 contains two sources with a separation of 73.7 au. We measured one outflow with two lobes. The lobe-averaged PA is 159$^\circ$ and the lobe PA offset is 5$^\circ$. Both lobes have sharp v-shapes. The outflow origin is not distinguishable.
+
+\subsubsection{HOPS-203}
+HOPS-203 contains three sources in a hierarchical triple system in which we measure two outflows, each with one lobe. The inner binary (HOPS-203-A and HOPS-203-B) has a separation of 49.7 au and the tertiary (HOPS-203-C) is 1085.5 au from the inner binary. The blue channels clearly illuminate a sharp v-shape launching from the binary and a diffuse u-shape launching from the tertiary. In the red channels, two lobes are visible on each side of the binary but we do not measure these. The outflow PA for the inner binary is 144$^\circ$ and for the tertiary is 101$^\circ$. The outflow origin on the inner binary is not distinguishable.
+
+\subsubsection{HOPS-173}
+HOPS-173 contains two sources with a separation of 103.0 au. We measured one outflow with one lobe. The outflow PA is 247$^\circ$. The blue channels contain some arcing u-shaped structure to the north of the binary, but do not seem associated with given the PA measured in the red channels. We cannot confidently determine the presence of an outflow lobe, nor measure an outflow PA in the blue channels. The red channels display a sharp and faint v-shape on both sides of the binary and we measure the PA of the southwest lobe. The outflow origin is not distinguishable. Due to the very low signal, we label these measurements LOW confidence.
+
+\subsubsection{HOPS-193}
+HOPS-193 contains two sources with a separation of 100.0 au. We measured one outflow with two lobes. The lobe-averaged PA is 94$^\circ$ and the lobe PA offset is 8$^\circ$. The blue lobe has a diffuse u-shape only visible in two or three channels. The red lobe has a sharp v-shape also only visible in two or three channels. The outflow origin is not distinguishable.
+
+\subsubsection{HOPS-158}
+HOPS-158 contains two sources with a separation of 46.0 au. We measured one outflow with two lobes. The lobe-averaged PA is 236$^\circ$ and the lobe PA offset is 18$^\circ$. This outflow is wider than most. The blue channels have u-shaped lobe, the base of which coincides with the binary. The red channels have a similar u-shaped lobe, but strangely the base of it is at least 500 au behind the binary. Due to the large lobe PA offset and the strange morphology, we label our measurements LOW confidence.
+
+\begin{figure*}[ht!]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/appendix-4.pdf}
+\caption{All Fields (4 of 6). Same as Figure \ref{fig:fig_1}, but for all fields. Fields with no measured outflows are displayed with maximum intensity (moment 8) maps, as labeled in the map title.}
+\label{fig:appendix-4}
+\end{figure*}
+
+\subsubsection{HOPS-138}
+HOPS-138 contains two sources with a separation of 125.6 au. We could not confidently identify nor measure any outflows in this field. Neither the blue nor red channels have any notable emission or structure. However, the maximum intensity map (M8) suggests the presence of a shell structure around the binary, which appears to be a false positive structure.
+
+\subsubsection{HOPS-395}
+HOPS-395 contains two sources with a separation of 65.4 au. We measured one outflow with two lobes. The lobe-averaged PA is 174$^\circ$ and the lobe PA offset is 14$^\circ$. The outflow is launching from HOPS-395-B. The blue channels predominantly show the north lobe on the binary, but the south lobe is also strongly visible in some blue channels. Both lobes have diffuse v-shapes and extremely narrow, like a jet. Their directions appear mirrored across the separation line, and not directly across. This is likely due to an edge-on orientation.
+
+\subsubsection{HOPS-288}
+HOPS-288 contains three sources in a hierarchical triple system in which we measure two outflows, each with one lobe. The inner binary (HOPS-288-AA and HOPS-288-AB) has a separation of 61.3 au and the tertiary (HOPS-288-B) is 221.9 au from the inner binary. In the blue channels, the binary and tertiary each clearly launch their own sharp v-shaped outflows, almost side-by-side. Also in the blue channels is a lobe on the opposite side that is more aligned with the outflow lobe on the tertiary, but has a trail of emission launching from the binary. In the red channels the tertiary has a sharp v-shaped lobe but on the same side as before. In lower red velocity channels there is a sharp v-shaped lobe on the opposite side, but it is not clear whether it only belongs to the tertiary. We only measure a blue lobe for the inner binary and its PA is 56$^\circ$. We also only measure a red lobe for the tertiary and its PA is 212$^\circ$. We only measure these two lobes since it is ambiguous which source the other lobes belong to. The outflow origin on the inner binary is not distinguishable.
+
+\subsubsection{HOPS-290}
+HOPS-290 contains two sources with a separation of 332.7 au. We measured two outflows. The first outflow is a typical v-shape with two lobes, and launches from HOPS-290-A. The blue lobe is sharp and the red lobe diffuse. The lobe-averaged PA is 294$^\circ$ and the lobe PA offset is 4$^\circ$. The second outflow launches from HOPS-290-B. The blue lobe is atypical; the outflow curves in, looking like a shell. This outflow has another lobe that also appears faintly on the blue side--we record this as the red lobe. The lobe averaged PA is 229$^\circ$ and the lobe PA offset is 3$^\circ$.
+
+\subsubsection{HOPS-281}
+HOPS-281 contains two sources with a separation of 311.6 au. We measured one outflow with two lobes. The lobe-averaged PA is 26$^\circ$ and the lobe PA offset is 3$^\circ$. The blue lobe has a sharp u-shape. The red lobe has a sharp v-shape. The outflow origin is not distinguishable.
+
+\subsubsection{HOPS-282}
+HOPS-282 contains two sources with a separation of 70.1 au. We measured one outflow with two lobes. The lobe-average PA is 183$^\circ$ and the lobe PA offset is 4$^\circ$. Both lobes appear in both red and blue channels and each has a sharp v-shape. We assign the north lobe as the blue lobe and the south lobe as the red lobe. The outflow origin is not distinguishable.
+
+\subsubsection{HOPS-261}
+HOPS-261 contains two sources. We could not confidently identify nor measure any outflows in this field. In both the low red and blue channels there are very compact and indiscernible structures near the binary.
+
+\subsubsection{HOPS-384}
+HOPS-384 contains ten sources/regions, of which two form a close-companion system with a separation of 49.0 au. We measured one outflow with one lobe. The outflow PA is 184$^\circ$. The blue channels have some blobs and an arc of emission in front of the binary but we cannot confidently determine the presence of an outflow lobe, nor measure an outflow PA. The red lobe has a sharp v-shape with lots of filaments in the cavity and along the edges. The outflow origin is not distinguishable. Due to the general messiness of the emission, we label these measurements LOW confidence.
+
+\subsubsection{HOPS-304}
+HOPS-304 contains two sources with a separation of 272.7 au. We measured one outflow with two lobes. The lobe-averaged PA is 332$^\circ$ and the lobe PA offset is 30$^\circ$ The blue lobe has a diffuse u-shape. The red lobe has a faint diffuse u-shape. The red channels have some extraneous emission in the northwest corner of the field. The outflow origin is not distinguishable.  Due to the large lobe PA offset and general messiness in the emission, we label our measurements LOW confidence.
+
+\begin{figure*}[ht!]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/appendix-5.pdf}
+\caption{All Fields (5 of 6). Same as Figure \ref{fig:fig_1}, but for all fields. Fields with no measured outflows are displayed with maximum intensity (moment 8) maps, as labeled in the map title.}
+\label{fig:appendix-5}
+\end{figure*}
+
+\subsubsection{HOPS-400}
+HOPS-400 contains two sources with a separation of 184.0 au. We measured one outflow with two lobes. The lobe-averaged PA is 267$^\circ$ and the lobe PA offset is 19$^\circ$. The outflow is clearly launching from HOPS-400-A. Both lobes have a narrow and diffuse v-shape.
+
+\subsubsection{HOPS-213}
+HOPS-213 contains two sources with a separation of 144.4 au. We measured one outflow with two lobes. The lobe-averaged PA is 264$^\circ$ and the lobe PA offset is 5$^\circ$. The blue lobe has a sharp but faint v-shape only visible in two velocity channels. The red lobe has a faint u-shape, also only visible in two velocity channels. The outflow origin is not distinguishable. Due to the overall fuzziness of the image and and low signal, we label these measurements as LOW confidence.
+
+\subsubsection{HOPS-312}
+HOPS-312 contains two sources with a separation of 134.7 au. We measured one outflow with two lobes. The lobe-averaged PA is 216$^\circ$ and the lobe PA offset is 1$^\circ$. Both lobes of the outflow have sharp v-shapes. The blue lobe launches from source A, while the red lobe appears to launch primarily from source B, but source A may be feeding into it as well.
+
+\subsubsection{HOPS-363}
+HOPS-363 contains two sources with a separation of 79.5 au. We measured one outflow with two lobes. The lobe-averaged PA is 93$^\circ$ and the lobe PA offset is 24$^\circ$. The blue lobe has a very diffuse v-shape. The red lobe has a sharp v-shape. Both lobes are surrounded by extraneous emission, either part of the outflow or not, but the outflow shape is clearly there. The outflow origin is not distinguishable. Due to the large lobe PA offset and general messiness of the emission, we label these measurements as LOW confidence.
+
+\subsubsection{HOPS-323}
+HOPS-323 contains two sources with a separation of 273.6 au. We measured one outflow with two lobes. The lobe-averaged PA is 303$^\circ$ and the lobe PA offset is 7$^\circ$. The blue lobe exhibits two sharp and distinct v-shapes launching from each source, with a difference in PA of 5-10 degrees. However, the red lobe exhibits one sharp v-shape, launching from between the two sources. It appears possible that there are two outflows, one from each source. Ultimately, we treat it as a single outflow, measure one PA, and cannot confidently determine which source it originates from due to ambiguity.
+
+\subsubsection{HOPS-366}
+HOPS-366 contains two sources with a separation of 61.1 au. We measured one outflow with one lobe. The outflow PA is 137$^\circ$. In the faster blue velocity channels there is some circular and shell-like structure aligned with the outflow that appears in the slower blue channels. The blue lobe has a sharp u-shape. The red side of the outflow is extremely crowded; there is generally outflow structure with the expected PA (opposite the blue lobe), but it is ambiguous so we cannot confidently measure an outflow PA. The outflow origin is not distinguishable. 
+
+\subsubsection{HOPS-361}
+HOPS-361 contains 13 sources, of which two form a close-companion system (a = 37.6 au). The sources of interest are the binary consisting of HOPS-361-C-A and HOPS-361-C-B. Nearby in the field are HOPS-361-A and HOPS-361-B. We measured one outflow with one lobe. The outflow PA is 201$^\circ$. The blue lobe has a sharp and faint v-shape. Around sources A and B there is some circular shell like structures in the blue channels. The red channels seem to have a v-shape with the expected PA (opposite the blue lobe), but it is buried under the emission around HOPS-361-A and HOPS-361-B and therefore we cannot confidently measure an outflow PA. The outflow origin is not distinguishable. 
+
+\subsubsection{HOPS-364}
+HOPS-364 contains two sources with a separation of 65.5 au. We measured one outflow with two lobes. The lobe-averaged PA is 276$^\circ$ and the lobe PA offset is 18$^\circ$. Both lobes are sharp v-shapes. The outflow origin is not distinguishable. 
+
+\subsubsection{HH270VLA1}
+HH270VLA1 contains two sources with a separation of 99.4 au. We measured one outflow with two lobes. The lobe-averaged PA is 50$^\circ$ and the lobe PA offset is 1$^\circ$. Both lobes have sharp v-shapes. Both lobes are visible in both the red and blue channels. The blue channels predominantly feature the southwest lobe and the red channels predominantly feature the northeast lobe. The outflow origin is not distinguishable. 
+
+\subsection{Fields Without Outflow Emission} \label{sec:appendix:fields-without-emission}
+The following systems contain no evidence of any outflow structure whatsoever in $^{12}$CO moment maps: HOPS-28, HOPS-163, HOPS-242, HOPS-255, HOPS-248, and HOPS-357. We did not identify nor measure any outflows in these fields. Note that HOPS-357 has regions of emission in the maximum intensity map all of which come from right around the systemic velocity, likely just emission from the envelope.
+
+\begin{figure*}[ht!]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/appendix-6.pdf}
+\caption{All Fields (6 of 6). Same as Figure \ref{fig:fig_1}, but for all fields. Fields with no measured outflows are displayed with maximum intensity (moment 8) maps, as labeled in the map title.}
+\label{fig:appendix-6}
+\end{figure*}
+
+%% This command is needed to show the entire author+affiliation list when
+%% the collaboration and author truncation commands are used.  It has to
+%% go at the end of the manuscript.
+%\allauthors
+
+%% Include this line if you are using the \added, \replaced, \deleted
+%% commands to see a summary list of all changes at the end of the article.
+%\listofchanges
+
+\end{document}
+
+% End of file `sample631.tex'.
