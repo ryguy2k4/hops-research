@@ -1,4 +1,8 @@
 # Protostellar Outflows Shed Light on the Dominant Close Companion Star Formation Pathways
+
+## Overview
+During my sophomore and junior year at the University of Illinois Urbana-Champaign, I worked with Professor Leslie Looney to continue the work of a former graduate student researching the formation of multiple-star systems using data from the ALMA radio telescope array. I used tools such as CASA, CARTA, and Python (scipy) to measure protostellar outflow features in the data and then compare the measurements to different possible simulated scenarios using statistical tests. I used Matplotlib, astropy, and APLpy to map 3D spectral cubes into 2D moment maps to better visualize the data and present the results. I independently drafted a paper describing the observations, methods, and results, and posit that disk fragmentation is the dominant formation pathway for close-companion protostellar systems. Along the way, I communicated with collaborating authors who provided comments and critiques before submission to the Astrophysical Journal, peer review, and publication.
+
 ## Authors
 Ryan Sponzilli<sup>1</sup>, Leslie W. Looney<sup>1</sup>, John J. Tobin<sup>2</sup>, Frankie J. Encalada<sup>1</sup>, Austen Fourkas<sup>1</sup>, Hector Arce<sup>3</sup>, Erin Cox<sup>4,5</sup>, James Di Francesco<sup>6,7</sup>, Nicole Karnath<sup>8</sup>, Zhi-Yun Li<sup>9</sup>, Nadia Murillo<sup>10</sup>, Stella Offner<sup>11</sup>, Sarah Sadavoy<sup>12</sup>, Rajeeb Sharma<sup>13</sup>
 
@@ -29,11 +33,11 @@ Understanding the formation pathway for close-companion protostars is central to
 * `doc`: Contains project proposals.
 * `data`
     * `input` : Folder contains tables sourced from references with source positions, separations, distances, and protostellar classes for the systems in this analysis.
-        * `tobin2022_orion.txt` : Table 1 in https://iopscience.iop.org/article/10.3847/1538-4357/ac36d2
-        * `reynolds2024_perseus_1.txt` : Table 4 in https://iopscience.iop.org/article/10.3847/1538-4357/ad151d#apjad151dbib60
-        * `tobin2018_perseus_2.txt` : Table 1 in https://iopscience.iop.org/article/10.3847/1538-4357/aae1f7
-        * `tobin2022_orion_pairings` : Table 3 in https://iopscience.iop.org/article/10.3847/1538-4357/ac36d2
-        * `tobin2022_perseus_pairings` : Table 4 in https://iopscience.iop.org/article/10.3847/1538-4357/ac36d2
+        * `tobin2022_orion.txt` : Table 1 in https://doi.org/10.3847/1538-4357/ac36d2
+        * `reynolds2024_perseus_1.txt` : Table 4 in https://doi.org/10.3847/1538-4357/ad151d
+        * `tobin2018_perseus_2.txt` : Table 1 in https://doi.org/10.3847/1538-4357/aae1f7
+        * `tobin2022_orion_pairings` : Table 3 in https://doi.org/10.3847/1538-4357/ac36d2
+        * `tobin2022_perseus_pairings` : Table 4 in https://doi.org/10.3847/1538-4357/ac36d2
         * `notes.txt` :  Contains my notes and measurements of each system
         * `offsets.csv` : Contains manually determined RA and DEC offsets for each source.
     * `output` : Folder contains organized csv tables generated in `prepare_tables.py` which are used in the analysis and presented in the paper.
@@ -57,4 +61,4 @@ Understanding the formation pathway for close-companion protostars is central to
 The entire analysis is containerized with Docker. The `Dockerfile` in the root folder can be used to build the image. The workflow is implemented with snakemake and defined in the `Snakefile` in the root folder. The container can be run via the `runall.sh` script. Note that running the analysis requires having the relevant FITS images. Edit `config.yaml` to point to the location of the FITS images on your system. The results of the analysis are saved in the `results` folder.
 
 ## FITS Images
-The relevant FITS images are not included in this repository. For compatibility with the code, they should be organized such that each field is in a folder named after the field, and that folder contains a 12CO image, which contains either "12co" or "spw39" in the filename.
+The relevant FITS images are not included in this repository. The FITS images may be obtained from the [Illinois Databank Repository](https://doi.org/10.13012/B2IDB-7093951_V1) in `fits.zip`, and their location should be specified in `config.yaml`.
