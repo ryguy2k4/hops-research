@@ -3,6 +3,8 @@
 ## Overview
 During my sophomore and junior year at the University of Illinois Urbana-Champaign, I worked with Professor Leslie Looney to continue the work of a former graduate student researching the formation of multiple-star systems using data from the ALMA radio telescope array. I used tools such as CASA, CARTA, and Python (scipy) to measure protostellar outflow features in the data and then compare the measurements to different possible simulated scenarios using statistical tests. I used Matplotlib, astropy, and APLpy to map 3D spectral cubes into 2D moment maps to better visualize the data and present the results. I independently drafted a paper describing the observations, methods, and results, and posit that disk fragmentation is the dominant formation pathway for close-companion protostellar systems. Along the way, I communicated with collaborating authors who provided comments and critiques before submission to the Astrophysical Journal, peer review, and publication.
 
+The paper is published (date TBD) in the [Astrophysical Journal](https://doi.org/10.3847/1538-4357/ae4a29), available on [arXiv](https://arxiv.org/abs/2603.01347), and the analysis and data are preserved in an [Illinois Databank Repository](https://doi.org/10.13012/B2IDB-7093951_V1).
+
 ## Authors
 Ryan Sponzilli<sup>1</sup>, Leslie W. Looney<sup>1</sup>, John J. Tobin<sup>2</sup>, Frankie J. Encalada<sup>1</sup>, Austen Fourkas<sup>1</sup>, Hector Arce<sup>3</sup>, Erin Cox<sup>4,5</sup>, James Di Francesco<sup>6,7</sup>, Nicole Karnath<sup>8</sup>, Zhi-Yun Li<sup>9</sup>, Nadia Murillo<sup>10</sup>, Stella Offner<sup>11</sup>, Sarah Sadavoy<sup>12</sup>, Rajeeb Sharma<sup>13</sup>
 
@@ -30,7 +32,6 @@ Understanding the formation pathway for close-companion protostars is central to
 * `requirements.txt` : Specifies the python libraries needed to run the workflow.
 * `config.yaml` : Specifies the location of the FITS files.
 * `notebooks`: Contains scratch work and exploratory analysis.
-* `doc`: Contains project proposals.
 * `data`
     * `input` : Folder contains tables sourced from references with source positions, separations, distances, and protostellar classes for the systems in this analysis.
         * `tobin2022_orion.txt` : Table 1 in https://doi.org/10.3847/1538-4357/ac36d2
@@ -53,7 +54,7 @@ Understanding the formation pathway for close-companion protostars is central to
     * `all_m8_maps.pdf` : Contains all the M8 maps, one per page, for convenience.
     * `m0_outflow_maps.pdf` : Contains all the M0 outflow maps, one per page, for convenience.
     * `master_reference.pdf` : Contains all the continuum maps, M8 maps, and M0 maps for each system, one system per page, for convenience.
-    * `figs_for_paper` : Contains 15 pdf files of figures which contain M0 or M8 maps which are presented in the paper.
+    * `maps_for_paper` : Contains all figures used in the manuscripts.
     * `stat_test` : Contains the DeltaPA histogram figure presented in the paper, the DeltaPA cumulative frequency distribution presented in the paper, and a figure plotting p-value vs % orthogonal distribution which is not presented in the paper.
     * `tables` : Contains the 4 latex formatted tables presented in the paper.
 
