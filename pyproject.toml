@@ -1,0 +1,14 @@
+[project]
+name = "hops-research"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "aplpy>=2.2.0",
+    "astropy>=7.2.0",
+    "matplotlib>=3.10.9",
+    "matplotlib-label-lines>=0.8.1",
+    "numpy>=2.4.4",
+    "pandas>=3.0.2",
+    "scipy>=1.17.1",
+    "snakemake>=9.19.0",
+]
